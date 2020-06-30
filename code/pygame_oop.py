@@ -82,8 +82,7 @@ class coord:
 
     def in_box(self, mouse_pos:tuple, surface_coord:tuple = (0, 0)) -> bool:
         # Save surface coord to seperate variables
-        scroll_x:int = surface_coord[0]
-        scroll_y:int = surface_coord[1]
+        scroll_x, scroll_y = surface_coord
         # Return if in box
         return self.frame.bx + scroll_x < mouse_pos[0] < self.frame.bx + self.frame.w + scroll_x and self.frame.by + scroll_y < mouse_pos[1] < self.frame.by + self.frame.h + scroll_y
     
@@ -149,38 +148,37 @@ class objects:
     def add(self, name, item_data):
         self.__dict__[name] = item(self.screen, name, **item_data)
 
-    def load(self, items:tuple = None):
+    def load(self, items:tuple = None, state:str = ''):
         # Load all items
         if items == None:
             for name,item in self.__dict__.items():
-                if name != 'screen': item.load()
+                if name != 'screen': item.load(state)
         # Load items defined
         else:
             for name in items:
-                self.__dict__[name].load()
+                self.__dict__[name].load(state)
 
-    def display(self, items:tuple = None, direct_to_screen:bool = False):
+    def display(self, items:tuple = None, state:str = '', direct_to_screen:bool = False):
         if direct_to_screen:
             # Display all items
             if items == None:
                 for name,item in self.__dict__.items():
-                    if name != 'screen': item.display(direct_to_screen)
+                    if name != 'screen': item.display(state, direct_to_screen)
             # Load items defined
             else:
                 for name in items:
-                    self.__dict__[name].display(direct_to_screen)
+                    self.__dict__[name].display(state, direct_to_screen)
 
         else: 
             # Load items defined to surface
-            self.load(items)
+            self.load(items, state)
             # Display Surface
-            self.screen.load(with_load=False)
+            self.screen.surface.display(with_load=False)
 
     def __setitem__(self, name, value): self.__dict__[name] = value
     def __setattr__(self, name, value): self.__dict__[name] = value
     def __getitem__(self, name): return self.__dict__[name]
     def __str__(self): return '{}'.format(self.__dict__)
-
 
 
 class item:
@@ -195,8 +193,14 @@ class item:
         self.frame = frame
         self.runclass = runclass
         self.runclass_parameter = runclass_parameter
-
-        if load_images: self.images = images(frame, (screen.name, name))
+        
+        # load images
+        if load_images: 
+            # Get image
+            self.images = images(frame, (screen.name, name))
+            # Load to surface
+            self.load()
+        # No images loaded
         else: self.images = None
 
     def load(self, state:str = ''):
@@ -208,7 +212,7 @@ class item:
         self.load(state)
         # Output item to screen
         if direct_to_screen: 
-            window.blit(self.images.__dict__['{}_{}'.format(self.type, '_'.join(state))], self.frame.image_coord())
+            Surface.blit(self.images.__dict__[self.type+state], (self.frame.image_coord()))
             pg_ess.core.update()
         else: self.screen.surface.display(with_load=False)
 
@@ -248,35 +252,3 @@ class images:
     def __setattr__(self, name, value): self.__dict__[name] = value
     def __getitem__(self, name): return self.__dict__[name]
     def __str__(self): return '{}'.format(self.__dict__)
-
-
-test = screen(
-    name = 'home',
-    surface_parameters = {
-        'frame': coord(w=1024, h=768)
-    },
-
-    objects_parameters = {
-        'background': {
-            'type': 'object',
-            'frame': coord(w=1024, h=768)
-        },
-        'run': {
-            'type': 'button',
-            'frame': coord(
-                bx=775, by=671,
-                w=1024, h=768,
-                ix=775, iy=671
-                )
-        }
-    }
-)
-
-
-test.surface.display()
-test.objects.run.display(state='_hover')
-
-while True:
-    if pg_ess.core.buffer(): break
-
-pg_ess.core.quit()

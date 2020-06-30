@@ -94,12 +94,11 @@ if __name__ == "__main__":
     logging.info(config)
 
     # Initialize pygame
-    from pygame_ess import pygame_ess
-    from home_screen import cryptography
+    from pygame_oop import pg_ess
+    from home import home
 
     # Run home screen
-    pygame_ess.set_caption('Cryptography GUI')
-    cryptography.run()
+    pg_ess.core.set_caption('Cryptography GUI')
 
     # End program
-    pygame_ess.quit()
+    pg_ess.core.pygame_ess.quit()
