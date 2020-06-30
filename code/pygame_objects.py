@@ -1,63 +1,15 @@
 ######################################
 # Import and initialize the librarys #
 ######################################
-import logging
 import os
 import glob
-import pygame
-from config import config
-
+from pygame_core import *
+from pygame_events import event
 
 ##################
 # Initialization #
 ##################
-pygame.init()
 window = pygame.display.set_mode(config.screen_res())
-
-
-######################
-# Essentials Classes #
-######################
-class pg_ess:
-
-    ##########################
-    # Common defined colours #
-    ##########################
-    class colour:
-        '''Common colour types in RGB tuple form'''
-        black = (0, 0, 0)
-        white = (255, 255, 255)
-        red = (255, 0, 0)
-        gray = (43, 43, 43)
-        whiteish = (213, 213, 213)
-        orange = (255, 143, 8)
-    
-
-    ##################
-    # Core functions #
-    ##################
-    class core:
-        def set_caption(caption:str = 'pygame time!'):
-            '''Set window header title'''
-            pygame.display.set_caption(caption)
-            logging.debug('window captions set to {}'.format(caption))
-
-        def update(tick:int = config.ticks):
-            '''Draw display changes to screen'''
-            pygame.display.flip()
-            pygame.display.update()
-            pygame.time.Clock().tick(tick)
-
-        def buffer() -> bool:
-            '''Loop through pygame events and check of quit and scrolling'''
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT: return True
-                # pygame_ess.event.scroll(window, event)
-
-        def quit():
-            '''Exit from program'''
-            logging.info('Exiting program...')
-            pygame.quit()
 
 
 class coord:
@@ -94,6 +46,7 @@ class screen:
         self.name = name
         self.surface = surface(self, **surface_parameters)
         self.objects = objects(self, objects_parameters)
+        self.event = event(self)
 
     def __setitem__(self, name, value): self.__dict__[name] = value
 
@@ -110,6 +63,7 @@ class surface:
         self.frame = frame
         self.bg_colour = bg_colour
         self.is_alpha = is_alpha
+        print(type(screen))
         
         # Create surface
         self.create()

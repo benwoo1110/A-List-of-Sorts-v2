@@ -1,7 +1,8 @@
 ######################################
 # Import and initialize the librarys #
 ######################################
-from pygame_oop import *
+from pygame_objects import *
+
 
 ###########################
 # Set homescreen elements #
@@ -41,6 +42,7 @@ home_screen = screen(
 )
 
 class home:
+    # Display home screen
     home_screen.surface.display()
 
     while True:
