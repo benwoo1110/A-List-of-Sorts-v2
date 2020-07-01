@@ -18,31 +18,33 @@ class coreFunc:
     def __str__(self): return '{}'.format(self.__dict__)
 
 
+class objectFrame(coreFunc):
+    def __init__(self, coords):
+        self.__dict__.update(**coords)
+
 class coord:
-    def __init__(self, bx:int = 0, by:int = 0, w:int = 0, h:int = 0, ix:int = 0, iy:int = 0, scale:bool = True):
+    def __init__(self, scale:bool = True, x:int = 0, y:int = 0, w:int = 0, h:int = 0):
         self.scale:bool = scale
-        self.bx:int = bx
-        self.by:int = by
+        self.x:int = x
+        self.y:int = y
         self.w:int = w
         self.h:int = h
-        self.ix:int = ix
-        self.iy:int = iy
 
     def __setattr__(self, name, value):
         if name != 'scale' and self.scale: self.__dict__[name] = int(value * config.scale_w())
         else: self.__dict__[name] = value
 
-    def boxSize(self) -> tuple: return (self.w, self.h)
+    def size(self) -> tuple: 
+        return (self.w, self.h)
 
-    def boxCoord(self, surfaceCoord:tuple = (0, 0)) -> tuple: return (self.bx + surfaceCoord[0], self.by + surfaceCoord[1])
+    def coord(self, surfaceCoord:tuple = (0, 0)) -> tuple: 
+        return (self.x + surfaceCoord[0], self.y + surfaceCoord[1])
     
-    def imageCoord(self, surfaceCoord:tuple = (0, 0)) -> tuple: return (self.ix + surfaceCoord[0], self.iy + surfaceCoord[1])
-
-    def inBox(self, mouse_pos:tuple, surfaceCoord:tuple = (0, 0)) -> bool:
+    def mouseIn(self, mouse_pos:tuple, surfaceCoord:tuple = (0, 0)) -> bool:
         # Save surface coord to seperate variables
         scroll_x, scroll_y = surfaceCoord
         # Return if in box
-        return self.bx + scroll_x < mouse_pos[0] < self.bx + self.w + scroll_x and self.by + scroll_y < mouse_pos[1] < self.by + self.h + scroll_y
+        return self.x + scroll_x < mouse_pos[0] < self.x + self.w + scroll_x and self.y + scroll_y < mouse_pos[1] < self.y + self.h + scroll_y
     
     def __str__(self): return '{}'.format(self.__dict__)
 
@@ -67,8 +69,8 @@ class surface(coreFunc):
     
     def create(self):
         # Create window based on if is alpha
-        if self.is_alpha: Surface = pygame.surface.Surface(self.frame.boxSize(), pygame.SRCALPHA)
-        else: Surface = pygame.surface.Surface(self.frame.boxSize())
+        if self.is_alpha: Surface = pygame.surface.Surface(self.frame.size(), pygame.SRCALPHA)
+        else: Surface = pygame.surface.Surface(self.frame.size())
         # set background color
         if self.bg_colour != None: Surface.fill(self.bg_colour)
         # Save Surface to class
@@ -80,7 +82,7 @@ class surface(coreFunc):
         # Update to latest state of objects
         if withLoad: self.load()
         # Output to screen
-        window.blit(self.Surface, self.frame.boxCoord())
+        window.blit(self.Surface, self.frame.coord())
         pg_ess.core.update()
 
 
@@ -125,12 +127,12 @@ class objects(coreFunc):
 class item(coreFunc):
     types = ('object', 'background', 'button', 'text', 'textfield')
 
-    def __init__(self, screen, name:str, type:str, frame:coord, data:any = None, state:str = '',
+    def __init__(self, screen, name:str, type:str, frame:dict, data:any = None, state:str = '',
     runclass:any = None, runclass_parameter:any = {}, load_images:bool = True):
         self.__screen__ = screen
         self.name = name
         self.type = str(type)
-        self.frame = frame
+        self.frame = objectFrame(frame)
         self.data = data
         self.state = state
         self.runclass = runclass
@@ -138,12 +140,11 @@ class item(coreFunc):
         
         # load images
         if load_images: 
-            self.images = images(frame, (screen.name, name))
+            self.images = images((screen.name, name))
             self.load()
         # No images loaded
         else: self.images = None
         
-
     def hasState(self, state:str): 
         return hasattr(self.images, self.type+state)
 
@@ -156,7 +157,7 @@ class item(coreFunc):
         if withState != None: self.state = withState
         # Load item to surface
         Surface = self.__screen__.surface.Surface
-        Surface.blit(self.images.__dict__[self.type+self.state], (self.frame.imageCoord()))
+        Surface.blit(self.images.__dict__[self.type+self.state], (self.frame.image.coord()))
         # Load data
         if self.data != None: self.data.load()
 
@@ -166,7 +167,7 @@ class item(coreFunc):
             # Set state
             if withState != None: self.state = withState
             # Display to screen
-            window.blit(self.images.__dict__[self.type+self.state], (self.frame.imageCoord()))
+            window.blit(self.images.__dict__[self.type+self.state], (self.frame.image.coord()))
             pg_ess.core.update()
         # Display to surface
         else: 
@@ -175,7 +176,7 @@ class item(coreFunc):
 
 
 class images:
-    def __init__(self, frame:coord, imagePage:tuple, fileType:str = '.png', isAlpha:bool = False):
+    def __init__(self, imagePage:tuple, fileType:str = '.png', isAlpha:bool = False):
         self.imagePage = imagePage
         self.fileType = fileType
         self.isAlpha = isAlpha

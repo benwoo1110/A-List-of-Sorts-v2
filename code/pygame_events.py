@@ -63,7 +63,7 @@ class event:
         for name,item in self.__screen__.objects.__dict__.items():
             # Check if item is valid and has a runclass
             if name !=  '__screen__' and item.runclass != None: 
-                while item.frame.inBox(pygame.mouse.get_pos(),  self.__screen__.surface.frame.boxCoord()):
+                while item.frame.box.mouseIn(pygame.mouse.get_pos(),  self.__screen__.surface.frame.coord()):
                     # Load hover state
                     item.switchState('Hover', direct_to_screen) 
                     
@@ -109,12 +109,12 @@ class event:
             if event.type == pygame.MOUSEBUTTONDOWN:
                 # Scroll up
                 if event.button == 4:
-                    surface.frame.by = min(surface.frame.by + config.scroll_speed, 0) / config.scale_w()
+                    surface.frame.y = min(surface.frame.y + config.scroll_speed, 0) / config.scale_w()
                     surface.display(withLoad=False)
 
                 # Scroll down
                 elif event.button == 5:
-                    surface.frame.by = max(surface.frame.by - config.scroll_speed, min(config.screen.height - surface.frame.h, 0)) / config.scale_w()
+                    surface.frame.y = max(surface.frame.y - config.scroll_speed, min(config.screen.height - surface.frame.h, 0)) / config.scale_w()
                     surface.display(withLoad=False)
 
     def quit(self, event):

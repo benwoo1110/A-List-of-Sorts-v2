@@ -17,31 +17,51 @@ home_screen = screen(
     objects_parameters = {
         'background': {
             'type': 'object',
-            'frame': coord(w=1024, h=768)
+            'frame': {
+                'image': coord(w=1024, h=768)
+            }
         },
         'type': {
             'type': 'textfield',
-            'frame': coord(bx=240, by=149, w=729, h=70, ix=240, iy=149),
+            'frame': {
+                'box': coord(x=240, y=149, w=729, h=70), 
+                'image': coord(x=240, y=149, w=729, h=70), 
+                'text': coord(x=240, y=149, w=729, h=70)
+            },
             'runclass': 'type'
         },
         'info': {
             'type': 'button',
-            'frame': coord(bx=219, by=241, w=751, h=211, ix=219, iy=241),
+            'frame': {
+                'box': coord(x=219, y=241, w=751, h=211), 
+                'image': coord(x=219, y=241, w=751, h=211)
+            },
             'runclass': 'info'
         },
         'speed': {
             'type': 'textfield',
-            'frame': coord(bx=265, by=480, w=704, h=70, ix=265, iy=480),
+            'frame': {
+                'box': coord(x=265, y=480, w=704, h=70), 
+                'image': coord(x=265, y=480, w=704, h=70),
+                'text': coord(x=265, y=480, w=704, h=70)
+            },
             'runclass': 'speed'
         },
         'list_length': {
             'type': 'textfield',
-            'frame': coord(bx=397, by=574, w=572, h=70, ix=397, iy=574),
+            'frame': {
+                'box': coord(x=397, y=574, w=572, h=70), 
+                'image': coord(x=397, y=574, w=572, h=70), 
+                'text': coord(x=397, y=574, w=572, h=70)
+            },
             'runclass': 'list_length'
         },
         'run': {
             'type': 'button',
-            'frame': coord(bx=775, by=671, w=194, h=70, ix=775, iy=671),
+            'frame': {
+                'box': coord(x=775, y=671, w=194, h=70), 
+                'image': coord(x=775, y=671, w=194, h=70)
+            },
             'runclass': 'run'
         }
     }
