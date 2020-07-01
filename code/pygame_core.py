@@ -10,6 +10,7 @@ from config import config
 # Initialization #
 ##################
 pygame.init()
+window = pygame.display.set_mode(config.screen_res())
 
 
 #####################
@@ -66,7 +67,7 @@ class pg_ess:
         def buffer() -> bool:
             '''Loop through pygame events and check of quit and scrolling'''
             for event in pygame.event.get():
-                if event.type == pygame.QUIT: return True
+                if event.type == pygame.QUIT: return '__quit__'
 
         def quit():
             '''Exit from program'''

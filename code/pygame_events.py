@@ -102,4 +102,4 @@ class event(coreFunc):
 
     def quit(self, event):
         if event.type == pygame.QUIT: 
-            return 'quit'
+            return '__quit__'

@@ -3,17 +3,14 @@
 ######################################
 import os
 import glob
+import textwrap
 from pygame_events import *
-
-##################
-# Initialization #
-##################
-window = pygame.display.set_mode(config.screen_res())
 
 
 class objectFrame(coreFunc):
     def __init__(self, coords):
         self.__dict__.update(**coords)
+
 
 class coord:
     def __init__(self, scale:bool = True, x:int = 0, y:int = 0, w:int = 0, h:int = 0):
@@ -104,7 +101,7 @@ class objects(coreFunc):
             # Display all items
             if items == None:
                 for name,item in self.__dict__.items():
-                    if name != '__screen__': item.display(state, direct_to_screen)
+                    if name != '__screen__': item.display(withState, direct_to_screen)
             # Load items defined
             else:
                 for name in items:
@@ -139,7 +136,8 @@ class item(coreFunc):
         else: self.images = None
         
     def hasState(self, state:str): 
-        return hasattr(self.images, self.type+state)
+        if type(state) == str: return hasattr(self.images, self.type+state)
+        return False
 
     def switchState(self, toState:str, direct_to_screen:bool = False):
         if self.state != toState and self.hasState(toState): 
@@ -147,7 +145,7 @@ class item(coreFunc):
 
     def load(self, withState:str = None, loadData:bool = True):
         # Set state
-        if withState != None: self.state = withState
+        if self.hasState(withState): self.state = withState
         # Load item to surface
         Surface = self.__screen__.surface.Surface
         Surface.blit(self.images.__dict__[self.type+self.state], (self.frame.image.coord()))
@@ -158,7 +156,7 @@ class item(coreFunc):
         # Output item to screen
         if direct_to_screen: 
             # Set state
-            if withState != None: self.state = withState
+            if self.hasState(withState): self.state = withState
             # Display to screen
             window.blit(self.images.__dict__[self.type+self.state], (self.frame.image.coord()))
             pg_ess.core.update()
@@ -196,10 +194,13 @@ class images:
 
 
 class textFormat(coreFunc):
-    def __init__(self, fontType:str = None, fontSize:int = 36, colour:tuple = pg_ess.colour.white):
+    def __init__(self, fontType:str = None, fontSize:int = 36, 
+    colour:tuple = pg_ess.colour.white, warpText:int = None, align:str = 'left'):
         self.fontType = fontType
         self.fontSize = int(fontSize * config.scale_w())
         self.colour = colour
+        self.warpText = warpText
+        self.align = align
         
         self.font = pygame.font.Font(self.fontType, self.fontSize)
 
@@ -210,5 +211,22 @@ class text(coreFunc):
         self.format = format
 
     def load(self, Surface, frame:objectFrame):
-        rendered_text = self.format.font.render(self.text, True, self.format.colour)
-        Surface.blit(rendered_text, frame.text.coord())
+        # No warpText
+        if self.format.warpText == None:
+            rendered_text = self.format.font.render(self.text, True, self.format.colour)
+            Surface.blit(rendered_text, frame.text.coord())
+
+        # Output multi-line text
+        else:
+            # Warp the text
+            warpped_text = textwrap.wrap(self.text, width=self.format.warpText)
+            # Generate surface for text
+            text_surface = pygame.surface.Surface(frame.text.size(), )
+            # Print text to surface
+            h = 0
+            for line in warpped_text:
+                rendered_text = self.format.font.render(line, True, self.format.colour)
+                text_surface.blit(rendered_text, (0, h))
+                h += self.format.font.size(line)[1]
+            # Output to surface
+            Surface.blit(text_surface, frame.text.coord())
