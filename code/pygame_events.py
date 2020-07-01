@@ -45,24 +45,24 @@ class event(coreFunc):
         
         return result
 
-    def action(self, direct_to_screen:bool = False):
+    def action(self, directToScreen:bool = False):
         for name,item in self.__screen__.objects.__dict__.items():
             # Check if item is valid and has a runclass
             if name !=  '__screen__' and item.runclass != None: 
-                while item.frame.box.mouseIn(pygame.mouse.get_pos(),  self.__screen__.surface.frame.coord()):
+                while item.frame.box.mouseIn(self.__screen__.surface.frame.coord()):
                     # Load hover state
-                    item.switchState('Hover', direct_to_screen) 
+                    item.switchState('Hover', directToScreen) 
                     
                     # Check for clicks
                     event_result = self.Event([
-                        eventRun(action='click', event=self.click, parameters=[item, direct_to_screen]),
+                        eventRun(action='click', event=self.click, parameters=[item, directToScreen]),
                         eventRun(action='scroll', event=self.scroll),
                         eventRun(action='quit', event=self.quit)
                         ])
                     if event_result.didAction(): return event_result
 
                 # Change back to normal state
-                item.switchState('', direct_to_screen) 
+                item.switchState('', directToScreen) 
 
         # Run event
         event_result = self.Event([
@@ -71,7 +71,7 @@ class event(coreFunc):
                 ])
         if event_result.didAction(): return event_result
 
-    def click(self, event, item, direct_to_screen:bool = False):
+    def click(self, event, item, directToScreen:bool = False):
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             #
             click_result = actionResult(name=item.name, type=item.type)
@@ -80,7 +80,7 @@ class event(coreFunc):
             # Runclass is just a string
             if type(item.runclass) == str: click_result.outcome = item.runclass
             # Runclass is a method
-            else: click_result.outcome = item.runclass(**item.runclass_parameter)
+            else: click_result.outcome = item.runclass(self.__screen__, **item.runclassParameter)
 
             return click_result
 
@@ -99,6 +99,9 @@ class event(coreFunc):
                 elif event.button == 5:
                     surface.frame.y = max(surface.frame.y - config.scroll_speed, min(config.screen.height - surface.frame.h, 0)) / config.scale_w()
                     surface.display(withLoad=False)
+
+    def keyboard(self, event):
+        pass
 
     def quit(self, event):
         if event.type == pygame.QUIT: 

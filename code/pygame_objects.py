@@ -30,41 +30,46 @@ class coord:
     def coord(self, surfaceCoord:tuple = (0, 0)) -> tuple: 
         return (self.x + surfaceCoord[0], self.y + surfaceCoord[1])
     
-    def mouseIn(self, mouse_pos:tuple, surfaceCoord:tuple = (0, 0)) -> bool:
+    def mouseIn(self, surfaceCoord:tuple = (0, 0)) -> bool:
+        # Get current mouse position
+        mousePos = pygame.mouse.get_pos()
         # Save surface coord to seperate variables
         scroll_x, scroll_y = surfaceCoord
         # Return if in box
-        return self.x + scroll_x < mouse_pos[0] < self.x + self.w + scroll_x and self.y + scroll_y < mouse_pos[1] < self.y + self.h + scroll_y
+        return self.x + scroll_x < mousePos[0] < self.x + self.w + scroll_x and self.y + scroll_y < mousePos[1] < self.y + self.h + scroll_y
     
     def __str__(self): return '{}'.format(self.__dict__)
 
 
 class screen(coreFunc):
-    def __init__(self, name: str, surface_parameters:dict, objects_parameters:dict = {}):
+    def __init__(self, name: str, surfaceParameters:dict, objectsParameters:dict = {}):
         self.name = name
-        self.surface = surface(self, **surface_parameters)
-        self.objects = objects(self, objects_parameters)
+        self.surface = surface(self, **surfaceParameters)
+        self.objects = objects(self, objectsParameters)
         self.event = event(self)
 
 
 class surface(coreFunc):
-    def __init__(self, screen, frame:coord, bg_colour:tuple = pg_ess.colour.orange, is_alpha:bool = False):
+    def __init__(self, screen, frame:coord, bgColour:tuple = pg_ess.colour.orange, isAlpha:bool = False):
         self.__screen__ = screen
         self.frame = frame
-        self.bg_colour = bg_colour
-        self.is_alpha = is_alpha
+        self.bgColour = bgColour
+        self.isAlpha = isAlpha
         
         # Create surface
         self.create()
     
     def create(self):
         # Create window based on if is alpha
-        if self.is_alpha: Surface = pygame.surface.Surface(self.frame.size(), pygame.SRCALPHA)
+        if self.isAlpha: Surface = pygame.surface.Surface(self.frame.size(), pygame.SRCALPHA)
         else: Surface = pygame.surface.Surface(self.frame.size())
         # set background color
-        if self.bg_colour != None: Surface.fill(self.bg_colour)
+        if self.bgColour != None: Surface.fill(self.bgColour)
         # Save Surface to class
         self.Surface = Surface
+    
+    def fill(bgColour:tuple = None):
+        pass
 
     def load(self): self.__screen__.objects.load()
 
@@ -96,16 +101,16 @@ class objects(coreFunc):
             for name in items:
                 self.__dict__[name].load(withState)
 
-    def display(self, items:tuple = None, withState:str = None, direct_to_screen:bool = False):
-        if direct_to_screen:
+    def display(self, items:tuple = None, withState:str = None, directToScreen:bool = False):
+        if directToScreen:
             # Display all items
             if items == None:
                 for name,item in self.__dict__.items():
-                    if name != '__screen__': item.display(withState, direct_to_screen)
+                    if name != '__screen__': item.display(withState, directToScreen)
             # Load items defined
             else:
                 for name in items:
-                    self.__dict__[name].display(state, direct_to_screen)
+                    self.__dict__[name].display(state, directToScreen)
 
         else: 
             # Load items defined to surface
@@ -117,20 +122,26 @@ class objects(coreFunc):
 class item(coreFunc):
     types = ('object', 'background', 'button', 'text', 'textfield')
 
-    def __init__(self, screen, name:str, type:str, frame:dict, data:any = None, state:str = '',
-    runclass:any = None, runclass_parameter:any = {}, load_images:bool = True):
+    def __init__(self, screen, name:str, type:str, frame:dict, data:any = None,dataAddSelf:bool = False, state:str = '',
+    runclass:any = None, runclassParameter:any = {}, loadImages:bool = True, isAlpha: bool = False):
         self.__screen__ = screen
         self.name = name
         self.type = str(type)
         self.frame = objectFrame(frame)
         self.data = data
+        self.dataAddSelf = dataAddSelf
         self.state = state
         self.runclass = runclass
-        self.runclass_parameter = runclass_parameter
+        self.runclassParameter = runclassParameter
+        self.loadImages = loadImages
+        self.isAlpha = isAlpha
+
+        # Add self to data
+        if dataAddSelf: data['item'] = self
         
         # load images
-        if load_images: 
-            self.images = images((screen.name, name))
+        if loadImages: 
+            self.images = images(imagePage=(screen.name, name), isAlpha=isAlpha)
             self.load()
         # No images loaded
         else: self.images = None
@@ -139,9 +150,9 @@ class item(coreFunc):
         if type(state) == str: return hasattr(self.images, self.type+state)
         return False
 
-    def switchState(self, toState:str, direct_to_screen:bool = False):
+    def switchState(self, toState:str, directToScreen:bool = False):
         if self.state != toState and self.hasState(toState): 
-            self.display(toState, direct_to_screen) 
+            self.display(toState, directToScreen) 
 
     def load(self, withState:str = None, loadData:bool = True):
         # Set state
@@ -150,11 +161,11 @@ class item(coreFunc):
         Surface = self.__screen__.surface.Surface
         Surface.blit(self.images.__dict__[self.type+self.state], (self.frame.image.coord()))
         # Load data
-        if self.data != None and loadData: self.data.load(Surface, self.frame)
+        if self.data != None and loadData: self.data.load(Surface, self.frame, self.state)
 
-    def display(self, withState:str = None, direct_to_screen:bool = False):
+    def display(self, withState:str = None, directToScreen:bool = False):
         # Output item to screen
-        if direct_to_screen: 
+        if directToScreen: 
             # Set state
             if self.hasState(withState): self.state = withState
             # Display to screen
@@ -166,14 +177,14 @@ class item(coreFunc):
             self.__screen__.surface.display(withLoad=False)
 
 
-class images:
+class images(coreFunc):
     def __init__(self, imagePage:tuple, fileType:str = '.png', isAlpha:bool = False):
         self.imagePage = imagePage
         self.fileType = fileType
         self.isAlpha = isAlpha
 
         # Load the images
-        image_dir_list = self.get_files()
+        image_dir_list = self.getFilesList()
 
         # get the image
         for image in image_dir_list:
@@ -184,7 +195,7 @@ class images:
             # Store image
             self.__dict__[image_name] = image_surface
 
-    def get_files(self) -> list:
+    def getFilesList(self) -> list:
         # Define variables
         image_dir = 'surfaces/{}/'.format('/'.join(self.imagePage))
         # If in code directory and not root, go back a step
@@ -206,17 +217,20 @@ class textFormat(coreFunc):
 
 
 class text(coreFunc):
-    def __init__(self, text:str = '', prefix:str = '', suffix:str = '', format:textFormat = textFormat()):
+    def __init__(self, text:str = '', prefix:str = '', suffix:str = '', 
+    format:textFormat = textFormat(), editable:bool = True):
         self.text = text
         self.prefix = prefix
         self.suffix = suffix
         self.format = format
+        self.editable = editable
 
-    def getText(self):
-        return self.prefix+self.text+self.suffix
+    def getText(self, state:str):
+        if state == 'Selected' and self.editable: return self.prefix+self.text+'_'+self.suffix
+        else: return self.prefix+self.text+self.suffix
 
-    def load(self, Surface, frame:objectFrame):
-        text = self.getText()
+    def load(self, Surface, frame:objectFrame, state:str):
+        text = self.getText(state)
         # No warpText
         if self.format.warpText == None:
             rendered_text = self.format.font.render(text, True, self.format.colour)
@@ -227,7 +241,7 @@ class text(coreFunc):
             # Warp the text
             warpped_text = textwrap.wrap(text, width=self.format.warpText)
             # Generate surface for text
-            text_surface = pygame.surface.Surface(frame.text.size(), )
+            text_surface = pygame.surface.Surface(frame.text.size())
             # Print text to surface
             h = 0
             for line in warpped_text:

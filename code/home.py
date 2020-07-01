@@ -2,6 +2,7 @@
 # Import and initialize the librarys #
 ######################################
 from pygame_objects import *
+from textfield import textfield
 
 
 ###########################
@@ -10,11 +11,11 @@ from pygame_objects import *
 home_screen = screen(
     name = 'home',
 
-    surface_parameters = {
+    surfaceParameters = {
         'frame': coord(w=1024, h=768)
     },
 
-    objects_parameters = {
+    objectsParameters = {
         'background': {
             'type': 'object',
             'frame': {
@@ -36,6 +37,7 @@ home_screen = screen(
                     colour=pg_ess.colour.black
                 )
             ),
+            'dataAddSelf': True,
             'runclass': 'type'
         },
         'info': {
@@ -47,6 +49,7 @@ home_screen = screen(
             },
             'data': text(
                 text = '',
+                editable = False,
                 format = textFormat(
                     fontType=pg_ess.font.futura,
                     fontSize=31,
@@ -72,7 +75,9 @@ home_screen = screen(
                     colour=pg_ess.colour.black
                 )
             ),
-            'runclass': 'speed'
+            'dataAddSelf': True,
+            'runclass': textfield.run,
+            'runclassParameter': {'itemName': 'speed'}
         },
         'list_length': {
             'type': 'textfield',
@@ -90,7 +95,9 @@ home_screen = screen(
                     colour=pg_ess.colour.black
                 )
             ),
-            'runclass': 'list_length'
+            'dataAddSelf': True,
+            'runclass': textfield.run,
+            'runclassParameter': {'itemName': 'list_length'}
         },
         'run': {
             'type': 'button',
