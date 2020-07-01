@@ -64,7 +64,8 @@ home_screen = screen(
                 'text': coord(x=290, y=491, w=654, h=53)
             },
             'data': text(
-                text = '100.0 swaps per sec',
+                text = '10.0',
+                suffix = ' swaps per sec',
                 format = textFormat(
                     fontType=pg_ess.font.futura,
                     fontSize=38,
@@ -81,7 +82,8 @@ home_screen = screen(
                 'text': coord(x=422, y=586, w=522, h=53)
             },
             'data': text(
-                text = '1000 bars',
+                text = '100',
+                suffix = ' bars',
                 format = textFormat(
                     fontType=pg_ess.font.futura,
                     fontSize=38,
