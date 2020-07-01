@@ -49,7 +49,6 @@ class pg_ess:
             '''Loop through pygame events and check of quit and scrolling'''
             for event in pygame.event.get():
                 if event.type == pygame.QUIT: return True
-                # pygame_ess.event.scroll(window, event)
 
         def quit():
             '''Exit from program'''

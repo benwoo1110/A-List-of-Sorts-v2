@@ -11,6 +11,13 @@ from pygame_events import *
 window = pygame.display.set_mode(config.screen_res())
 
 
+class coreFunc:
+    def __setitem__(self, name, value): self.__dict__[name] = value
+    def __setattr__(self, name, value): self.__dict__[name] = value
+    def __getitem__(self, name): return self.__dict__[name]
+    def __str__(self): return '{}'.format(self.__dict__)
+
+
 class coord:
     def __init__(self, bx:int = 0, by:int = 0, w:int = 0, h:int = 0, ix:int = 0, iy:int = 0, scale:bool = True):
         self.scale:bool = scale
@@ -40,20 +47,15 @@ class coord:
     def __str__(self): return '{}'.format(self.__dict__)
 
 
-class screen:
+class screen(coreFunc):
     def __init__(self, name: str, surface_parameters:dict, objects_parameters:dict = {}):
         self.name = name
         self.surface = surface(self, **surface_parameters)
         self.objects = objects(self, objects_parameters)
         self.event = event(self)
 
-    def __setitem__(self, name, value): self.__dict__[name] = value
-    def __setattr__(self, name, value): self.__dict__[name] = value
-    def __getitem__(self, name): return self.__dict__[name]
-    def __str__(self): return '{}'.format(self.__dict__)
 
-
-class surface:
+class surface(coreFunc):
     def __init__(self, screen, frame:coord, bg_colour:tuple = pg_ess.colour.orange, is_alpha:bool = False):
         self.__screen__ = screen
         self.frame = frame
@@ -81,13 +83,8 @@ class surface:
         window.blit(self.Surface, self.frame.boxCoord())
         pg_ess.core.update()
 
-    def __setitem__(self, name, value): self.__dict__[name] = value
-    def __setattr__(self, name, value): self.__dict__[name] = value
-    def __getitem__(self, name): return self.__dict__[name]
-    def __str__(self): return '{}'.format(self.__dict__)
 
-
-class objects:
+class objects(coreFunc):
     def __init__(self, screen, items):
         self.__screen__ = screen
         # Add objects
@@ -124,13 +121,8 @@ class objects:
             # Display Surface
             self.__screen__.surface.display(withLoad=False)
 
-    def __setitem__(self, name, value): self.__dict__[name] = value
-    def __setattr__(self, name, value): self.__dict__[name] = value
-    def __getitem__(self, name): return self.__dict__[name]
-    def __str__(self): return '{}'.format(self.__dict__)
 
-
-class item:
+class item(coreFunc):
     types = ('object', 'background', 'button', 'text', 'textfield')
 
     def __init__(self, screen, name:str, type:str, frame:coord, data:any = None, state:str = '',
@@ -165,6 +157,8 @@ class item:
         # Load item to surface
         Surface = self.__screen__.surface.Surface
         Surface.blit(self.images.__dict__[self.type+self.state], (self.frame.imageCoord()))
+        # Load data
+        if self.data != None: self.data.load()
 
     def display(self, withState:str = None, direct_to_screen:bool = False):
         # Output item to screen
@@ -178,11 +172,6 @@ class item:
         else: 
             self.load(withState)
             self.__screen__.surface.display(withLoad=False)
-
-    def __setitem__(self, name, value): self.__dict__[name] = value
-    def __setattr__(self, name, value): self.__dict__[name] = value
-    def __getitem__(self, name): return self.__dict__[name]
-    def __str__(self): return '{}'.format(self.__dict__)
 
 
 class images:
@@ -211,7 +200,11 @@ class images:
         # Get all image file from givent directory
         return glob.glob(image_dir+"*"+self.fileType)
 
-    def __setitem__(self, name, value): self.__dict__[name] = value
-    def __setattr__(self, name, value): self.__dict__[name] = value
-    def __getitem__(self, name): return self.__dict__[name]
-    def __str__(self): return '{}'.format(self.__dict__)
+
+class text(coreFunc):
+    def __init__(self, text:str = '', font_type:str = None, calculate_font_dir:bool = True, 
+    font_size:int = 36, warp_text:int = None, align:str = 'left', colour:set = (0, 0, 0), validation = None):
+        pass
+
+    def load(self):
+        pass

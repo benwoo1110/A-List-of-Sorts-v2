@@ -15,7 +15,6 @@ with open('requirements.txt', 'r') as requirements:
     dependencies = requirements.read().split('\n')
 
     for dependency in dependencies:
-
         # Check if dependencies meets the requirements
         try: pkg_resources.require(dependency)
 
@@ -29,9 +28,6 @@ with open('requirements.txt', 'r') as requirements:
             print('Dependency {} not found. Attempting to install now...'.format(dependency))
             os.system('pip3 install --no-cache-dir {}'.format(dependency))
 
-        # Dependencies is all good
-        else: print('{} is installed.'.format(dependency))
-
 
 #####################
 # Get configuration #
@@ -40,7 +36,6 @@ with open('requirements.txt', 'r') as requirements:
 sys.path.insert(1, './code')
 # Import config options
 from config import config
-
 
 
 #################################
@@ -55,4 +50,4 @@ if __name__ == "__main__":
     home.run()
 
     # End program
-    pg_ess.core.pygame_ess.quit()
+    pg_ess.core.quit()

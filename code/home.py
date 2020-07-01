@@ -48,8 +48,9 @@ home_screen = screen(
 )
 
 
-
-
+###############
+# Home screen #
+###############
 class home:
 
     def run():
@@ -59,12 +60,14 @@ class home:
         while True:
             action_result = home_screen.event.action()
 
-            if action_result != None:
-                if action_result.didAction('quit'): 
-                    return '__quit__'
+            if action_result == None: continue
 
-                elif action_result.didAction('click'):
-                    print(action_result.click)
+            elif action_result.didAction('quit'): 
+                return '__quit__'
+
+            elif action_result.didAction('click'):
+                if action_result.click.outcome == '__quit__':
+                    return '__quit__'
 
 
 if __name__ == "__main__":
