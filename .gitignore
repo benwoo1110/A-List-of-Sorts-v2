@@ -130,5 +130,5 @@ dmypy.json
 
 # Other misc
 .log
-*.yml
+config.yml
 .DS_Store
