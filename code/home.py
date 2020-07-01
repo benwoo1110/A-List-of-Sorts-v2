@@ -38,7 +38,8 @@ home_screen = screen(
                 )
             ),
             'dataAddSelf': True,
-            'runclass': 'type'
+            'runclass': textfield.run,
+            'runclassParameter': {'itemName': 'type'}
         },
         'info': {
             'type': 'button',
