@@ -155,6 +155,10 @@ class item:
     def hasState(self, state:str): 
         return hasattr(self.images, self.type+state)
 
+    def switchState(self, toState:str, direct_to_screen:bool = False):
+        if self.state != toState and self.hasState(toState): 
+            self.display(toState, direct_to_screen) 
+
     def load(self, withState:str = None):
         # Set state
         if withState != None: self.state = withState

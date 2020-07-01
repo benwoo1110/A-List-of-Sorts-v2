@@ -59,17 +59,17 @@ class event:
         
         return result
 
-    def action(self):
+    def action(self, direct_to_screen:bool = False):
         for name,item in self.__screen__.objects.__dict__.items():
             # Check if item is valid and has a runclass
             if name !=  '__screen__' and item.runclass != None: 
                 while item.frame.inBox(pygame.mouse.get_pos(),  self.__screen__.surface.frame.boxCoord()):
                     # Load hover state
-                    if item.state == '' and item.hasState('Hover'): item.display(withState='Hover') 
+                    item.switchState('Hover', direct_to_screen) 
                     
                     # Check for clicks
                     event_result = self.Event([
-                        eventRun(action='click', event=self.click, parameters=[item]),
+                        eventRun(action='click', event=self.click, parameters=[item, direct_to_screen]),
                         eventRun(action='scroll', event=self.scroll),
                         eventRun(action='quit', event=self.quit)
                         ])
@@ -77,7 +77,7 @@ class event:
                     if event_result.didAction(): return event_result
 
                 # Change back to normal state
-                if item.state == 'Hover' and item.hasState(''): item.display(withState='')
+                item.switchState('', direct_to_screen) 
 
         # Run event
         event_result = self.Event([
@@ -87,7 +87,7 @@ class event:
 
         if event_result.didAction(): return event_result
 
-    def click(self, event, item):
+    def click(self, event, item, direct_to_screen:bool = False):
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             click_result = actionResult(name=item.name, type=item.type)
             

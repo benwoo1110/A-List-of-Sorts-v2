@@ -1,8 +1,3 @@
-# This file is part of Cryptography GUI, licensed under the MIT License.
-# Copyright (c) 2020 Benedict Woo Jun Kai
-# See LICENSE.md for more details.
-
-
 ######################################
 # Import and initialize the librarys #
 ######################################
@@ -10,6 +5,7 @@ import logging
 import sys
 import os
 import pkg_resources
+
 
 ##########################
 # Check for dependencies #
@@ -37,17 +33,26 @@ with open('requirements.txt', 'r') as requirements:
         else: print('{} is installed.'.format(dependency))
 
 
+#####################
+# Get configuration #
+#####################
+# Set to code directory
+sys.path.insert(1, './code')
+# Import config options
+from config import config
+
+
+
 #################################
 # Starting Cryptography GUI app #
 #################################
 if __name__ == "__main__":
-
-    # Initialize pygame
-    from pygame_oop import pg_ess
-    from home import home
+    # Get home screen
+    from home import *
 
     # Run home screen
-    pg_ess.core.set_caption('Cryptography GUI')
+    pg_ess.core.setCaption('A List of Sorts v2')
+    home.run()
 
     # End program
     pg_ess.core.pygame_ess.quit()
