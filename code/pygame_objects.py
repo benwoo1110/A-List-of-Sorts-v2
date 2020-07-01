@@ -206,20 +206,26 @@ class textFormat(coreFunc):
 
 
 class text(coreFunc):
-    def __init__(self, text:str = '', format:textFormat = textFormat()):
+    def __init__(self, text:str = '', prefix:str = '', suffix:str = '', format:textFormat = textFormat()):
         self.text = text
+        self.prefix = prefix
+        self.suffix = suffix
         self.format = format
 
+    def getText(self):
+        return self.prefix+self.text+self.suffix
+
     def load(self, Surface, frame:objectFrame):
+        text = self.getText()
         # No warpText
         if self.format.warpText == None:
-            rendered_text = self.format.font.render(self.text, True, self.format.colour)
+            rendered_text = self.format.font.render(text, True, self.format.colour)
             Surface.blit(rendered_text, frame.text.coord())
 
         # Output multi-line text
         else:
             # Warp the text
-            warpped_text = textwrap.wrap(self.text, width=self.format.warpText)
+            warpped_text = textwrap.wrap(text, width=self.format.warpText)
             # Generate surface for text
             text_surface = pygame.surface.Surface(frame.text.size(), )
             # Print text to surface
