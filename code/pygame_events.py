@@ -4,19 +4,14 @@
 from pygame_core import *
 
 
-class eventRun:
+class eventRun(coreFunc):
     def __init__(self, action:str, event:any, parameters:list = []): 
         self.action = action
         self.event = event
         self.parameters = parameters
 
-    def __setitem__(self, name, value): self.__dict__[name] = value
-    def __setattr__(self, name, value): self.__dict__[name] = value
-    def __getitem__(self, name): return self.__dict__[name]
-    def __str__(self): return '{}'.format(self.__dict__)
 
-
-class eventResults:
+class eventResults(coreFunc):
     def __init__(self, **kwargs): 
         self.__dict__.update(kwargs)
 
@@ -26,24 +21,15 @@ class eventResults:
         # Check for specific action
         else: return hasattr(self, action)
 
-    def __setitem__(self, name, value): self.__dict__[name] = value
-    def __setattr__(self, name, value): self.__dict__[name] = value
-    def __getitem__(self, name): return self.__dict__[name]
-    def __str__(self): return '{}'.format(self.__dict__)
 
-
-class actionResult:
+class actionResult(coreFunc):
     def __init__(self, name:str, type:str, outcome:any = None): 
         self.name = name
         self.type = str(type)
         self.outcome = outcome
 
-    def __setitem__(self, name, value): self.__dict__[name] = value
-    def __setattr__(self, name, value): self.__dict__[name] = value
-    def __getitem__(self, name): return self.__dict__[name]
-    def __str__(self): return '{}'.format(self.__dict__)
 
-class event:
+class event(coreFunc):
     def __init__(self, screen):
         self.__screen__ = screen
 
@@ -73,7 +59,6 @@ class event:
                         eventRun(action='scroll', event=self.scroll),
                         eventRun(action='quit', event=self.quit)
                         ])
-
                     if event_result.didAction(): return event_result
 
                 # Change back to normal state
@@ -84,17 +69,16 @@ class event:
                 eventRun(action='scroll', event=self.scroll),
                 eventRun(action='quit', event=self.quit)
                 ])
-
         if event_result.didAction(): return event_result
 
     def click(self, event, item, direct_to_screen:bool = False):
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+            #
             click_result = actionResult(name=item.name, type=item.type)
-            
+            item.switchState('Selected')
+
             # Runclass is just a string
-            if type(item.runclass) == str: 
-                click_result.outcome = item.runclass
-                
+            if type(item.runclass) == str: click_result.outcome = item.runclass
             # Runclass is a method
             else: click_result.outcome = item.runclass(**item.runclass_parameter)
 
@@ -111,7 +95,6 @@ class event:
                 if event.button == 4:
                     surface.frame.y = min(surface.frame.y + config.scroll_speed, 0) / config.scale_w()
                     surface.display(withLoad=False)
-
                 # Scroll down
                 elif event.button == 5:
                     surface.frame.y = max(surface.frame.y - config.scroll_speed, min(config.screen.height - surface.frame.h, 0)) / config.scale_w()
@@ -120,8 +103,3 @@ class event:
     def quit(self, event):
         if event.type == pygame.QUIT: 
             return 'quit'
-
-    def __setitem__(self, name, value): self.__dict__[name] = value
-    def __setattr__(self, name, value): self.__dict__[name] = value
-    def __getitem__(self, name): return self.__dict__[name]
-    def __str__(self): return '{}'.format(self.__dict__)

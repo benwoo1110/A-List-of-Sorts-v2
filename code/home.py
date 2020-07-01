@@ -26,8 +26,16 @@ home_screen = screen(
             'frame': {
                 'box': coord(x=240, y=149, w=729, h=70), 
                 'image': coord(x=240, y=149, w=729, h=70), 
-                'text': coord(x=240, y=149, w=729, h=70)
+                'text': coord(x=268, y=157, w=628, h=53)
             },
+            'data': text(
+                text = 'Insertion sort',
+                format = textFormat(
+                    fontType=pg_ess.font.futura,
+                    fontSize=42,
+                    colour=pg_ess.colour.black
+                )
+            ),
             'runclass': 'type'
         },
         'info': {
@@ -43,8 +51,16 @@ home_screen = screen(
             'frame': {
                 'box': coord(x=265, y=480, w=704, h=70), 
                 'image': coord(x=265, y=480, w=704, h=70),
-                'text': coord(x=265, y=480, w=704, h=70)
+                'text': coord(x=290, y=488, w=654, h=53)
             },
+            'data': text(
+                text = '100.0 swaps per sec',
+                format = textFormat(
+                    fontType=pg_ess.font.futura,
+                    fontSize=42,
+                    colour=pg_ess.colour.black
+                )
+            ),
             'runclass': 'speed'
         },
         'list_length': {
@@ -52,8 +68,16 @@ home_screen = screen(
             'frame': {
                 'box': coord(x=397, y=574, w=572, h=70), 
                 'image': coord(x=397, y=574, w=572, h=70), 
-                'text': coord(x=397, y=574, w=572, h=70)
+                'text': coord(x=422, y=583, w=522, h=53)
             },
+            'data': text(
+                text = '1000 bars',
+                format = textFormat(
+                    fontType=pg_ess.font.futura,
+                    fontSize=42,
+                    colour=pg_ess.colour.black
+                )
+            ),
             'runclass': 'list_length'
         },
         'run': {

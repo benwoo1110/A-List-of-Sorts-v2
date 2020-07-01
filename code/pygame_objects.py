@@ -11,13 +11,6 @@ from pygame_events import *
 window = pygame.display.set_mode(config.screen_res())
 
 
-class coreFunc:
-    def __setitem__(self, name, value): self.__dict__[name] = value
-    def __setattr__(self, name, value): self.__dict__[name] = value
-    def __getitem__(self, name): return self.__dict__[name]
-    def __str__(self): return '{}'.format(self.__dict__)
-
-
 class objectFrame(coreFunc):
     def __init__(self, coords):
         self.__dict__.update(**coords)
@@ -152,14 +145,14 @@ class item(coreFunc):
         if self.state != toState and self.hasState(toState): 
             self.display(toState, direct_to_screen) 
 
-    def load(self, withState:str = None):
+    def load(self, withState:str = None, loadData:bool = True):
         # Set state
         if withState != None: self.state = withState
         # Load item to surface
         Surface = self.__screen__.surface.Surface
         Surface.blit(self.images.__dict__[self.type+self.state], (self.frame.image.coord()))
         # Load data
-        if self.data != None: self.data.load()
+        if self.data != None and loadData: self.data.load(Surface, self.frame)
 
     def display(self, withState:str = None, direct_to_screen:bool = False):
         # Output item to screen
@@ -202,10 +195,20 @@ class images:
         return glob.glob(image_dir+"*"+self.fileType)
 
 
-class text(coreFunc):
-    def __init__(self, text:str = '', font_type:str = None, calculate_font_dir:bool = True, 
-    font_size:int = 36, warp_text:int = None, align:str = 'left', colour:set = (0, 0, 0), validation = None):
-        pass
+class textFormat(coreFunc):
+    def __init__(self, fontType:str = None, fontSize:int = 36, colour:tuple = pg_ess.colour.white):
+        self.fontType = fontType
+        self.fontSize = int(fontSize * config.scale_w())
+        self.colour = colour
+        
+        self.font = pygame.font.Font(self.fontType, self.fontSize)
 
-    def load(self):
-        pass
+
+class text(coreFunc):
+    def __init__(self, text:str = '', format:textFormat = textFormat()):
+        self.text = text
+        self.format = format
+
+    def load(self, Surface, frame:objectFrame):
+        rendered_text = self.format.font.render(self.text, True, self.format.colour)
+        Surface.blit(rendered_text, frame.text.coord())

@@ -12,10 +12,28 @@ from config import config
 pygame.init()
 
 
+#####################
+# Core parent class #
+#####################
+class coreFunc:
+    def __setitem__(self, name, value): self.__dict__[name] = value
+    def __setattr__(self, name, value): self.__dict__[name] = value
+    def __getitem__(self, name): return self.__dict__[name]
+    def __str__(self): return '{}'.format(self.__dict__)
+
+
 ######################
 # Essentials Classes #
 ######################
 class pg_ess:
+
+    ##########################
+    # Common defined colours #
+    ##########################
+    class font:
+        '''fonts found in fonts folder'''
+        futura = './fonts/Futura.ttc'
+
 
     ##########################
     # Common defined colours #
