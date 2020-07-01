@@ -34,7 +34,7 @@ class pg_ess:
     # Core functions #
     ##################
     class core:
-        def set_caption(caption:str = 'pygame time!'):
+        def setCaption(caption:str = 'pygame time!'):
             '''Set window header title'''
             pygame.display.set_caption(caption)
             logging.debug('window captions set to {}'.format(caption))
