@@ -15,7 +15,7 @@ class eventResults(coreFunc):
     def __init__(self, **kwargs): 
         self.__dict__.update(kwargs)
 
-    def didAction(self, action = None): 
+    def didAction(self, action = None) -> bool: 
         # Check if there was an action
         if action == None: return self.__dict__ != {}
         # Check for specific action
@@ -27,6 +27,12 @@ class actionResult(coreFunc):
         self.name = name
         self.type = str(type)
         self.outcome = outcome
+
+    def isItem(self, name = None) -> bool: return self.name == name
+
+    def isType(self, type = None) -> bool: return self.name == type
+
+    def withOutcome(self, outcome = None) -> bool: return self.name == outcome
 
 
 class event(coreFunc):

@@ -3,6 +3,7 @@
 ######################################
 from pygame_objects import *
 from textfield import textfield
+from selection import selection
 
 
 ###########################
@@ -24,6 +25,7 @@ home_screen = screen(
         },
         'type': {
             'type': 'textfield',
+            'isAlpha': True,
             'frame': {
                 'box': coord(x=240, y=149, w=729, h=70), 
                 'image': coord(x=240, y=149, w=729, h=70), 
@@ -31,6 +33,7 @@ home_screen = screen(
             },
             'data': text(
                 text = 'Merge sort',
+                editable = False,
                 format = textFormat(
                     fontType=pg_ess.font.futura,
                     fontSize=38,
@@ -38,7 +41,7 @@ home_screen = screen(
                 )
             ),
             'dataAddSelf': True,
-            'runclass': textfield.run,
+            'runclass': selection.run,
             'runclassParameter': {'itemName': 'type'}
         },
         'info': {
@@ -58,6 +61,7 @@ home_screen = screen(
                     warpText=48
                 )
             ),
+            'dataAddSelf': True,
             'runclass': 'info'
         },
         'speed': {
@@ -133,21 +137,29 @@ class home:
         home_screen.surface.display()
 
         while True:
+            # Get check for interaction with screen
             action_result = home_screen.event.action()
 
+            # No action
             if action_result == None: continue
 
-            elif action_result.didAction('quit'): 
-                return '__quit__'
+            # When program is set to close
+            elif action_result.didAction('quit'): return '__quit__'
 
-            elif action_result.didAction('click'):
-                if action_result.click.outcome == '__quit__':
-                    return '__quit__'
+            # When an object is clicked
+            elif action_result.didAction('click'):   
+                # When program is set to close 
+                if  action_result.click.outcome == '__quit__':return '__quit__'
+                # The sort type is changed               
+                if action_result.click.isItem('type'): home.setInfoText()
+                # Load back screen
+                if action_result.click.outcome == '__back__': home_screen.surface.display()
 
-    def setInfoText(display:bool = False):
-        home_screen.objects.info.data.text = info_text[home_screen.objects.type.data.text]
-        if display: home_screen.objects.info.display()
-        else: home_screen.objects.info.load()
+    def setInfoText():
+        # Set info to teh corresponding sort type
+        sort_type = home_screen.objects.type.data.text
+        if sort_type in info_text.keys():
+            home_screen.objects.info.data.setText(info_text[sort_type])
 
 
 #############

@@ -24,11 +24,9 @@ class coord:
         if name != 'scale' and self.scale: self.__dict__[name] = int(value * config.scale_w())
         else: self.__dict__[name] = value
 
-    def size(self) -> tuple: 
-        return (self.w, self.h)
+    def size(self) -> tuple: return (self.w, self.h)
 
-    def coord(self, surfaceCoord:tuple = (0, 0)) -> tuple: 
-        return (self.x + surfaceCoord[0], self.y + surfaceCoord[1])
+    def coord(self, surfaceCoord:tuple = (0, 0)) -> tuple: return (self.x + surfaceCoord[0], self.y + surfaceCoord[1])
     
     def mouseIn(self, surfaceCoord:tuple = (0, 0)) -> bool:
         # Get current mouse position
@@ -137,7 +135,7 @@ class item(coreFunc):
         self.isAlpha = isAlpha
 
         # Add self to data
-        if dataAddSelf: data['item'] = self
+        if data != None and dataAddSelf: data['item'] = self
         
         # load images
         if loadImages: 
@@ -152,7 +150,7 @@ class item(coreFunc):
 
     def switchState(self, toState:str, directToScreen:bool = False):
         if self.state != toState and self.hasState(toState): 
-            self.display(toState, directToScreen) 
+            self.display(withState=toState, directToScreen=directToScreen) 
 
     def load(self, withState:str = None, loadData:bool = True):
         # Set state
@@ -163,14 +161,17 @@ class item(coreFunc):
         # Load data
         if self.data != None and loadData: self.data.load(Surface, self.frame, self.state)
 
-    def display(self, withState:str = None, directToScreen:bool = False):
+    def display(self, withState:str = None, loadData:bool = True, directToScreen:bool = False):
         # Output item to screen
         if directToScreen: 
             # Set state
             if self.hasState(withState): self.state = withState
             # Display to screen
             window.blit(self.images.__dict__[self.type+self.state], (self.frame.image.coord()))
+            # Display data
+            if self.data != None and loadData: self.data.display(None, self.frame, self.state, True)
             pg_ess.core.update()
+
         # Display to surface
         else: 
             self.load(withState)
@@ -205,13 +206,14 @@ class images(coreFunc):
 
 
 class textFormat(coreFunc):
-    def __init__(self, fontType:str = None, fontSize:int = 36, 
-    colour:tuple = pg_ess.colour.white, warpText:int = None, align:str = 'left'):
+    def __init__(self, fontType:str = None, fontSize:int = 36, colour:tuple = pg_ess.colour.white, 
+    warpText:int = None, align:str = 'left', lineSpacing:int = 0):
         self.fontType = fontType
         self.fontSize = int(fontSize * config.scale_w())
         self.colour = colour
         self.warpText = warpText
         self.align = align
+        self.lineSpacing = lineSpacing
         
         self.font = pygame.font.Font(self.fontType, self.fontSize)
 
@@ -229,12 +231,18 @@ class text(coreFunc):
         if state == 'Selected' and self.editable: return self.prefix+self.text+'_'+self.suffix
         else: return self.prefix+self.text+self.suffix
 
-    def load(self, Surface, frame:objectFrame, state:str):
+    def setText(self, text:str = None, prefix:str = None, suffix:str = None, withDisplay: bool = True):
+        if text != None: self.text = text
+        if prefix != None: self.prefix = prefix
+        if suffix != None: self.suffix = suffix
+
+        self.item.display()
+
+    def generateSurface(self, frame:objectFrame, state:str):
         text = self.getText(state)
         # No warpText
         if self.format.warpText == None:
-            rendered_text = self.format.font.render(text, True, self.format.colour)
-            Surface.blit(rendered_text, frame.text.coord())
+            return self.format.font.render(text, True, self.format.colour)
 
         # Output multi-line text
         else:
@@ -245,8 +253,28 @@ class text(coreFunc):
             # Print text to surface
             h = 0
             for line in warpped_text:
+                # Render the text line and store to text surface
                 rendered_text = self.format.font.render(line, True, self.format.colour)
                 text_surface.blit(rendered_text, (0, h))
-                h += self.format.font.size(line)[1]
-            # Output to surface
-            Surface.blit(text_surface, frame.text.coord())
+                # Set hight of next line
+                h += self.format.font.size(line)[1] + self.format.lineSpacing
+            
+            return text_surface
+
+    def load(self, Surface, frame:objectFrame, state:str):
+        # Get the text
+        text_surface = self.generateSurface(frame, state)
+        # Output to surface
+        Surface.blit(text_surface, frame.text.coord())
+
+
+    def display(self, screen, frame:objectFrame, state:str, directToScreen:bool = False):
+        if directToScreen:
+            # Get the text
+            text_surface = self.generateSurface(frame, state)
+            # Output to screen
+            window.blit(text_surface, frame.text.coord())
+        
+        else:
+            self.load(screen.surface.Surface, frame, state)
+            screen.surface.display(withLoad=False)
