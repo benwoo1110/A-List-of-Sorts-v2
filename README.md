@@ -13,7 +13,6 @@ Visualisation for sorting algorithms v2. Upped a notch from [version 1](https://
 * python 3.x
 * pygame
 * yyaml 
-</br>
 See: [requirements.txt](requirements.txt)
 
 #### Manual install: 
