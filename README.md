@@ -1,5 +1,5 @@
 ![Alt text](design/splash_screen.png)
-Visualisation for sorting algorithms v2. Upped a notch from [version 1](https://github.com/benwoo1110/A-List-of-Sorts). This program provides animates simple, common and popular sorting algorithms, to allow people to learn more able these algorithms and how the work.</br>
+Visualisation for sorting algorithms v2. Upped a notch from [version 1](https://github.com/benwoo1110/A-List-of-Sorts). This program provides animates simple, common and popular sorting algorithms, to allow people to learn more about these algorithms and how the work. The [source code](code/) also provides a great example for object orented programming with pygame.</br>
 
 ## Sorting Algorithms:
 * Bubble sort
