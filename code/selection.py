@@ -79,7 +79,7 @@ selection_screen = screen(
             'type': 'button',
             'frame': {
                 'box': coord(x=897, y=160, w=53, h=53), 
-                'image': coord(x=897, y=160, w=53, h=53), 
+                'image': coord(x=892, y=160, w=53, h=53), 
             },
             'runclass': '__back__'
         }
