@@ -28,7 +28,7 @@ class coord:
 
     def coord(self, surfaceCoord:tuple = (0, 0)) -> tuple: return (self.x + surfaceCoord[0], self.y + surfaceCoord[1])
     
-    def mouseIn(self, surfaceCoord:tuple = (0, 0)) -> bool:
+    def mouseIn(self, mousePos = None, surfaceCoord:tuple = (0, 0)) -> bool:
         # Get current mouse position
         mousePos = pygame.mouse.get_pos()
         # Save surface coord to seperate variables

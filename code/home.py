@@ -20,6 +20,7 @@ home_screen = screen(
         'background': {
             'type': 'object',
             'frame': {
+                'box': coord(w=1024, h=768),
                 'image': coord(w=1024, h=768)
             }
         },
@@ -156,7 +157,7 @@ class home:
                 if action_result.click.outcome == '__back__': home_screen.surface.display()
 
     def setInfoText():
-        # Set info to teh corresponding sort type
+        # Set info to the corresponding sort type
         sort_type = home_screen.objects.type.data.text
         if sort_type in info_text.keys():
             home_screen.objects.info.data.setText(info_text[sort_type])

@@ -17,8 +17,10 @@ selection_screen = screen(
             'type': 'object',
             'isAlpha': True,
             'frame': {
+                'box': coord(w=1024, h=768),
                 'image': coord(w=1024, h=768)
-            }
+            },
+            'runclass': '__back__'
         },
         'bubble': {
             'type': 'button',
@@ -75,19 +77,13 @@ selection_screen = screen(
             },
             'runclass': 'Bogo sort'
         },
-        'arrow': {
-            'type': 'button',
-            'frame': {
-                'box': coord(x=897, y=160, w=53, h=53), 
-                'image': coord(x=892, y=160, w=53, h=53), 
-            },
-            'runclass': '__back__'
-        }
     }
 )
 
 
+# Load items to screen
 selection_screen.surface.load()
+
 
 class selection:
 
@@ -107,6 +103,8 @@ class selection:
             elif action_result.didAction('quit'): return '__quit__'
 
             elif action_result.didAction('click'):
-                if not action_result.click.isItem('arrow'):
+                # Going back
+                if not action_result.click.withOutcome('__back__'): 
+                    # Sort type is changed
                     screen.objects[itemName].data.setText(text=action_result.click.outcome, withDisplay=False)
                 return '__back__'

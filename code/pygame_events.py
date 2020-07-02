@@ -30,9 +30,9 @@ class actionResult(coreFunc):
 
     def isItem(self, name = None) -> bool: return self.name == name
 
-    def isType(self, type = None) -> bool: return self.name == type
+    def isType(self, type = None) -> bool: return self.type == type
 
-    def withOutcome(self, outcome = None) -> bool: return self.name == outcome
+    def withOutcome(self, outcome = None) -> bool: return self.outcome == outcome
 
 
 class event(coreFunc):
@@ -52,23 +52,32 @@ class event(coreFunc):
         return result
 
     def action(self, directToScreen:bool = False):
-        for name,item in self.__screen__.objects.__dict__.items():
-            # Check if item is valid and has a runclass
-            if name !=  '__screen__' and item.runclass != None: 
-                while item.frame.box.mouseIn(self.__screen__.surface.frame.coord()):
-                    # Load hover state
-                    item.switchState('Hover', directToScreen) 
-                    
-                    # Check for clicks
-                    event_result = self.Event([
-                        eventRun(action='click', event=self.click, parameters=[item, directToScreen]),
-                        eventRun(action='scroll', event=self.scroll),
-                        eventRun(action='quit', event=self.quit)
-                        ])
-                    if event_result.didAction(): return event_result
+        for index,name in enumerate(list(self.__screen__.objects.__dict__.keys())[1:]):
+            # Get item
+            item = self.__screen__.objects[name]
+            # Check if has a runclass and mouse in hovering over it
+            while item.runclass != None and item.frame.box.mouseIn(self.__screen__.surface.frame.coord()):
+                # Load hover state
+                item.switchState('Hover', directToScreen) 
+                
+                # Check for clicks
+                event_result = self.Event([
+                    eventRun(action='click', event=self.click, parameters=[item, directToScreen]),
+                    eventRun(action='scroll', event=self.scroll),
+                    eventRun(action='quit', event=self.quit)
+                    ])
+                if event_result.didAction(): return event_result
 
-                # Change back to normal state
-                item.switchState('', directToScreen) 
+                # Check if mouse pos on more important layers
+                more_important = False
+                for more_important_item in list(self.__screen__.objects.__dict__.keys())[index+2:]:
+                    if self.__screen__.objects[more_important_item].frame.box.mouseIn(self.__screen__.surface.frame.coord()):
+                        more_important = True
+                        break
+                if more_important: break
+
+            # Change back to normal state
+            item.switchState('', directToScreen) 
 
         # Run event
         event_result = self.Event([
@@ -79,8 +88,8 @@ class event(coreFunc):
 
     def click(self, event, item, directToScreen:bool = False):
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-            #
-            click_result = actionResult(name=item.name, type=item.type)
+            # Set state to clicked
+            click_result = actionResult(name=item.name, type=item.type, outcome='clicked')
             item.switchState('Selected')
 
             # Runclass is just a string
@@ -88,6 +97,7 @@ class event(coreFunc):
             # Runclass is a method
             else: click_result.outcome = item.runclass(self.__screen__, **item.runclassParameter)
 
+            print(click_result)
             return click_result
 
     def scroll(self, event):
