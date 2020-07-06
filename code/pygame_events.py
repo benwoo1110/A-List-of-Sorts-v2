@@ -4,12 +4,14 @@
 from pygame_core import *
 
 
+# Track keys that are pressed
+keypressed = set()
+
 class eventRun(coreFunc):
     def __init__(self, action:str, event:any, parameters:list = []): 
         self.action = action
         self.event = event
         self.parameters = parameters
-
 
 class eventResults(coreFunc):
     def __init__(self, **kwargs): 
@@ -21,6 +23,10 @@ class eventResults(coreFunc):
         # Check for specific action
         else: return hasattr(self, action)
 
+    def contains(self, key:str, value:any) -> bool: 
+        for result in self.__dict__.values():
+            if result[key] == value: return True
+        return False
 
 class actionResult(coreFunc):
     def __init__(self, name:str, type:str, outcome:any = None): 
@@ -63,6 +69,7 @@ class event(coreFunc):
                 # Check for clicks
                 event_result = self.Event([
                     eventRun(action='click', event=self.click, parameters=[item, directToScreen]),
+                    eventRun(action='keyboard', event=self.keyboard),
                     eventRun(action='scroll', event=self.scroll),
                     eventRun(action='quit', event=self.quit)
                     ])
@@ -81,6 +88,7 @@ class event(coreFunc):
 
         # Run event
         event_result = self.Event([
+                eventRun(action='keyboard', event=self.keyboard),
                 eventRun(action='scroll', event=self.scroll),
                 eventRun(action='quit', event=self.quit)
                 ])
@@ -117,7 +125,35 @@ class event(coreFunc):
                     surface.display(withLoad=False)
 
     def keyboard(self, event):
-        pass
+        keyboard_result = None
+
+        # When key is pressed
+        if event.type == pygame.KEYDOWN:
+            keypressed.add(event.key)
+            keyboard_result = actionResult(name=event.key, type='keydown', outcome='pressed')
+
+        # When key is released
+        elif event.type == pygame.KEYUP:
+            keypressed.discard(event.key)
+            keyboard_result = actionResult(name=event.key, type='keyup', outcome='released')
+
+        # When there was an action
+        if keyboard_result != None:
+            # Check if key that was pressed have action to run
+            for name in list(self.__screen__.keyboardActions.__dict__.keys())[1:]:
+                key = self.__screen__.keyboardActions[name]
+
+                # On match key state and match key
+                if ( (key.onKey == 'down' and keyboard_result.isType('keydown')) or (key.onKey == 'up' and keyboard_result.isType('keyup')) ) and keypressed.intersection(key.keys) != set():
+                    # Set name of result
+                    keyboard_result.name = key.name
+                    # Runclass is just a string
+                    if type(key.runclass) == str: keyboard_result.outcome = key.runclass
+                    # Runclass is a method
+                    else: keyboard_result.outcome = key.runclass(self.__screen__, **key.runclassParameter)         
+            
+            return keyboard_result
+
 
     def quit(self, event):
         if event.type == pygame.QUIT: 

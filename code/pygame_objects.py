@@ -40,10 +40,11 @@ class coord:
 
 
 class screen(coreFunc):
-    def __init__(self, name: str, surfaceParameters:dict, objectsParameters:dict = {}):
+    def __init__(self, name: str, surfaceParameters:dict, objectsParameters:dict = {}, keyboardParameters:dict = {}):
         self.name = name
         self.surface = surface(self, **surfaceParameters)
         self.objects = objects(self, objectsParameters)
+        self.keyboardActions = keyboardActions(self, keyboardParameters)
         self.event = event(self)
 
 
@@ -65,9 +66,6 @@ class surface(coreFunc):
         if self.bgColour != None: Surface.fill(self.bgColour)
         # Save Surface to class
         self.Surface = Surface
-    
-    def fill(bgColour:tuple = None):
-        pass
 
     def load(self): self.__screen__.objects.load()
 
@@ -79,8 +77,30 @@ class surface(coreFunc):
         pg_ess.core.update()
 
 
+class keyboardActions(coreFunc):
+    def __init__(self, screen:screen, actions:dict):
+        self.__screen__ = screen
+        # Add keyboard actions
+        for name,action_data in actions.items():
+            self.add(name, action_data)
+
+    def add(self, name, data):
+        self.__dict__[name] = key(self.__screen__, name, **data)
+
+
+class key(coreFunc):
+    def __init__(self, screen, name, keys:set, onKey:str = 'down', useAscii:bool = True, runclass:any = None, runclassParameter:any = {}):
+        self.__screen__ = screen
+        self.name = name
+        self.keys = keys
+        self.onKey = onKey
+        self.useAscii = useAscii
+        self.runclass = runclass
+        self.runclassParameter = runclassParameter
+
+
 class objects(coreFunc):
-    def __init__(self, screen, items):
+    def __init__(self, screen:screen, items:dict):
         self.__screen__ = screen
         # Add objects
         for name,item_data in items.items():

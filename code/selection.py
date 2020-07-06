@@ -77,9 +77,17 @@ selection_screen = screen(
             },
             'runclass': 'Bogo sort'
         },
+    },
+    keyboardParameters = {
+        'back': {
+            'keys': {27},
+            'runclass': '__back__'
+        }
     }
 )
 
+
+print(selection_screen.keyboardActions.back.__dict__)
 
 # Load items to screen
 selection_screen.surface.load()
@@ -102,9 +110,10 @@ class selection:
             # When program is set to close
             elif action_result.didAction('quit'): return '__quit__'
 
+            # Going back
+            elif action_result.contains('outcome', '__back__'): return '__back__'
+
             elif action_result.didAction('click'):
-                # Going back
-                if not action_result.click.withOutcome('__back__'): 
-                    # Sort type is changed
-                    screen.objects[itemName].data.setText(text=action_result.click.outcome, withDisplay=False)
+                # Sort type is changed
+                screen.objects[itemName].data.setText(text=action_result.click.outcome, withDisplay=False)
                 return '__back__'

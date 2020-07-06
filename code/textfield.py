@@ -12,13 +12,12 @@ class textfield:
     def run(screen, itemName):
         # Get textfield item
         textfield_item = screen.objects[itemName]
+        textfield_item.load()
 
         # Key repeat variables
         key_pressed = []
         time_pressed, repeat_interval = 0, 1.2
-
-        textfield_item.load()
-
+      
         while True:
             for event in pygame.event.get():
                 # if keyboard is pressed
