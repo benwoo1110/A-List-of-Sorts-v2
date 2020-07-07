@@ -4,6 +4,7 @@
 from pygame_objects import *
 from textfield import textfield
 from selection import selection
+from sort import sort
 
 
 ###########################
@@ -11,11 +12,9 @@ from selection import selection
 ###########################
 home_screen = screen(
     name = 'home',
-
     surfaceParameters = {
         'frame': coord(w=1024, h=768)
     },
-
     objectsParameters = {
         'background': {
             'type': 'object',
@@ -28,9 +27,9 @@ home_screen = screen(
             'type': 'textfield',
             'isAlpha': True,
             'frame': {
-                'box': coord(x=240, y=149, w=729, h=70), 
-                'image': coord(x=240, y=149, w=729, h=70), 
-                'text': coord(x=269, y=160, w=628, h=53)
+                'box': coord(x=246, y=149, w=729, h=70), 
+                'image': coord(x=246, y=149, w=729, h=70), 
+                'text': coord(x=271, y=159, w=628, h=53)
             },
             'data': text(
                 text = 'Bubble sort',
@@ -50,9 +49,9 @@ home_screen = screen(
         'info': {
             'type': 'button',
             'frame': {
-                'box': coord(x=219, y=241, w=751, h=211), 
-                'image': coord(x=219, y=241, w=751, h=211),
-                'text': coord(x=249, y=260, w=696, h=170)
+                'box': coord(x=225, y=242, w=751, h=211), 
+                'image': coord(x=225, y=242, w=751, h=211),
+                'text': coord(x=252, y=260, w=696, h=170)
             },
             'data': text(
                 text = '',
@@ -70,9 +69,9 @@ home_screen = screen(
         'speed': {
             'type': 'textfield',
             'frame': {
-                'box': coord(x=265, y=480, w=704, h=70), 
-                'image': coord(x=265, y=480, w=704, h=70),
-                'text': coord(x=290, y=491, w=654, h=53)
+                'box': coord(x=271, y=480, w=704, h=70), 
+                'image': coord(x=271, y=480, w=704, h=70),
+                'text': coord(x=296, y=490, w=654, h=53)
             },
             'data': text(
                 text = '10.0',
@@ -92,9 +91,9 @@ home_screen = screen(
         'list_length': {
             'type': 'textfield',
             'frame': {
-                'box': coord(x=397, y=574, w=572, h=70), 
-                'image': coord(x=397, y=574, w=572, h=70), 
-                'text': coord(x=422, y=586, w=522, h=53)
+                'box': coord(x=403, y=575, w=572, h=70), 
+                'image': coord(x=403, y=575, w=572, h=70), 
+                'text': coord(x=428, y=585, w=522, h=53)
             },
             'data': text(
                 text = '100',
@@ -114,15 +113,18 @@ home_screen = screen(
         'run': {
             'type': 'button',
             'frame': {
-                'box': coord(x=775, y=671, w=194, h=70), 
-                'image': coord(x=775, y=671, w=194, h=70)
+                'box': coord(x=781, y=671, w=194, h=70), 
+                'image': coord(x=781, y=671, w=194, h=70)
             },
-            'runclass': runclass(action='run')
+            'runclass': runclass(action=sort.run)
         }
     }
 )
 
 
+##########################################
+# Info about the different sorting types #
+##########################################
 info_text = {
     'Bubble sort': 'Bubble sort, is one of the most simplest sorting algorithm that repeatedly steps through the list, compares adjacent pairs and swaps them if they are in the wrong order. ',
     'Insertion sort': 'Insertion sort is a simple sorting algorithm that builds the final sorted array (or list) one item at a time. It can be simply implemented and is also efficient for (quite) small data sets.',
@@ -151,16 +153,15 @@ class home:
             if action_result == None: continue
 
             # When program is set to close
-            elif action_result.didAction('quit'): return '__quit__'
+            if action_result.contains('outcome','__quit__'): return '__quit__'
+
+            # Load back screen
+            if action_result.contains('outcome', '__back__'): home_screen.surface.display(withLoad=False)
 
             # When an object is clicked
-            elif action_result.didAction('click'):   
-                # When program is set to close 
-                if  action_result.click.outcome == '__quit__':return '__quit__'
+            if action_result.didAction('click'): 
                 # The sort type is changed               
                 if action_result.click.isItem('type'): home.setInfoText()
-                # Load back screen
-                if action_result.click.outcome == '__back__': home_screen.surface.display(withLoad=False)
 
     def setInfoText():
         # Set info to the corresponding sort type

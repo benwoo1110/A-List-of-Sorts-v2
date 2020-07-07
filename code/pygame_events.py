@@ -78,7 +78,7 @@ class event(coreFunc):
             # Get item
             item = self.__screen__.objects[name]
             # Check if has a runclass and mouse in hovering over it
-            while item.runclass != None and item.frame.box.mouseIn(self.__screen__.surface.frame.coord()):
+            while item.hasRunclass() and item.frame.box.mouseIn(self.__screen__.surface.frame.coord()):
                 # Load hover state
                 item.switchState('Hover', directToScreen) 
                 
@@ -93,8 +93,9 @@ class event(coreFunc):
 
                 # Check if mouse pos on more important layers
                 priority = False
-                for priority_item in list(self.__screen__.objects.__dict__.keys())[index+2:]:
-                    if self.__screen__.objects[priority_item].frame.box.mouseIn(self.__screen__.surface.frame.coord()):
+                for priority_name in list(self.__screen__.objects.__dict__.keys())[index+2:]:
+                    priority_item = self.__screen__.objects[priority_name]
+                    if priority_item.hasRunclass() and priority_item.frame.box.mouseIn(self.__screen__.surface.frame.coord()):
                         priority = True
                         break
                 if priority: break

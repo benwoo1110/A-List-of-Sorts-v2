@@ -6,7 +6,6 @@ from pygame_objects import *
 
 selection_screen = screen(
     name = 'selection',
-
     surfaceParameters = {
         'frame': coord(w=1024, h=768),
         'bgColour': None,
@@ -20,13 +19,13 @@ selection_screen = screen(
                 'box': coord(w=1024, h=768),
                 'image': coord(w=1024, h=768)
             },
-            'runclass': runclass(action='__back__')
+            'runclass': runclass(action='go_back')
         },
         'bubble': {
             'type': 'button',
             'isAlpha': True,
             'frame': {
-                'box': coord(x=261, y=243, w=689, h=59), 
+                'box': coord(x=267, y=243, w=689, h=59), 
                 'image': coord(w=1024, h=768),
                 'text': coord(x=281, y=248, w=646, h=49), 
             },
@@ -36,7 +35,7 @@ selection_screen = screen(
             'type': 'button',
             'isAlpha': True,
             'frame': {
-                'box': coord(x=261, y=300, w=689, h=59), 
+                'box': coord(x=267, y=300, w=689, h=59), 
                 'image': coord(w=1024, h=768)
             },
             'runclass': runclass(action='Insertion sort')
@@ -45,7 +44,7 @@ selection_screen = screen(
             'type': 'button',
             'isAlpha': True,
             'frame': {
-                'box': coord(x=261, y=358, w=689, h=59), 
+                'box': coord(x=267, y=358, w=689, h=59), 
                 'image': coord(w=1024, h=768)
             },
             'runclass': runclass(action='Merge sort')
@@ -54,7 +53,7 @@ selection_screen = screen(
             'type': 'button',
             'isAlpha': True,
             'frame': {
-                'box': coord(x=261, y=415, w=689, h=59), 
+                'box': coord(x=267, y=415, w=689, h=59), 
                 'image': coord(w=1024, h=768)
             },
             'runclass': runclass(action='Quick sort')
@@ -63,7 +62,7 @@ selection_screen = screen(
             'type': 'button',
             'isAlpha': True,
             'frame': {
-                'box': coord(x=261, y=473, w=689, h=59), 
+                'box': coord(x=267, y=473, w=689, h=59), 
                 'image': coord(w=1024, h=768)
             },
             'runclass': runclass(action='Radix sort')
@@ -72,7 +71,7 @@ selection_screen = screen(
             'type': 'button',
             'isAlpha': True,
             'frame': {
-                'box': coord(x=261, y=531, w=689, h=59), 
+                'box': coord(x=267, y=531, w=689, h=59), 
                 'image': coord(w=1024, h=768)
             },
             'runclass': runclass(action='Bogo sort')
@@ -81,7 +80,7 @@ selection_screen = screen(
     keyboardParameters = {
         'back': {
             'keys': {27},
-            'runclass': runclass(action='__back__')
+            'runclass': runclass(action='go_back')
         }
     }
 )
@@ -106,11 +105,12 @@ class selection:
             if action_result == None: continue
 
             # When program is set to close
-            elif action_result.didAction('quit'): return '__quit__'
+            if action_result.contains('outcome','__quit__'): return '__quit__'
 
             # Going back
-            elif action_result.contains('outcome', '__back__'): return '__back__'
+            if action_result.contains('outcome', 'go_back'): return '__back__' 
 
-            elif action_result.didAction('click'):
+            # Change text to corresponding sort types
+            if action_result.didAction('click'):
                 screen.objects[itemName].data.setText(text=action_result.click.outcome, withDisplay=False)
                 return '__back__'

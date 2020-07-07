@@ -29,7 +29,7 @@ class coord:
 
     def coord(self, surfaceCoord:tuple = (0, 0)) -> tuple: return (self.x + surfaceCoord[0], self.y + surfaceCoord[1])
     
-    def mouseIn(self, mousePos = None, surfaceCoord:tuple = (0, 0)) -> bool:
+    def mouseIn(self, surfaceCoord:tuple = (0, 0)) -> bool:
         # Get current mouse position
         mousePos = pygame.mouse.get_pos()
         # Save surface coord to seperate variables
@@ -163,6 +163,9 @@ class item(coreFunc):
             self.load()
         # No images loaded
         else: self.images = None
+
+    def hasRunclass(self):
+        return isinstance(self.runclass, runclass)
         
     def hasState(self, state:str): 
         if type(state) == str: return hasattr(self.images, self.type+state)
@@ -187,7 +190,7 @@ class item(coreFunc):
             # Set state
             if self.hasState(withState): self.state = withState
             # Display to screen
-            window.blit(self.images.__dict__[self.type+self.state], (self.frame.image.coord()))
+            window.blit(self.images.__dict__[self.type+self.state], (self.frame.image.coord(self.__screen__.surface.frame.coord())))
             # Display data
             if self.data != None and loadData: self.data.display(None, self.frame, self.state, True)
             pg_ess.core.update()
@@ -294,7 +297,7 @@ class text(coreFunc):
             # Get the text
             text_surface = self.generateSurface(frame, state)
             # Output to screen
-            window.blit(text_surface, frame.text.coord())
+            window.blit(text_surface, frame.text.coord(self.item.__screen__.surface.frame.coord()))
         
         else:
             self.load(screen.surface.Surface, frame, state)
