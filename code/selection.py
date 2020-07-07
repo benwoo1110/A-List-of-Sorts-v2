@@ -20,7 +20,7 @@ selection_screen = screen(
                 'box': coord(w=1024, h=768),
                 'image': coord(w=1024, h=768)
             },
-            'runclass': '__back__'
+            'runclass': runclass(action='__back__')
         },
         'bubble': {
             'type': 'button',
@@ -30,7 +30,7 @@ selection_screen = screen(
                 'image': coord(w=1024, h=768),
                 'text': coord(x=281, y=248, w=646, h=49), 
             },
-            'runclass': 'Bubble sort'
+            'runclass': runclass(action='Bubble sort')
         },
         'insertion': {
             'type': 'button',
@@ -39,7 +39,7 @@ selection_screen = screen(
                 'box': coord(x=261, y=300, w=689, h=59), 
                 'image': coord(w=1024, h=768)
             },
-            'runclass': 'Insertion sort'
+            'runclass': runclass(action='Insertion sort')
         },
         'merge': {
             'type': 'button',
@@ -48,7 +48,7 @@ selection_screen = screen(
                 'box': coord(x=261, y=358, w=689, h=59), 
                 'image': coord(w=1024, h=768)
             },
-            'runclass': 'Merge sort'
+            'runclass': runclass(action='Merge sort')
         },
         'quick': {
             'type': 'button',
@@ -57,7 +57,7 @@ selection_screen = screen(
                 'box': coord(x=261, y=415, w=689, h=59), 
                 'image': coord(w=1024, h=768)
             },
-            'runclass': 'Quick sort'
+            'runclass': runclass(action='Quick sort')
         },
         'radix': {
             'type': 'button',
@@ -66,7 +66,7 @@ selection_screen = screen(
                 'box': coord(x=261, y=473, w=689, h=59), 
                 'image': coord(w=1024, h=768)
             },
-            'runclass': 'Radix sort'
+            'runclass': runclass(action='Radix sort')
         },
         'bogo': {
             'type': 'button',
@@ -75,19 +75,17 @@ selection_screen = screen(
                 'box': coord(x=261, y=531, w=689, h=59), 
                 'image': coord(w=1024, h=768)
             },
-            'runclass': 'Bogo sort'
+            'runclass': runclass(action='Bogo sort')
         },
     },
     keyboardParameters = {
         'back': {
             'keys': {27},
-            'runclass': '__back__'
+            'runclass': runclass(action='__back__')
         }
     }
 )
 
-
-print(selection_screen.keyboardActions.back.__dict__)
 
 # Load items to screen
 selection_screen.surface.load()
@@ -114,6 +112,5 @@ class selection:
             elif action_result.contains('outcome', '__back__'): return '__back__'
 
             elif action_result.didAction('click'):
-                # Sort type is changed
                 screen.objects[itemName].data.setText(text=action_result.click.outcome, withDisplay=False)
                 return '__back__'

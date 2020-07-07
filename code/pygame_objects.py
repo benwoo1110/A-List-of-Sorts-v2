@@ -4,6 +4,7 @@
 import os
 import glob
 import textwrap
+import inspect
 from pygame_events import *
 
 
@@ -69,7 +70,9 @@ class surface(coreFunc):
 
     def load(self): self.__screen__.objects.load()
 
-    def display(self, withLoad:bool = True):
+    def display(self, withLoad:bool = True, newSurface:bool = False):
+        # Use a new surface
+        if newSurface: self.create()
         # Update to latest state of objects
         if withLoad: self.load()
         # Output to screen
@@ -89,14 +92,13 @@ class keyboardActions(coreFunc):
 
 
 class key(coreFunc):
-    def __init__(self, screen, name, keys:set, onKey:str = 'down', useAscii:bool = True, runclass:any = None, runclassParameter:any = {}):
+    def __init__(self, screen, name, keys:set, onKey:str = 'down', useAscii:bool = True, runclass:runclass = None):
         self.__screen__ = screen
         self.name = name
         self.keys = keys
         self.onKey = onKey
         self.useAscii = useAscii
         self.runclass = runclass
-        self.runclassParameter = runclassParameter
 
 
 class objects(coreFunc):
@@ -109,39 +111,39 @@ class objects(coreFunc):
     def add(self, name, item_data):
         self.__dict__[name] = item(self.__screen__, name, **item_data)
 
-    def load(self, items:tuple = None, withState:str = None):
-        # Load all items
-        if items == None:
-            for name,item in self.__dict__.items():
-                if name != '__screen__': item.load(withState)
+    def getItems(self, withItems:set = {'__all__'}, excludeItems:set = set()):
+        items_to_load = set()
+        # Get all items
+        if withItems == {'__all__'}: items_to_load = set(list(self.__dict__.keys()))
+        # Remove the ones stated to exclude
+        items_to_load = (items_to_load - {'__screen__'}) - excludeItems
+
+        return items_to_load
+
+    def load(self, withItems:set = {'__all__'}, excludeItems:set = set(), withState:str = None):
+        # Calculate items to load
+        items_to_load = self.getItems(withItems, excludeItems)
         # Load items defined
-        else:
-            for name in items:
-                self.__dict__[name].load(withState)
+        for name in items_to_load: self.__dict__[name].load(withState)
 
-    def display(self, items:tuple = None, withState:str = None, directToScreen:bool = False):
+    def display(self, withItems:set = {'__all__'}, excludeItems:set = set(), withState:str = None, directToScreen:bool = False):
+        # Load items directly to screen
         if directToScreen:
-            # Display all items
-            if items == None:
-                for name,item in self.__dict__.items():
-                    if name != '__screen__': item.display(withState, directToScreen)
-            # Load items defined
-            else:
-                for name in items:
-                    self.__dict__[name].display(state, directToScreen)
+            # Calculate items to load
+            items_to_load = self.getItems(withItems, excludeItems)
+            for name in items_to_load: self.__dict__[name].display(state, directToScreen)
 
+        # Load items defined to surface
         else: 
-            # Load items defined to surface
-            self.load(items, state)
-            # Display Surface
+            self.load(items, withItems, excludeItems, state)
             self.__screen__.surface.display(withLoad=False)
 
 
 class item(coreFunc):
     types = ('object', 'background', 'button', 'text', 'textfield')
 
-    def __init__(self, screen, name:str, type:str, frame:dict, data:any = None,dataAddSelf:bool = False, state:str = '',
-    runclass:any = None, runclassParameter:any = {}, loadImages:bool = True, isAlpha: bool = False):
+    def __init__(self, screen, name:str, type:str, frame:dict, data:any = None, dataAddSelf:bool = False, 
+    state:str = '', runclass:runclass = None, loadImages:bool = True, isAlpha: bool = False):
         self.__screen__ = screen
         self.name = name
         self.type = str(type)
@@ -150,16 +152,14 @@ class item(coreFunc):
         self.dataAddSelf = dataAddSelf
         self.state = state
         self.runclass = runclass
-        self.runclassParameter = runclassParameter
-        self.loadImages = loadImages
         self.isAlpha = isAlpha
 
         # Add self to data
-        if data != None and dataAddSelf: data['item'] = self
+        if dataAddSelf and data != None: data['item'] = self
         
         # load images
         if loadImages: 
-            self.images = images(imagePage=(screen.name, name), isAlpha=isAlpha)
+            self.images = images(imagePage=[screen.name, name], isAlpha=isAlpha)
             self.load()
         # No images loaded
         else: self.images = None
@@ -199,7 +199,7 @@ class item(coreFunc):
 
 
 class images(coreFunc):
-    def __init__(self, imagePage:tuple, fileType:str = '.png', isAlpha:bool = False):
+    def __init__(self, imagePage:list, fileType:str = '.png', isAlpha:bool = False):
         self.imagePage = imagePage
         self.fileType = fileType
         self.isAlpha = isAlpha
@@ -209,8 +209,9 @@ class images(coreFunc):
 
         # get the image
         for image in image_dir_list:
+            # Get name
+            image_name = os.path.basename(image).split('.')[0]
             # Load image
-            image_name = image.split('/')[-1].split('\\')[-1].split('.')[0]
             image_surface = pygame.image.load(image).convert_alpha() if isAlpha else pygame.image.load(image).convert()
             image_surface = pygame.transform.smoothscale(image_surface, (int(image_surface.get_width()*config.scale_w()), int(image_surface.get_height()*config.scale_w())))
             # Store image
@@ -218,16 +219,16 @@ class images(coreFunc):
 
     def getFilesList(self) -> list:
         # Define variables
-        image_dir = 'surfaces/{}/'.format('/'.join(self.imagePage))
+        image_dir = os.path.join('surfaces', *self.imagePage, '*'+self.fileType)
         # If in code directory and not root, go back a step
         if os.path.basename(os.getcwd()) == 'code': image_dir = '../' + image_dir
-        # Get all image file from givent directory
-        return glob.glob(image_dir+"*"+self.fileType)
+        # Get list of image from dir
+        return glob.glob(image_dir)
 
 
 class textFormat(coreFunc):
     def __init__(self, fontType:str = None, fontSize:int = 36, colour:tuple = pg_ess.colour.white, 
-    warpText:int = None, align:str = 'left', lineSpacing:int = 0):
+    warpText:int = None, align:str = 'left', lineSpacing:int = 1):
         self.fontType = fontType
         self.fontSize = int(fontSize * config.scale_w())
         self.colour = colour
@@ -277,7 +278,7 @@ class text(coreFunc):
                 rendered_text = self.format.font.render(line, True, self.format.colour)
                 text_surface.blit(rendered_text, (0, h))
                 # Set hight of next line
-                h += self.format.font.size(line)[1] + self.format.lineSpacing
+                h += self.format.font.size(line)[1] * self.format.lineSpacing
             
             return text_surface
 

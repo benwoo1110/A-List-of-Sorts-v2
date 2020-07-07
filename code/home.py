@@ -33,7 +33,7 @@ home_screen = screen(
                 'text': coord(x=269, y=160, w=628, h=53)
             },
             'data': text(
-                text = 'Merge sort',
+                text = 'Bubble sort',
                 editable = False,
                 format = textFormat(
                     fontType=pg_ess.font.futura,
@@ -42,8 +42,10 @@ home_screen = screen(
                 )
             ),
             'dataAddSelf': True,
-            'runclass': selection.run,
-            'runclassParameter': {'itemName': 'type'}
+            'runclass': runclass(
+                action=selection.run,
+                parameters={'itemName': 'type'}
+            )
         },
         'info': {
             'type': 'button',
@@ -63,7 +65,7 @@ home_screen = screen(
                 )
             ),
             'dataAddSelf': True,
-            'runclass': 'info'
+            'runclass': runclass(action='info')
         },
         'speed': {
             'type': 'textfield',
@@ -82,8 +84,10 @@ home_screen = screen(
                 )
             ),
             'dataAddSelf': True,
-            'runclass': textfield.run,
-            'runclassParameter': {'itemName': 'speed'}
+            'runclass': runclass(
+                action=textfield.run,
+                parameters={'itemName': 'speed'}
+            )
         },
         'list_length': {
             'type': 'textfield',
@@ -102,8 +106,10 @@ home_screen = screen(
                 )
             ),
             'dataAddSelf': True,
-            'runclass': textfield.run,
-            'runclassParameter': {'itemName': 'list_length'}
+            'runclass': runclass(
+                action=textfield.run,
+                parameters={'itemName': 'list_length'}
+            )
         },
         'run': {
             'type': 'button',
@@ -111,7 +117,7 @@ home_screen = screen(
                 'box': coord(x=775, y=671, w=194, h=70), 
                 'image': coord(x=775, y=671, w=194, h=70)
             },
-            'runclass': 'run'
+            'runclass': runclass(action='run')
         }
     }
 )
@@ -154,7 +160,7 @@ class home:
                 # The sort type is changed               
                 if action_result.click.isItem('type'): home.setInfoText()
                 # Load back screen
-                if action_result.click.outcome == '__back__': home_screen.surface.display()
+                if action_result.click.outcome == '__back__': home_screen.surface.display(withLoad=False)
 
     def setInfoText():
         # Set info to the corresponding sort type
