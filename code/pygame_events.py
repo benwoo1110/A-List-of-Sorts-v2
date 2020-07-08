@@ -143,13 +143,13 @@ class event(coreFunc):
                 key = self.__screen__.keyboardActions[name]
 
                 # On match key state and match key
-                if ( (key.onKey == 'down' and keyboard_result.isType('keydown')) or (key.onKey == 'up' and keyboard_result.isType('keyup')) ) and keypressed.intersection(key.keys) != set():
+                if ((key.onKey == 'down' and keyboard_result.isType('keydown')) or (key.onKey == 'up' and keyboard_result.isType('keyup'))) and keypressed.intersection(key.keys) != set():
                     # Set name of result
                     keyboard_result.name = key.name
                     # Get the outcome of running
                     keyboard_result.getOutcome(key)     
             
-        return keyboard_result
+            return keyboard_result
 
     def scroll(self, event):
         # Get surface

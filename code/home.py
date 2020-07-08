@@ -19,7 +19,6 @@ home_screen = screen(
         'background': {
             'type': 'object',
             'frame': {
-                'box': coord(w=1024, h=768),
                 'image': coord(w=1024, h=768)
             }
         },

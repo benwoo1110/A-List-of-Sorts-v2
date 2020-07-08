@@ -41,7 +41,7 @@ class coord:
 
 
 class screen(coreFunc):
-    def __init__(self, name: str, surfaceParameters:dict, objectsParameters:dict = {}, keyboardParameters:dict = {}):
+    def __init__(self, name: str, surfaceParameters:dict = {}, objectsParameters:dict = {}, keyboardParameters:dict = {}):
         self.name = name
         self.surface = surface(self, **surfaceParameters)
         self.objects = objects(self, objectsParameters)
@@ -50,7 +50,7 @@ class screen(coreFunc):
 
 
 class surface(coreFunc):
-    def __init__(self, screen, frame:coord, bgColour:tuple = pg_ess.colour.orange, isAlpha:bool = False):
+    def __init__(self, screen, frame:coord = coord(), bgColour:tuple = pg_ess.colour.orange, isAlpha:bool = False):
         self.__screen__ = screen
         self.frame = frame
         self.bgColour = bgColour

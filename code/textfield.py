@@ -2,69 +2,69 @@
 # Import and initialize the librarys #
 ######################################
 import time
-from pygame_core import *
+from pygame_objects import *
+
+
+textfield_screen = screen(
+    name = 'textfield',
+    keyboardParameters = {
+        'back': {
+            'keys': {13, 27},
+            'runclass': runclass(action='go_back')
+        }
+    }
+)
 
 
 class textfield:
 
+    # Allow A-Z and all 
     chars_allowed = list(range(32,65)) + list(range(91,127)) + [8]
 
     def run(screen, itemName):
+
+        # Keyboard
+        key_pressed, time_pressed, repeat_interval = [], 0, 1.2
+
         # Get textfield item
         textfield_item = screen.objects[itemName]
         textfield_item.load()
 
-        # Key repeat variables
-        key_pressed = []
-        time_pressed, repeat_interval = 0, 1.2
-      
         while True:
-            for event in pygame.event.get():
-                # if keyboard is pressed
-                if event.type == pygame.KEYDOWN:
+            # Get check for interaction with screen
+            action_result = textfield_screen.event.action()
 
-                    # Exit textfield if click return or escape
-                    if event.key in [pygame.K_RETURN, pygame.K_ESCAPE]:
-                        # Exit textfield
-                        textfield_item.switchState('')
-                        return 'edited'
-                    
-                    # Add to list of keys taht are pressed
-                    if event.key in textfield.chars_allowed: key_pressed.append(event)
+            # No action
+            if action_result == None: continue
+
+            # When program is set to close
+            if action_result.contains('outcome','__quit__'): return '__quit__'
+
+            # Going back
+            if action_result.contains('outcome', 'go_back'): return '__back__' 
+
+            # When keyboard is pressed
+            if action_result.didAction('keyboard'):
+                # Key is pressed
+                if action_result.keyboard.isType('keydown') and action_result.keyboard.name in textfield.chars_allowed:
+                    key_pressed.append(action_result.keyboard.name)
 
                 # Key is released
-                elif event.type == pygame.KEYUP:
-                    # reset key variables
-                    for pressed in range(len(key_pressed)):
-                        if key_pressed[pressed].key == event.key:
-                            key_pressed.pop(pressed)
-                            time_pressed, repeat_interval = 0, 1.2
-                            break
+                elif action_result.keyboard.isType('keyup') and action_result.keyboard.name in key_pressed:
+                    key_pressed.remove(action_result.keyboard.name)
+                    # Reset variables
+                    time_pressed, repeat_interval = 0, 1.2
 
-                # Exit textfield if click out
-                elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                    # Check clicked outside of textfield
-                    if not textfield_item.frame.box.mouseIn(screen.surface.frame.coord()):
-                        # Exit textfield
-                        textfield_item.switchState('')
-                        return 'edited'
-
-                # Quit program
-                if screen.event.quit(event) == '__quit__': return '__quit__'
-
-                # check for Scroll
-                screen.event.scroll(event)
-
-            # Apply keypress, key repeat based on repeat interval in seconds
+            # Engage key
             if key_pressed != [] and time.time() - time_pressed >= repeat_interval:
 
                 new_text = textfield_item.data.text
 
                 # remove character
-                if key_pressed[-1].key == pygame.K_BACKSPACE: new_text = textfield_item.data.text[:-1]
+                if key_pressed[-1] == pygame.K_BACKSPACE: new_text = textfield_item.data.text[:-1]
                     
                 # Add character
-                else: new_text += key_pressed[-1].unicode
+                else: new_text += chr(key_pressed[-1])
 
                 # Stores the new_text
                 textfield_item.data.text = new_text
