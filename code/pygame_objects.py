@@ -5,6 +5,8 @@ import os
 import glob
 import textwrap
 import inspect
+import random
+import math
 from pygame_events import *
 
 
@@ -265,18 +267,20 @@ class text(coreFunc):
 
         self.item.display()
 
-    def generateSurface(self, frame:objectFrame, state:str):
+    def renderText(self, frame:objectFrame, state:str):
+        # Generate surface for text
+        text_surface = pygame.surface.Surface(frame.text.size())
+        # Get text with prefix and suffix
         text = self.getText(state)
+        
         # No warpText
         if self.format.warpText == None:
-            return self.format.font.render(text, True, self.format.colour)
+            text_surface.blit(self.format.font.render(text, True, self.format.colour), (0, 0))
 
         # Output multi-line text
         else:
             # Warp the text
             warpped_text = textwrap.wrap(text, width=self.format.warpText)
-            # Generate surface for text
-            text_surface = pygame.surface.Surface(frame.text.size())
             # Print text to surface
             h = 0
             for line in warpped_text:
@@ -286,22 +290,79 @@ class text(coreFunc):
                 # Set hight of next line
                 h += self.format.font.size(line)[1] * self.format.lineSpacing
             
-            return text_surface
+        return text_surface
 
     def load(self, Surface, frame:objectFrame, state:str):
         # Get the text
-        text_surface = self.generateSurface(frame, state)
+        text_surface = self.renderText(frame, state)
         # Output to surface
         Surface.blit(text_surface, frame.text.coord())
-
 
     def display(self, screen, frame:objectFrame, state:str, directToScreen:bool = False):
         if directToScreen:
             # Get the text
-            text_surface = self.generateSurface(frame, state)
+            text_surface = self.renderText(frame, state)
             # Output to screen
             window.blit(text_surface, frame.text.coord(self.item.__screen__.surface.frame.coord()))
         
         else:
             self.load(screen.surface.Surface, frame, state)
             screen.surface.display(withLoad=False)
+
+
+class sortbars(coreFunc):
+    def __init__(self, bars:int):
+        self.bars = bars
+        self.calBarInfo()
+
+    def calBarInfo(self):
+        # max height: 400
+        # start x: 100
+        # max width: 836
+        # Base y: 575
+        self.barslist = random.sample(list(range(1, self.bars+1)), self.bars)
+
+        self.spacing = 100 // self.bars
+        self.corner = 200 // self.bars
+
+        self.height = 400 // self.bars
+        self.width = (836 - self.spacing*self.bars) // self.bars
+
+        self.start_x = 100 + (836 % self.bars) // 2
+        self.base_y = 575
+
+    def swap(self, bar_1:int, bar_2:int):
+        bar_1 = min(bar_1, bar_2)
+        bar_2 = max(bar_1, bar_2)
+
+        self.barslist[bar_1], self.barslist[bar_2] = self.barslist[bar_2], self.barslist[bar_1]
+
+        self.item.display()
+
+    def move(self, orginal_pos:int, new_pos:int):
+        value = self.barslist.pop(orginal_pos)
+        self.barslist.insert(new_pos, value)
+
+        self.item.display()
+
+    def renderBars(self, frame:objectFrame):
+        # Generate surface for text
+        bar_surface = pygame.surface.Surface(frame.text.size())
+
+        pass
+
+    def load(self, Surface, frame:objectFrame, state:str):
+        for index,bar in enumerate(self.barslist):
+            pygame.draw.rect(surface=Surface, color=pg_ess.colour.white, 
+            rect=(self.start_x+self.spacing//2+(self.width+self.spacing)*index, self.base_y-self.height*bar, self.width, self.height*bar), 
+            border_top_left_radius=self.corner, border_top_right_radius=self.corner)
+
+    def display(self, screen, frame:objectFrame, state:str, directToScreen:bool = False):
+        self.load(screen.surface.Surface, frame, state)
+        screen.surface.display(withLoad=False)
+
+
+class barData(coreFunc):
+    def __init__(self, frame:coord, colour:tuple = pg_ess.colour.white):
+        self.frame = frame
+        self.colour = colour

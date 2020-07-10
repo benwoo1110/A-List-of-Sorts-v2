@@ -1,8 +1,8 @@
 ######################################
 # Import and initialize the librarys #
-######################################
+#####################################
 from pygame_objects import *
-from algorithm.bubblesort import bubblesort
+#from algorithm.bubblesort import bubblesort
 
 
 sort_screen = screen(
@@ -73,7 +73,7 @@ sort_screen = screen(
             'type': 'text',
             'frame': {
                 'image': coord(x=768, y=630, w=177, h=40),
-               'text': coord(x=768, y=630, w=177, h=40)
+                'text': coord(x=768, y=630, w=177, h=40)
             },
             'data': text(
                 text = '104.20',
@@ -104,6 +104,17 @@ sort_screen = screen(
                 )
             ),
             'dataAddSelf': True,
+        },
+        'sortbox': {
+            'type': 'object',
+            'frame': {
+                'box': coord(x=52, y=145, w=922, h=430),
+                'image': coord(x=52, y=145, w=922, h=430)
+            },
+            'data': sortbars(
+                bars=40,
+            ),
+            'dataAddSelf': True,
         }
     }
 )
@@ -111,13 +122,16 @@ sort_screen = screen(
 
 class sort:
 
+    def bubblesort():
+        
+
     def run(screen):
         # Display home screen
         sort_screen.surface.display()
 
-        bubblesort.run()
-
         while True:
+            # sort_screen.objects.sortbox.data.move(39, 0)
+
             # Get check for interaction with screen
             action_result = sort_screen.event.action()
 
