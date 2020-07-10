@@ -50,11 +50,12 @@ class screen(coreFunc):
 
 
 class surface(coreFunc):
-    def __init__(self, screen, frame:coord = coord(), bgColour:tuple = pg_ess.colour.orange, isAlpha:bool = False):
+    def __init__(self, screen, frame:coord = coord(), bgColour:tuple = pg_ess.colour.orange, isAlpha:bool = False, scroll:bool = True):
         self.__screen__ = screen
         self.frame = frame
         self.bgColour = bgColour
         self.isAlpha = isAlpha
+        self.scroll = scroll
         
         # Create surface
         self.create()
@@ -111,26 +112,28 @@ class objects(coreFunc):
     def add(self, name, item_data):
         self.__dict__[name] = item(self.__screen__, name, **item_data)
 
-    def getItems(self, withItems:set = {'__all__'}, excludeItems:set = set()):
-        items_to_load = set()
+    def getObjects(self, withItems:list = ['__all__'], excludeItems:list = []):
+        items_to_load = []
         # Get all items
-        if withItems == {'__all__'}: items_to_load = set(list(self.__dict__.keys()))
+        if withItems == ['__all__']: items_to_load = list(self.__dict__.keys())[1:]
         # Remove the ones stated to exclude
-        items_to_load = (items_to_load - {'__screen__'}) - excludeItems
+        for excludeItem in excludeItems:
+            try: items_to_load.remove(excludeItem)
+            except ValueError: pass
 
         return items_to_load
 
-    def load(self, withItems:set = {'__all__'}, excludeItems:set = set(), withState:str = None):
+    def load(self, withItems:list = ['__all__'], excludeItems:list = [], withState:str = None):
         # Calculate items to load
-        items_to_load = self.getItems(withItems, excludeItems)
+        items_to_load = self.getObjects(withItems, excludeItems)
         # Load items defined
         for name in items_to_load: self.__dict__[name].load(withState)
 
-    def display(self, withItems:set = {'__all__'}, excludeItems:set = set(), withState:str = None, directToScreen:bool = False):
+    def display(self, withItems:list = ['__all__'], excludeItems:list = [], withState:str = None, directToScreen:bool = False):
         # Load items directly to screen
         if directToScreen:
             # Calculate items to load
-            items_to_load = self.getItems(withItems, excludeItems)
+            items_to_load = self.getObjects(withItems, excludeItems)
             for name in items_to_load: self.__dict__[name].display(state, directToScreen)
 
         # Load items defined to surface

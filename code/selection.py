@@ -9,7 +9,8 @@ selection_screen = screen(
     surfaceParameters = {
         'frame': coord(w=1024, h=768),
         'bgColour': None,
-        'isAlpha': True
+        'isAlpha': True,
+        'scroll': False
     }, 
     objectsParameters = {
         'background': {

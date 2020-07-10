@@ -62,7 +62,7 @@ class pg_ess:
             '''Draw display changes to screen'''
             pygame.display.flip()
             pygame.display.update()
-            pygame.time.Clock().tick(tick)
+            pygame.time.Clock().tick_busy_loop(tick)
 
         def buffer() -> bool:
             '''Loop through pygame events and check of quit and scrolling'''

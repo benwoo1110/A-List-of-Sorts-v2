@@ -5,7 +5,7 @@ from pygame_core import *
 
 
 # Track keys that are pressed
-keypressed = set()
+keypressed = []
 
 
 class runclass(coreFunc):
@@ -58,6 +58,7 @@ class actionResult(coreFunc):
 
 
 class event(coreFunc):
+
     def __init__(self, screen):
         self.__screen__ = screen
 
@@ -67,9 +68,10 @@ class event(coreFunc):
         # check events
         for event in pygame.event.get():
             for event_run in events: 
+                # Run events
                 event_result = event_run.event(event, *event_run.parameters)
-                if event_result != None:
-                    result[event_run.action] = event_result
+                # Get and store result if any
+                if event_result != None: result[event_run.action] = event_result
         
         return result
 
@@ -89,7 +91,10 @@ class event(coreFunc):
                     eventRun(action='scroll', event=self.scroll),
                     eventRun(action='quit', event=self.quit)
                     ])
-                if event_result.didAction(): return event_result
+                if event_result.didAction(): 
+                    # Change back to normal state
+                    item.switchState('', directToScreen) 
+                    return event_result
 
                 # Check if mouse pos on more important layers
                 priority = False
@@ -128,13 +133,14 @@ class event(coreFunc):
 
         # When key is pressed
         if event.type == pygame.KEYDOWN:
-            keypressed.add(event.key)
-            keyboard_result = actionResult(name=event.key, type='keydown', outcome='pressed')
+            keyboard_result = actionResult(name=event.key, type='down', outcome='pressed')
+            keypressed.append(event)
 
         # When key is released
         elif event.type == pygame.KEYUP:
-            keypressed.discard(event.key)
-            keyboard_result = actionResult(name=event.key, type='keyup', outcome='released')
+            keyboard_result = actionResult(name=event.key, type='up', outcome='released')
+            for index, pressed in enumerate(keypressed):
+                if pressed.key == event.key: keypressed.pop(index)
 
         # When there was an action
         if keyboard_result != None:
@@ -143,7 +149,7 @@ class event(coreFunc):
                 key = self.__screen__.keyboardActions[name]
 
                 # On match key state and match key
-                if ((key.onKey == 'down' and keyboard_result.isType('keydown')) or (key.onKey == 'up' and keyboard_result.isType('keyup'))) and keypressed.intersection(key.keys) != set():
+                if key.onKey == keyboard_result.type and event.key in key.keys:
                     # Set name of result
                     keyboard_result.name = key.name
                     # Get the outcome of running
@@ -155,7 +161,7 @@ class event(coreFunc):
         # Get surface
         surface = self.__screen__.surface
         # Check if scrolling is needed
-        if config.screen.height - surface.frame.h < 0:
+        if surface.scroll and config.screen.height - surface.frame.h < 0:
             # Check of scroll action
             if event.type == pygame.MOUSEBUTTONDOWN:
                 # Scroll up
@@ -169,4 +175,4 @@ class event(coreFunc):
 
     def quit(self, event):
         if event.type == pygame.QUIT: 
-            return '__quit__'
+            return actionResult(name='quit', type='quit', outcome='__quit__')
