@@ -2,6 +2,7 @@
 # Import and initialize the librarys #
 ######################################
 from pygame_objects import *
+from algorithm.bubblesort import bubblesort
 
 
 sort_screen = screen(
@@ -113,6 +114,8 @@ class sort:
     def run(screen):
         # Display home screen
         sort_screen.surface.display()
+
+        bubblesort.run()
 
         while True:
             # Get check for interaction with screen
