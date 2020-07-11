@@ -112,7 +112,7 @@ sort_screen = screen(
                 'image': coord(x=52, y=145, w=922, h=430)
             },
             'data': sortbars(
-                bars=40,
+                bars=100,
             ),
             'dataAddSelf': True,
         }
@@ -123,11 +123,23 @@ sort_screen = screen(
 class sort:
 
     def bubblesort():
-        
+        while True:
+            array = sort_screen.objects.sortbox.data
+
+            didSwap = False
+            for index in range(array.bars-1):
+                if array.barslist[index+1].number < array.barslist[index].number:
+                    array.swap(index, index+1)
+                    didSwap = True
+            
+            if not didSwap: break
+
 
     def run(screen):
         # Display home screen
         sort_screen.surface.display()
+
+        sort.bubblesort()
 
         while True:
             # sort_screen.objects.sortbox.data.move(39, 0)
@@ -146,3 +158,6 @@ class sort:
 
             # Load back screen
             if action_result.contains('outcome', '__back__'): sort_screen.surface.display(withLoad=False)
+
+            if action_result.contains('outcome', 'info'):
+                sort_screen.objects.sortbox.data.swap(0, 10)

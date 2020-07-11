@@ -31,6 +31,12 @@ class coord:
 
     def coord(self, surfaceCoord:tuple = (0, 0)) -> tuple: return (self.x + surfaceCoord[0], self.y + surfaceCoord[1])
     
+    def rect(self): return (self.x, self.y, self.w, self.h)
+
+    def move(self, x, y):
+        self.x += x
+        self.y += y
+
     def mouseIn(self, surfaceCoord:tuple = (0, 0)) -> bool:
         # Get current mouse position
         mousePos = pygame.mouse.get_pos()
@@ -313,29 +319,75 @@ class text(coreFunc):
 class sortbars(coreFunc):
     def __init__(self, bars:int):
         self.bars = bars
-        self.calBarInfo()
+
+    def __setattr__(self, name, value):
+        if name == 'bars': 
+            self.__dict__[name] = value
+            self.calBarInfo()
+        else: self.__dict__[name] = value
 
     def calBarInfo(self):
         # max height: 400
         # start x: 100
         # max width: 836
         # Base y: 575
-        self.barslist = random.sample(list(range(1, self.bars+1)), self.bars)
+        self.spacing = int(100 / self.bars)
+        self.corner = int(200 / self.bars)
 
-        self.spacing = 100 // self.bars
-        self.corner = 200 // self.bars
+        self.height = int(400 / self.bars)
+        self.width = int((836 - self.spacing*self.bars) / self.bars)
 
-        self.height = 400 // self.bars
-        self.width = (836 - self.spacing*self.bars) // self.bars
-
-        self.start_x = 100 + (836 % self.bars) // 2
+        self.start_x = int(100 + (836 % self.bars) / 2)
         self.base_y = 575
 
+        # Generate random list of sort
+        barsnumbers = random.sample(list(range(1, self.bars+1)), self.bars)
+
+        # Generate barslist 
+        barslist = []
+        for index,bar in enumerate(barsnumbers):
+            barslist.append(barData(number=bar, frame=self.calBarCoord(index, bar), colour=pg_ess.colour.white))
+        
+        # Store
+        self.barslist = barslist
+
+    def calBarCoord(self, index:int, bar:int) -> coord:
+        return coord(
+                    True, 
+                    self.start_x+self.spacing//2+(self.width+self.spacing)*index, 
+                    self.base_y-self.height*bar, self.width, self.height*bar
+                )
+
     def swap(self, bar_1:int, bar_2:int):
+        # Ensure bar 2 is on the left of bar 1
         bar_1 = min(bar_1, bar_2)
         bar_2 = max(bar_1, bar_2)
 
+        # get the x postion
+        bar_1_x = self.barslist[bar_1].frame.x
+        bar_2_x = self.barslist[bar_2].frame.x
+
+        # Change colour
+        self.barslist[bar_1].colour = (136, 250, 78)
+        self.barslist[bar_2].colour = (255, 100, 78)
+
+        # Animate frame
+        length = (bar_2_x - bar_1_x)//2
+        for i in range(length):
+            self.barslist[bar_1].frame.move(2, 0)
+            self.barslist[bar_2].frame.move(-2, 0)
+
+            self.item.display()
+            pg_ess.core.buffer()
+
         self.barslist[bar_1], self.barslist[bar_2] = self.barslist[bar_2], self.barslist[bar_1]
+
+        self.barslist[bar_1].frame = self.calBarCoord(bar_1, self.barslist[bar_1].number)
+        self.barslist[bar_2].frame = self.calBarCoord(bar_2, self.barslist[bar_2].number)
+
+        # Change back
+        self.barslist[bar_1].colour = pg_ess.colour.white
+        self.barslist[bar_2].colour = pg_ess.colour.white
 
         self.item.display()
 
@@ -345,17 +397,9 @@ class sortbars(coreFunc):
 
         self.item.display()
 
-    def renderBars(self, frame:objectFrame):
-        # Generate surface for text
-        bar_surface = pygame.surface.Surface(frame.text.size())
-
-        pass
-
     def load(self, Surface, frame:objectFrame, state:str):
         for index,bar in enumerate(self.barslist):
-            pygame.draw.rect(surface=Surface, color=pg_ess.colour.white, 
-            rect=(self.start_x+self.spacing//2+(self.width+self.spacing)*index, self.base_y-self.height*bar, self.width, self.height*bar), 
-            border_top_left_radius=self.corner, border_top_right_radius=self.corner)
+            pygame.draw.rect(surface=Surface, color=bar.colour, rect=bar.frame.rect(), border_top_left_radius=self.corner, border_top_right_radius=self.corner)
 
     def display(self, screen, frame:objectFrame, state:str, directToScreen:bool = False):
         self.load(screen.surface.Surface, frame, state)
@@ -363,6 +407,7 @@ class sortbars(coreFunc):
 
 
 class barData(coreFunc):
-    def __init__(self, frame:coord, colour:tuple = pg_ess.colour.white):
+    def __init__(self, number:int, frame:coord, colour:tuple = pg_ess.colour.white):
+        self.number = number
         self.frame = frame
         self.colour = colour
