@@ -76,47 +76,37 @@ class event(coreFunc):
         return result
 
     def action(self, directToScreen:bool = False):
-        for index,name in enumerate(list(self.__screen__.objects.__dict__.keys())[1:]):
+        onItem = None
+        # Loop through items in opposite order
+        for index,name in enumerate(list(self.__screen__.objects.__dict__.keys())[:0:-1]):
             # Get item
             item = self.__screen__.objects[name]
-            # Check if has a runclass and mouse in hovering over it
-            while item.hasRunclass() and item.frame.box.mouseIn(self.__screen__.surface.frame.coord()):
-                # Load hover state
-                item.switchState('Hover', directToScreen) 
-                
-                # Check for clicks
-                event_result = self.Event([
-                    eventRun(action='click', event=self.click, parameters=[item, directToScreen]),
-                    eventRun(action='keyboard', event=self.keyboard),
-                    eventRun(action='scroll', event=self.scroll),
-                    eventRun(action='quit', event=self.quit)
-                    ])
-                if event_result.didAction(): 
-                    # Change back to normal state
-                    item.switchState('', directToScreen) 
-                    return event_result
+            # Check if has a runclass
+            if item.hasRunclass():
+                # Check of mouse in hovering over it
+                if item.frame.box.mouseIn(self.__screen__.surface.frame.coord()):
+                    # Load hover state
+                    item.switchState('Hover', directToScreen) 
+                    onItem = item
+                    break
+                # Change back to normal state
+                else: item.switchState('', directToScreen)
 
-                # Check if mouse pos on more important layers
-                priority = False
-                for priority_name in list(self.__screen__.objects.__dict__.keys())[index+2:]:
-                    priority_item = self.__screen__.objects[priority_name]
-                    if priority_item.hasRunclass() and priority_item.frame.box.mouseIn(self.__screen__.surface.frame.coord()):
-                        priority = True
-                        break
-                if priority: break
-
-            # Change back to normal state
-            item.switchState('', directToScreen) 
-
-        # Run event
+        # Run events
         event_result = self.Event([
-                eventRun(action='keyboard', event=self.keyboard),
-                eventRun(action='scroll', event=self.scroll),
-                eventRun(action='quit', event=self.quit)
-                ])
+            eventRun(action='click', event=self.click, parameters=[onItem, directToScreen]),
+            eventRun(action='keyboard', event=self.keyboard),
+            eventRun(action='scroll', event=self.scroll),
+            eventRun(action='quit', event=self.quit)
+        ])
+        # Output event's result if any
         if event_result.didAction(): return event_result
 
     def click(self, event, item, directToScreen:bool = False):
+        # Check if item is valid
+        if item == None: return None
+
+        # Check if mouse is clicked
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             # Set state to clicked
             click_result = actionResult(name=item.name, type=item.type, outcome='clicked')
