@@ -283,7 +283,7 @@ class text(coreFunc):
 
     def renderText(self, frame:objectFrame, state:str):
         # Generate surface for text
-        text_surface = pygame.surface.Surface(frame.text.size())
+        text_surface = pygame.surface.Surface(frame.text.size(), pygame.SRCALPHA)
         # Get text with prefix and suffix
         text = self.getText(state)
         

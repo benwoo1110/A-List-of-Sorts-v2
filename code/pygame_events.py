@@ -100,7 +100,11 @@ class event(coreFunc):
             eventRun(action='quit', event=self.quit)
         ])
         # Output event's result if any
-        if event_result.didAction(): return event_result
+        if event_result.didAction(): 
+            # Change back to orginal state
+            if onItem != None: item.switchState('', directToScreen)
+            # Output result
+            return event_result
 
     def click(self, event, item, directToScreen:bool = False):
         # Check if item is valid
