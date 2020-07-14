@@ -123,12 +123,13 @@ sort_screen = screen(
 class sort:
 
     def bubblesort(speed:int):
+        count = 1
         while True:
             array = sort_screen.objects.sortbox.data
 
             # Compare each pair
             didSwap = False
-            for index in range(array.bars-1):
+            for index in range(array.bars - count):
                 array.barslist[index].state('selected')
                 array.barslist[index+1].state('selected')
                 sort_screen.objects.sortbox.display()
@@ -144,14 +145,15 @@ class sort:
 
                 select_time = time.time()
                 while time.time() - select_time < speed/2: action_result = sort_screen.event.action()
+
+            count += 1
             
             array.barslist[index+1].state()
 
             # If all pairs are sorted
             if not didSwap: break
 
-        sort_screen.objects.sortbox.display()
-        
+        sort_screen.objects.sortbox.data.completed()
 
 
     def run(screen, sortType:str, bars:int, speed:float):

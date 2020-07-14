@@ -418,7 +418,23 @@ class sortbars(coreFunc):
         self.item.display()
 
     def completed(self):
-        pass
+        # Going up
+        for index in range(len(self.barslist)):
+            self.barslist[index].colour = (0, 255, 0)
+
+            self.item.display()
+            pg_ess.core.buffer()
+            select_time = time.time()
+            while time.time() - select_time < 1/self.bars: pg_ess.core.buffer()
+
+        # Going down
+        for index in range(len(self.barslist)-1, -1, -1):
+            self.barslist[index].colour = pg_ess.colour.white
+
+            self.item.display()
+            pg_ess.core.buffer()
+            select_time = time.time()
+            while time.time() - select_time < 1/self.bars: pg_ess.core.buffer()
 
     def load(self, Surface, frame:objectFrame, state:str):
         for index,bar in enumerate(self.barslist):
