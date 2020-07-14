@@ -112,7 +112,7 @@ sort_screen = screen(
                 'image': coord(x=52, y=145, w=922, h=430)
             },
             'data': sortbars(
-                bars=100,
+                bars=10,
             ),
             'dataAddSelf': True,
         }
@@ -122,24 +122,46 @@ sort_screen = screen(
 
 class sort:
 
-    def bubblesort():
+    def bubblesort(speed:int):
         while True:
             array = sort_screen.objects.sortbox.data
 
+            # Compare each pair
             didSwap = False
             for index in range(array.bars-1):
+                array.barslist[index].state('selected')
+                array.barslist[index+1].state('selected')
+                sort_screen.objects.sortbox.display()
+
+                select_time = time.time()
+                while time.time() - select_time < speed/2: action_result = sort_screen.event.action()
+
                 if array.barslist[index+1].number < array.barslist[index].number:
-                    array.swap(index, index+1)
+                    array.swap(index, index+1, speed)
                     didSwap = True
+
+                array.barslist[index].state()
+
+                select_time = time.time()
+                while time.time() - select_time < speed/2: action_result = sort_screen.event.action()
             
+            array.barslist[index+1].state()
+
+            # If all pairs are sorted
             if not didSwap: break
 
+        sort_screen.objects.sortbox.display()
+        
 
-    def run(screen):
+
+    def run(screen, sortType:str, bars:int, speed:float):
+        # Set data from parent
+        sort_screen.objects.sortbox.data.bars = int(bars)
+
         # Display home screen
         sort_screen.surface.display()
 
-        sort.bubblesort()
+        sort.bubblesort(speed)
 
         while True:
             # sort_screen.objects.sortbox.data.move(39, 0)
@@ -158,6 +180,3 @@ class sort:
 
             # Load back screen
             if action_result.contains('outcome', '__back__'): sort_screen.surface.display(withLoad=False)
-
-            if action_result.contains('outcome', 'info'):
-                sort_screen.objects.sortbox.data.swap(0, 10)

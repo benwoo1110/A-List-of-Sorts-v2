@@ -73,7 +73,7 @@ home_screen = screen(
                 'text': coord(x=296, y=490, w=654, h=53)
             },
             'data': text(
-                text = '10.0',
+                text = '1.0',
                 suffix = ' swaps per sec',
                 format = textFormat(
                     fontType=pg_ess.font.futura,
@@ -95,7 +95,7 @@ home_screen = screen(
                 'text': coord(x=428, y=585, w=522, h=53)
             },
             'data': text(
-                text = '100',
+                text = '10',
                 suffix = ' bars',
                 format = textFormat(
                     fontType=pg_ess.font.futura,
@@ -115,7 +115,11 @@ home_screen = screen(
                 'box': coord(x=781, y=671, w=194, h=70), 
                 'image': coord(x=781, y=671, w=194, h=70)
             },
-            'runclass': runclass(action=sort.run)
+            'runclass': runclass(
+                action=sort.run,
+                parameters={'sortType': 'Bubble sort', 'bars': 10, 'speed': 1}
+                )
+            
         }
     }
 )
@@ -150,10 +154,8 @@ class home:
 
             # No action
             if action_result == None: continue
-
             # When program is set to close
             if action_result.contains('outcome','__quit__'): return '__quit__'
-
             # Load back screen
             if action_result.contains('outcome', '__back__'): home_screen.surface.display(withLoad=False)
 
@@ -161,6 +163,18 @@ class home:
             if action_result.didAction('click'): 
                 # The sort type is changed               
                 if action_result.click.isItem('type'): home.setInfoText()
+
+                # When speed is changed
+                if action_result.click.isItem('speed'): 
+                    home_screen.objects.run.runclass.parameters['speed'] = 1 / float(home_screen.objects.speed.data.text)
+
+                # When bar numbers is changed 
+                if action_result.click.isItem('list_length'): 
+                    home_screen.objects.run.runclass.parameters['bars'] = int(home_screen.objects.list_length.data.text)
+                
+
+                
+
 
     def setInfoText():
         # Set info to the corresponding sort type

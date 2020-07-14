@@ -7,7 +7,15 @@ import textwrap
 import inspect
 import random
 import math
+import time
 from pygame_events import *
+
+
+####################
+# Global variables #
+####################
+time_per_frame = 1 / config.ticks
+
 
 
 class objectFrame(coreFunc):
@@ -317,6 +325,7 @@ class text(coreFunc):
 
 
 class sortbars(coreFunc):
+
     def __init__(self, bars:int):
         self.bars = bars
 
@@ -358,7 +367,7 @@ class sortbars(coreFunc):
                     self.base_y-self.height*bar, self.width, self.height*bar
                 )
 
-    def swap(self, bar_1:int, bar_2:int):
+    def swap(self, bar_1:int, bar_2:int, speed:float):
         # Ensure bar 2 is on the left of bar 1
         bar_1 = min(bar_1, bar_2)
         bar_2 = max(bar_1, bar_2)
@@ -371,17 +380,28 @@ class sortbars(coreFunc):
         self.barslist[bar_1].colour = (136, 250, 78)
         self.barslist[bar_2].colour = (255, 100, 78)
 
+        # Calculate animation speed
+        length_apart = abs(bar_2_x - bar_1_x)
+        number_of_frames = config.ticks * speed
+        move_per_frame = length_apart / number_of_frames
+        
         # Animate frame
-        length = (bar_2_x - bar_1_x)//2
-        for i in range(length):
-            self.barslist[bar_1].frame.move(2, 0)
-            self.barslist[bar_2].frame.move(-2, 0)
+        to_move = 0
+        length_moved = 0
+        while length_moved < length_apart:
+            to_move += move_per_frame
+
+            self.barslist[bar_1].frame.move(to_move//1, 0)
+            self.barslist[bar_2].frame.move(0 - to_move//1, 0)
+
+            length_moved += to_move//1
+            to_move -= to_move//1
 
             self.item.display()
             pg_ess.core.buffer()
 
+        # Swap bar position
         self.barslist[bar_1], self.barslist[bar_2] = self.barslist[bar_2], self.barslist[bar_1]
-
         self.barslist[bar_1].frame = self.calBarCoord(bar_1, self.barslist[bar_1].number)
         self.barslist[bar_2].frame = self.calBarCoord(bar_2, self.barslist[bar_2].number)
 
@@ -397,6 +417,9 @@ class sortbars(coreFunc):
 
         self.item.display()
 
+    def completed(self):
+        pass
+
     def load(self, Surface, frame:objectFrame, state:str):
         for index,bar in enumerate(self.barslist):
             pygame.draw.rect(surface=Surface, color=bar.colour, rect=bar.frame.rect(), border_top_left_radius=self.corner, border_top_right_radius=self.corner)
@@ -411,3 +434,7 @@ class barData(coreFunc):
         self.number = number
         self.frame = frame
         self.colour = colour
+
+    def state(self, withState:str = ''):
+        if withState == 'selected': self.colour = (150, 150, 150)
+        else: self.colour = pg_ess.colour.white
