@@ -171,21 +171,9 @@ class home:
                 # When bar numbers is changed 
                 if action_result.click.isItem('list_length'): 
                     home_screen.objects.run.runclass.parameters['bars'] = int(home_screen.objects.list_length.data.text)
-                
-
-                
-
 
     def setInfoText():
         # Set info to the corresponding sort type
         sort_type = home_screen.objects.type.data.text
         if sort_type in info_text.keys():
             home_screen.objects.info.data.setText(info_text[sort_type])
-
-
-#############
-# Main loop #
-#############
-if __name__ == "__main__":
-    home.run()
-    pg_ess.core.quit()

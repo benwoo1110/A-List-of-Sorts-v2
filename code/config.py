@@ -1,8 +1,3 @@
-# This file is part of Cryptography GUI, licensed under the MIT License.
-# Copyright (c) 2020 Benedict Woo Jun Kai
-# See LICENSE.md for more details.
-
-
 ######################################
 # Import and initialize the librarys #
 ######################################

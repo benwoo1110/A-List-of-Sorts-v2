@@ -75,7 +75,7 @@ class event(coreFunc):
         
         return result
 
-    def action(self, directToScreen:bool = False):
+    def action(self, actions:list = [],  directToScreen:bool = False):
         onItem = None
         # Loop through items in opposite order
         for index,name in enumerate(list(self.__screen__.objects.__dict__.keys())[:0:-1]):

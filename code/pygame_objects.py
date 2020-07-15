@@ -17,7 +17,6 @@ from pygame_events import *
 time_per_frame = 1 / config.ticks
 
 
-
 class objectFrame(coreFunc):
     def __init__(self, coords):
         self.__dict__.update(**coords)
@@ -42,8 +41,11 @@ class coord:
     def rect(self): return (self.x, self.y, self.w, self.h)
 
     def move(self, x, y):
+        og_scale = self.scale
+        self.scale = False
         self.x += x
         self.y += y
+        self.scale = og_scale
 
     def mouseIn(self, surfaceCoord:tuple = (0, 0)) -> bool:
         # Get current mouse position
@@ -248,19 +250,6 @@ class images(coreFunc):
         return glob.glob(image_dir)
 
 
-class textFormat(coreFunc):
-    def __init__(self, fontType:str = None, fontSize:int = 36, colour:tuple = pg_ess.colour.white, 
-    warpText:int = None, align:str = 'left', lineSpacing:int = 1):
-        self.fontType = fontType
-        self.fontSize = int(fontSize * config.scale_w())
-        self.colour = colour
-        self.warpText = warpText
-        self.align = align
-        self.lineSpacing = lineSpacing
-        
-        self.font = pygame.font.Font(self.fontType, self.fontSize)
-
-
 class text(coreFunc):
     def __init__(self, text:str = '', prefix:str = '', suffix:str = '', 
     format:textFormat = textFormat(), editable:bool = True):
@@ -324,6 +313,19 @@ class text(coreFunc):
             screen.surface.display(withLoad=False)
 
 
+class textFormat(coreFunc):
+    def __init__(self, fontType:str = None, fontSize:int = 36, colour:tuple = pg_ess.colour.white, 
+    warpText:int = None, align:str = 'left', lineSpacing:int = 1):
+        self.fontType = fontType
+        self.fontSize = int(fontSize * config.scale_w())
+        self.colour = colour
+        self.warpText = warpText
+        self.align = align
+        self.lineSpacing = lineSpacing
+        
+        self.font = pygame.font.Font(self.fontType, self.fontSize)
+
+
 class sortbars(coreFunc):
 
     def __init__(self, bars:int):
@@ -372,16 +374,12 @@ class sortbars(coreFunc):
         bar_1 = min(bar_1, bar_2)
         bar_2 = max(bar_1, bar_2)
 
-        # get the x postion
-        bar_1_x = self.barslist[bar_1].frame.x
-        bar_2_x = self.barslist[bar_2].frame.x
-
         # Change colour
         self.barslist[bar_1].colour = (136, 250, 78)
         self.barslist[bar_2].colour = (255, 100, 78)
 
         # Calculate animation speed
-        length_apart = abs(bar_2_x - bar_1_x)
+        length_apart = self.barslist[bar_2].frame.x - self.barslist[bar_1].frame.x
         number_of_frames = config.ticks * speed
         move_per_frame = length_apart / number_of_frames
         
