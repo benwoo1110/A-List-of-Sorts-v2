@@ -250,6 +250,19 @@ class images(coreFunc):
         return glob.glob(image_dir)
 
 
+class textFormat(coreFunc):
+    def __init__(self, fontType:str = None, fontSize:int = 36, colour:tuple = pg_ess.colour.white, 
+    warpText:int = None, align:str = 'left', lineSpacing:int = 1):
+        self.fontType = fontType
+        self.fontSize = int(fontSize * config.scale_w())
+        self.colour = colour
+        self.warpText = warpText
+        self.align = align
+        self.lineSpacing = lineSpacing
+        
+        self.font = pygame.font.Font(self.fontType, self.fontSize)
+
+
 class text(coreFunc):
     def __init__(self, text:str = '', prefix:str = '', suffix:str = '', 
     format:textFormat = textFormat(), editable:bool = True):
@@ -311,19 +324,6 @@ class text(coreFunc):
         else:
             self.load(screen.surface.Surface, frame, state)
             screen.surface.display(withLoad=False)
-
-
-class textFormat(coreFunc):
-    def __init__(self, fontType:str = None, fontSize:int = 36, colour:tuple = pg_ess.colour.white, 
-    warpText:int = None, align:str = 'left', lineSpacing:int = 1):
-        self.fontType = fontType
-        self.fontSize = int(fontSize * config.scale_w())
-        self.colour = colour
-        self.warpText = warpText
-        self.align = align
-        self.lineSpacing = lineSpacing
-        
-        self.font = pygame.font.Font(self.fontType, self.fontSize)
 
 
 class sortbars(coreFunc):
