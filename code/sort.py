@@ -43,7 +43,7 @@ sort_screen = screen(
             'data': text(
                 text = '10',
                 editable = False,
-                suffix = ' swaps per sec',
+                suffix = ' sec per move',
                 format = textFormat(
                     fontType=pg_ess.font.futura,
                     fontSize=28,
@@ -122,9 +122,14 @@ sort_screen = screen(
 
 class sort:
 
+    def updateTime():
+        pass
+
     def run(screen, sortType:str, bars:int, speed:float):
         # Set data from parent
         sort_screen.objects.sortbox.data.bars = int(bars)
+        sort_screen.objects.speed.data.text = str(speed)
+        sort_screen.objects.list_length.data.text = str(bars)
 
         # Display home screen
         sort_screen.surface.display()

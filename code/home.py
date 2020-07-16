@@ -74,7 +74,7 @@ home_screen = screen(
             },
             'data': text(
                 text = '1.0',
-                suffix = ' swaps per sec',
+                suffix = ' sec per move',
                 format = textFormat(
                     fontType=pg_ess.font.futura,
                     fontSize=38,
@@ -166,7 +166,7 @@ class home:
 
                 # When speed is changed
                 if action_result.click.isItem('speed'): 
-                    home_screen.objects.run.runclass.parameters['speed'] = 1 / float(home_screen.objects.speed.data.text)
+                    home_screen.objects.run.runclass.parameters['speed'] = float(home_screen.objects.speed.data.text)
 
                 # When bar numbers is changed 
                 if action_result.click.isItem('list_length'): 
