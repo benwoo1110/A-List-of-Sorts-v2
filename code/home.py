@@ -177,3 +177,6 @@ class home:
         sort_type = home_screen.objects.type.data.text
         if sort_type in info_text.keys():
             home_screen.objects.info.data.setText(info_text[sort_type])
+
+        # Set as run parameter
+        home_screen.objects.run.runclass.parameters['sortType'] = sort_type

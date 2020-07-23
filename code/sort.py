@@ -119,6 +119,16 @@ sort_screen = screen(
 )
 
 
+runSort = {
+    'Bubble sort': bubblesort.run,
+    'Insertion sort': insertionsort.run,
+    'Merge sort': insertionsort.run,
+    'Quick sort': insertionsort.run,
+    'Radix sort': insertionsort.run,
+    'Bogo sort': selectionsort.run
+}
+
+
 class sort:
 
     def run(screen, sortType:str, bars:int, speed:float):
@@ -130,12 +140,9 @@ class sort:
         # Display home screen
         sort_screen.surface.display()
 
-        # bubblesort.run(sort_screen, speed)
-        selectionsort.run(sort_screen, speed)
+        runSort[sortType](sort_screen, speed)
 
         while True:
-            # sort_screen.objects.sortbox.data.move(39, 0)
-
             # Get check for interaction with screen
             action_result = sort_screen.event.action()
 
