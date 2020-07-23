@@ -134,7 +134,7 @@ class sort:
         # Display home screen
         sort_screen.surface.display()
 
-        bubblesort.run(sort_screen, speed)
+        # bubblesort.run(sort_screen, speed)
 
         while True:
             # sort_screen.objects.sortbox.data.move(39, 0)
@@ -153,3 +153,5 @@ class sort:
 
             # Load back screen
             if action_result.contains('outcome', '__back__'): sort_screen.surface.display(withLoad=False)
+
+            if action_result.contains('name', 'info'): sort_screen.objects.sortbox.data.move(1, 4, speed)

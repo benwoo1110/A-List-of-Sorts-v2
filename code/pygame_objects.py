@@ -381,11 +381,12 @@ class sortbars(coreFunc):
         # Calculate animation speed
         length_apart = self.barslist[bar_2].frame.x - self.barslist[bar_1].frame.x
         number_of_frames = config.ticks * speed
+        if number_of_frames < 1: number_of_frames = 1
+
         move_per_frame = length_apart / number_of_frames
         
         # Animate frame
-        to_move = 0
-        length_moved = 0
+        to_move, length_moved = 0, 0
         while length_moved < length_apart:
             to_move += move_per_frame
 
@@ -409,9 +410,47 @@ class sortbars(coreFunc):
 
         self.item.display()
 
-    def move(self, orginal_pos:int, new_pos:int):
+    def move(self, orginal_pos:int, new_pos:int, speed:float):
+        # Set colour for bar that is moving
+        self.barslist[orginal_pos].colour = (136, 250, 78)
+
+        # Calculate animation speed
+        length_apart = self.barslist[new_pos].frame.x - self.barslist[orginal_pos].frame.x
+        number_of_frames = config.ticks * speed
+        if number_of_frames < 1: number_of_frames = 1
+
+        move_per_frame = length_apart / number_of_frames
+        move_other_per_frame = (self.spacing + self.width) / number_of_frames
+        if length_apart > 0: move_other_per_frame = -move_other_per_frame
+
+        # Animate moving
+        to_move, length_moved = 0, 0
+        while length_moved < abs(length_apart):
+            # move the orginal_pos bar
+            to_move += move_per_frame
+
+            self.barslist[orginal_pos].frame.move(to_move//1, 0)
+
+            length_moved += abs(to_move//1)
+            to_move -= to_move//1
+
+            # Move the other bars inbetween
+            for i in range(min(orginal_pos, new_pos), max(orginal_pos, new_pos)+1):
+                if i != orginal_pos: self.barslist[i].frame.move(move_other_per_frame, 0)
+
+            self.item.display()
+            pg_ess.core.buffer()
+
+        # Change back colour
+        self.barslist[orginal_pos].colour = pg_ess.colour.white
+
+        # Move the position of the bar in list
         value = self.barslist.pop(orginal_pos)
         self.barslist.insert(new_pos, value)
+
+        # Re-calculate coordinates
+        for i in range(min(orginal_pos, new_pos), max(orginal_pos, new_pos)+1):
+            self.barslist[i].frame = self.calBarCoord(i, self.barslist[i].number)
 
         self.item.display()
 
@@ -436,7 +475,10 @@ class sortbars(coreFunc):
 
     def load(self, Surface, frame:objectFrame, state:str):
         for index,bar in enumerate(self.barslist):
-            pygame.draw.rect(surface=Surface, color=bar.colour, rect=bar.frame.rect(), border_top_left_radius=self.corner, border_top_right_radius=self.corner)
+            pygame.draw.rect(
+                surface=Surface, color=bar.colour, rect=bar.frame.rect(), 
+                border_top_left_radius=self.corner, border_top_right_radius=self.corner
+                )
 
     def display(self, screen, frame:objectFrame, state:str, directToScreen:bool = False):
         self.load(screen.surface.Surface, frame, state)
