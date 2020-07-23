@@ -100,10 +100,12 @@ class event(coreFunc):
         # Run events
         event_result = self.Event([
             eventRun(action='click', event=self.click, parameters=[onItem, directToScreen]),
-            eventRun(action='keyboard', event=self.keyboard),
+            eventRun(action='keydown', event=self.keydown),
+            eventRun(action='keyup', event=self.keyup),
             eventRun(action='scroll', event=self.scroll),
             eventRun(action='quit', event=self.quit)
         ])
+        
         # Output event's result if any
         if event_result.didAction(): 
             # Change back to orginal state
@@ -127,20 +129,36 @@ class event(coreFunc):
             # Output result
             return click_result
 
-    def keyboard(self, event):
+    def keydown(self, event):
         keyboard_result = None
-
         # When key is pressed
         if event.type == pygame.KEYDOWN:
             keyboard_result = actionResult(name=event.key, type='down', outcome='pressed')
             keypressed.append(event)
 
+        # When there was an action
+        if keyboard_result != None:
+            # Check if key that was pressed have action to run
+            for name in list(self.__screen__.keyboardActions.__dict__.keys())[1:]:
+                key = self.__screen__.keyboardActions[name]
+
+                # On match key state and match key
+                if key.onKey == keyboard_result.type and event.key in key.keys:
+                    # Set name of result
+                    keyboard_result.name = key.name
+                    # Get the outcome of running
+                    keyboard_result.getOutcome(key)     
+            
+            return keyboard_result
+
+    def keyup(self, event):
+        keyboard_result = None
         # When key is released
-        elif event.type == pygame.KEYUP:
+        if event.type == pygame.KEYUP:
             keyboard_result = actionResult(name=event.key, type='up', outcome='released')
             for index, pressed in enumerate(keypressed):
                 if pressed.key == event.key: keypressed.pop(index)
-
+        
         # When there was an action
         if keyboard_result != None:
             # Check if key that was pressed have action to run

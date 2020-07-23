@@ -28,6 +28,8 @@ class textfield:
         textfield_item = screen.objects[itemName]
         textfield_item.load()
 
+        time_pressed, repeat_interval = 0, 1.2
+
         while True:
 
             pressed_key = None
@@ -63,6 +65,6 @@ class textfield:
             # Going back
             if action_result.contains('outcome', 'go_back'): return '__back__' 
 
-            if action_result.didAction('keyboard'):
-                # Reset repeat timing
-                if action_result.keyboard.name in chars_allowed: time_pressed, repeat_interval = 0, 1.2
+            # Reset repeat timing on key release
+            if action_result.didAction('keyup'):
+                time_pressed, repeat_interval = 0, 1.2

@@ -421,7 +421,8 @@ class sortbars(coreFunc):
         self.barslist[bar_1].colour = pg_ess.colour.white
         self.barslist[bar_2].colour = pg_ess.colour.white
 
-        self.item.display()
+        self.item.load()
+        self.item.__screen__.objects.time_taken.data.updateTimer()
 
     def move(self, orginal_pos:int, new_pos:int, speed:float):
         # Set colour for bar that is moving
@@ -466,7 +467,8 @@ class sortbars(coreFunc):
             self.barslist[i].colour = pg_ess.colour.white
             self.barslist[i].frame = self.calBarCoord(i, self.barslist[i].number)
 
-        self.item.display()
+        self.item.load()
+        self.item.__screen__.objects.time_taken.data.updateTimer()
 
     def completed(self):
         # Going up
