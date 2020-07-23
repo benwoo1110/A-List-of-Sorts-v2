@@ -77,10 +77,7 @@ sort_screen = screen(
                 'image': coord(x=768, y=630, w=177, h=40),
                 'text': coord(x=768, y=630, w=177, h=40)
             },
-            'data': text(
-                text = '104.20',
-                editable = False,
-                suffix = ' sec',
+            'data': timer(
                 format = textFormat(
                     fontType=pg_ess.font.futura,
                     fontSize=28,
@@ -124,9 +121,6 @@ sort_screen = screen(
 
 class sort:
 
-    def updateTime():
-        pass
-
     def run(screen, sortType:str, bars:int, speed:float):
         # Set data from parent
         sort_screen.objects.sortbox.data.bars = int(bars)
@@ -156,5 +150,3 @@ class sort:
 
             # Load back screen
             if action_result.contains('outcome', '__back__'): sort_screen.surface.display(withLoad=False)
-
-            if action_result.contains('name', 'info'): sort_screen.objects.sortbox.data.move(1, 4, speed)

@@ -92,6 +92,11 @@ class event(coreFunc):
                 # Change back to normal state
                 else: item.switchState('', directToScreen)
 
+        # Run actions
+        for actionMethod in actions:
+            if hasattr(self.__screen__.actions, actionMethod):
+                self.__screen__.actions[actionMethod]()
+
         # Run events
         event_result = self.Event([
             eventRun(action='click', event=self.click, parameters=[onItem, directToScreen]),

@@ -59,11 +59,12 @@ class coord:
 
 
 class screen(coreFunc):
-    def __init__(self, name: str, surfaceParameters:dict = {}, objectsParameters:dict = {}, keyboardParameters:dict = {}):
+    def __init__(self, name: str, surfaceParameters:dict = {}, objectsParameters:dict = {}, keyboardParameters:dict = {}, actionParameters:dict = {}):
         self.name = name
         self.surface = surface(self, **surfaceParameters)
         self.objects = objects(self, objectsParameters)
         self.keyboardActions = keyboardActions(self, keyboardParameters)
+        self.actions = actions(self, actionParameters)
         self.event = event(self)
 
 
@@ -97,6 +98,17 @@ class surface(coreFunc):
         # Output to screen
         window.blit(self.Surface, self.frame.coord())
         pg_ess.core.update()
+
+
+class actions(coreFunc):
+    def __init__(self, screen:screen, actionsMethods:dict = {}):
+        self.__screen__ = screen
+        # Add keyboard actions
+        for name,action_method in actionsMethods.items():
+            self.add(name, action_method)
+
+    def add(self, name, data):
+        self.__dict__[name] = data
 
 
 class keyboardActions(coreFunc):
@@ -396,7 +408,8 @@ class sortbars(coreFunc):
             length_moved += to_move//1
             to_move -= to_move//1
 
-            self.item.display()
+            self.item.load()
+            self.item.__screen__.objects.time_taken.data.updateTimer()
             pg_ess.core.buffer()
 
         # Swap bar position
@@ -440,7 +453,8 @@ class sortbars(coreFunc):
             for i in range(min(orginal_pos, new_pos), max(orginal_pos, new_pos)+1):
                 if i != orginal_pos: self.barslist[i].frame.move(move_other_per_frame, 0)
 
-            self.item.display()
+            self.item.load()
+            self.item.__screen__.objects.time_taken.data.updateTimer()
             pg_ess.core.buffer()
 
         # Move the position of the bar in list
@@ -494,3 +508,42 @@ class barData(coreFunc):
     def state(self, withState:str = ''):
         if withState == 'selected': self.colour = pg_ess.colour.selected
         else: self.colour = pg_ess.colour.white
+
+
+class timer(text):
+    def __init__(self, format:textFormat = textFormat()):
+        super().__init__('0.00 sec', '', '', format, False)
+
+        self.resetTimer()
+
+    def startTimer(self, withReset = False):
+        # Start only if timer is stopped
+        if self.state == 'stop':
+            if withReset: self.startTime = None
+            if self.startTime == None: self.startTime = time.time()
+            else: self.startTime += time.time()
+            self.state = 'start'
+        
+        else: print('Timer has alr started.')
+
+    def stopTimer(self):
+        # Stop only if timer has started
+        if self.state == 'start':
+            stopTime = time.time()
+            self.updateTimer()
+            self.startTime = stopTime - self.startTime
+            self.state = 'stop'
+
+        else: print('Timer has alr stopped.')
+
+    def updateTimer(self):
+        # Only update if timer has started
+        if self.state == 'start':
+            self.text = '{:.2f} sec'.format(time.time() - self.startTime)
+            self.item.display()
+
+        else: print('Cant update timer, it is currently stopped.')
+
+    def resetTimer(self):
+        self.startTime = None
+        self.state = 'stop'

@@ -10,6 +10,7 @@ class selectionsort:
 
     def run(sort_screen, speed:int):
         array = sort_screen.objects.sortbox.data
+        sort_screen.objects.time_taken.data.startTimer(withReset=True)
 
         # Loop through all the bar index
         for index in range(array.bars):
@@ -25,7 +26,9 @@ class selectionsort:
                     sort_screen.objects.sortbox.display()
 
                     select_time = time.time()
-                    while time.time() - select_time < speed/2: action_result = sort_screen.event.action()
+                    while time.time() - select_time < speed/2: 
+                        sort_screen.objects.time_taken.data.updateTimer()
+                        sort_screen.event.action()
 
                 else:
                     array.barslist[check].state('selected')
@@ -33,10 +36,13 @@ class selectionsort:
                     sort_screen.objects.sortbox.display()
 
                     select_time = time.time()
-                    while time.time() - select_time < speed/2: action_result = sort_screen.event.action()
-                    
+                    while time.time() - select_time < speed/2: 
+                        sort_screen.objects.time_taken.data.updateTimer()
+                        sort_screen.event.action()
+                                        
                     array.barslist[check].state()
 
             array.move(lowest_index, index, speed)
 
+        sort_screen.objects.time_taken.data.stopTimer()
         array.completed()
