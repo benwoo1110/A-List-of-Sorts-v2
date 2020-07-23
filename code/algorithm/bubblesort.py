@@ -15,6 +15,7 @@ class bubblesort:
         while True:
             # Compare each pair
             didSwap = False
+            index = -1
             for index in range(array.bars - count):
                 array.barslist[index].state('selected')
                 array.barslist[index+1].state('selected')

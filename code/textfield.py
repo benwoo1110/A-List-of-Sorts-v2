@@ -58,13 +58,10 @@ class textfield:
 
             # No action
             if action_result == None: continue
-
             # When program is set to close
             if action_result.contains('outcome','__quit__'): return '__quit__'
-
             # Going back
             if action_result.contains('outcome', 'go_back'): return '__back__' 
 
             # Reset repeat timing on key release
-            if action_result.didAction('keyup'):
-                time_pressed, repeat_interval = 0, 1.2
+            if action_result.didAction('keyup'): time_pressed, repeat_interval = 0, 1.2

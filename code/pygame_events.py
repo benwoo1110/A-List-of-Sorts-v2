@@ -94,8 +94,7 @@ class event(coreFunc):
 
         # Run actions
         for actionMethod in actions:
-            if hasattr(self.__screen__.actions, actionMethod):
-                self.__screen__.actions[actionMethod]()
+            if hasattr(self.__screen__.actions, actionMethod): self.__screen__.actions[actionMethod]()
 
         # Run events
         event_result = self.Event([
@@ -107,11 +106,7 @@ class event(coreFunc):
         ])
         
         # Output event's result if any
-        if event_result.didAction(): 
-            # Change back to orginal state
-            if onItem != None: item.switchState('', directToScreen)
-            # Output result
-            return event_result
+        if event_result.didAction(): return event_result
 
     def click(self, event, item, directToScreen:bool = False):
         # Check if item is valid
@@ -136,21 +131,8 @@ class event(coreFunc):
             keyboard_result = actionResult(name=event.key, type='down', outcome='pressed')
             keypressed.append(event)
 
-        # When there was an action
-        if keyboard_result != None:
-            # Check if key that was pressed have action to run
-            for name in list(self.__screen__.keyboardActions.__dict__.keys())[1:]:
-                key = self.__screen__.keyboardActions[name]
-
-                # On match key state and match key
-                if key.onKey == keyboard_result.type and event.key in key.keys:
-                    # Set name of result
-                    keyboard_result.name = key.name
-                    # Get the outcome of running
-                    keyboard_result.getOutcome(key)     
-            
-            return keyboard_result
-
+        return self.keyEvent(event, keyboard_result)
+        
     def keyup(self, event):
         keyboard_result = None
         # When key is released
@@ -159,6 +141,9 @@ class event(coreFunc):
             for index, pressed in enumerate(keypressed):
                 if pressed.key == event.key: keypressed.pop(index)
         
+        return self.keyEvent(event, keyboard_result)
+
+    def keyEvent(self, event, keyboard_result):
         # When there was an action
         if keyboard_result != None:
             # Check if key that was pressed have action to run
@@ -172,7 +157,7 @@ class event(coreFunc):
                     # Get the outcome of running
                     keyboard_result.getOutcome(key)     
             
-            return keyboard_result
+        return keyboard_result
 
     def scroll(self, event):
         # Get surface
