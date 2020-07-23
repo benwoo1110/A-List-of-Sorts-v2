@@ -2,6 +2,8 @@
 # Import and initialize the librarys #
 ######################################
 import time
+from pygame_objects import *
+
 
 
 class selectionsort:
@@ -18,7 +20,7 @@ class selectionsort:
                 if array.barslist[check].number < array.barslist[lowest_index].number:
                     array.barslist[lowest_index].state()
                     lowest_index = check
-                    array.barslist[check].colour = (136, 250, 78)
+                    array.barslist[check].colour = pg_ess.colour.green
 
                     sort_screen.objects.sortbox.display()
 

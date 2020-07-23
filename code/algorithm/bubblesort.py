@@ -2,6 +2,8 @@
 # Import and initialize the librarys #
 ######################################
 import time
+from pygame_objects import *
+
 
 class bubblesort:
 

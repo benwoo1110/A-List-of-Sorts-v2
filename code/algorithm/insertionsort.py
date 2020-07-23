@@ -2,6 +2,7 @@
 # Import and initialize the librarys #
 ######################################
 import time
+from pygame_objects import *
 
 
 class insertionsort:
@@ -24,7 +25,7 @@ class insertionsort:
             for check in range(index-1, -1, -1):
                 if array.barslist[index].number >= array.barslist[check].number: break
                 else: 
-                    array.barslist[check].colour = (255, 100, 78)
+                    array.barslist[check].colour = pg_ess.colour.red
                     moveTo = check
 
                     sort_screen.objects.sortbox.display()

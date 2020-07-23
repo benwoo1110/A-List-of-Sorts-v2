@@ -375,8 +375,8 @@ class sortbars(coreFunc):
         bar_2 = max(bar_1, bar_2)
 
         # Change colour
-        self.barslist[bar_1].colour = (136, 250, 78)
-        self.barslist[bar_2].colour = (255, 100, 78)
+        self.barslist[bar_1].colour = pg_ess.colour.green
+        self.barslist[bar_2].colour = pg_ess.colour.red
 
         # Calculate animation speed
         length_apart = self.barslist[bar_2].frame.x - self.barslist[bar_1].frame.x
@@ -413,8 +413,8 @@ class sortbars(coreFunc):
     def move(self, orginal_pos:int, new_pos:int, speed:float):
         # Set colour for bar that is moving
         for i in range(min(orginal_pos, new_pos), max(orginal_pos, new_pos)+1):
-             self.barslist[i].colour = (255, 100, 78)
-        self.barslist[orginal_pos].colour = (136, 250, 78)
+             self.barslist[i].colour = pg_ess.colour.red
+        self.barslist[orginal_pos].colour = pg_ess.colour.green
 
         # Calculate animation speed
         length_apart = self.barslist[new_pos].frame.x - self.barslist[orginal_pos].frame.x
@@ -492,5 +492,5 @@ class barData(coreFunc):
         self.colour = colour
 
     def state(self, withState:str = ''):
-        if withState == 'selected': self.colour = (150, 150, 150)
+        if withState == 'selected': self.colour = pg_ess.colour.selected
         else: self.colour = pg_ess.colour.white

@@ -46,7 +46,7 @@ if __name__ == "__main__":
     from home import *
 
     # Run home screen
-    pg_ess.core.setCaption('A List of Sorts v2')
+    pg_ess.core.caption('A List of Sorts v2')
     home.run()
 
     # End program

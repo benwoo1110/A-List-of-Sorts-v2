@@ -1,7 +1,6 @@
 ######################################
 # Import and initialize the librarys #
 ######################################
-import logging
 import pygame
 from config import config
 
@@ -43,33 +42,37 @@ class pg_ess:
         '''Common colour types in RGB tuple form'''
         black = (0, 0, 0)
         white = (255, 255, 255)
-        red = (255, 0, 0)
         gray = (43, 43, 43)
         whiteish = (213, 213, 213)
         orange = (255, 143, 8)
+        selected = (150, 150, 150)
+        red = (255, 100, 78)
+        green = (136, 250, 78)
     
 
     ##################
     # Core functions #
     ##################
     class core:
-        def setCaption(caption:str = 'pygame time!'):
+        @staticmethod
+        def caption(caption:str = 'pygame time!'):
             '''Set window header title'''
             pygame.display.set_caption(caption)
-            logging.debug('window captions set to {}'.format(caption))
-
+        
+        @staticmethod
         def update(tick:int = config.ticks):
             '''Draw display changes to screen'''
             pygame.display.flip()
             pygame.display.update()
             pygame.time.Clock().tick_busy_loop(tick)
-
+        
+        @staticmethod
         def buffer() -> bool:
             '''Loop through pygame events and check of quit and scrolling'''
             for event in pygame.event.get():
                 if event.type == pygame.QUIT: return '__quit__'
 
+        @staticmethod
         def quit():
             '''Exit from program'''
-            logging.info('Exiting program...')
             pygame.quit()
