@@ -4,6 +4,7 @@
 from pygame_objects import *
 from algorithm.bubblesort import bubblesort
 from algorithm.insertionsort import insertionsort
+from algorithm.selectionsort import selectionsort
 
 
 sort_screen = screen(
@@ -136,7 +137,7 @@ class sort:
         sort_screen.surface.display()
 
         # bubblesort.run(sort_screen, speed)
-        insertionsort.run(sort_screen, speed)
+        selectionsort.run(sort_screen, speed)
 
         while True:
             # sort_screen.objects.sortbox.data.move(39, 0)
