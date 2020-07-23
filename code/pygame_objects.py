@@ -152,11 +152,11 @@ class objects(coreFunc):
         if directToScreen:
             # Calculate items to load
             items_to_load = self.getObjects(withItems, excludeItems)
-            for name in items_to_load: self.__dict__[name].display(state, directToScreen)
+            for name in items_to_load: self.__dict__[name].display(withState, directToScreen)
 
         # Load items defined to surface
         else: 
-            self.load(items, withItems, excludeItems, state)
+            self.load(withItems, excludeItems, withState)
             self.__screen__.surface.display(withLoad=False)
 
 
