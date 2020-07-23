@@ -7,9 +7,8 @@ class bubblesort:
 
     def run(sort_screen, speed:int):
         count = 1
+        array = sort_screen.objects.sortbox.data
         while True:
-            array = sort_screen.objects.sortbox.data
-
             # Compare each pair
             didSwap = False
             for index in range(array.bars - count):
@@ -36,5 +35,5 @@ class bubblesort:
             # If all pairs are sorted
             if not didSwap: break
 
-        sort_screen.objects.sortbox.data.completed()
+        array.completed()
         

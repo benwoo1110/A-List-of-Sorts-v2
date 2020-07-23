@@ -412,6 +412,8 @@ class sortbars(coreFunc):
 
     def move(self, orginal_pos:int, new_pos:int, speed:float):
         # Set colour for bar that is moving
+        for i in range(min(orginal_pos, new_pos), max(orginal_pos, new_pos)+1):
+             self.barslist[i].colour = (255, 100, 78)
         self.barslist[orginal_pos].colour = (136, 250, 78)
 
         # Calculate animation speed
@@ -441,15 +443,13 @@ class sortbars(coreFunc):
             self.item.display()
             pg_ess.core.buffer()
 
-        # Change back colour
-        self.barslist[orginal_pos].colour = pg_ess.colour.white
-
         # Move the position of the bar in list
         value = self.barslist.pop(orginal_pos)
         self.barslist.insert(new_pos, value)
 
-        # Re-calculate coordinates
+        # Re-calculate coordinates and change back colour
         for i in range(min(orginal_pos, new_pos), max(orginal_pos, new_pos)+1):
+            self.barslist[i].colour = pg_ess.colour.white
             self.barslist[i].frame = self.calBarCoord(i, self.barslist[i].number)
 
         self.item.display()
