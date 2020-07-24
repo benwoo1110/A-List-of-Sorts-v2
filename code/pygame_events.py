@@ -1,6 +1,7 @@
 ######################################
 # Import and initialize the librarys #
 ######################################
+import traceback
 from pygame_core import *
 
 
@@ -43,12 +44,16 @@ class actionResult(coreFunc):
         self.outcome = outcome
 
     def getOutcome(self, item):
-        # Runclass is just a string
-        if not callable(item.runclass.action): self.outcome = item.runclass.action
-        # Runclass is a method
-        elif item.runclass.includeScreen: self.outcome = item.runclass.action(item.__screen__, **item.runclass.parameters)
-        # Do not add 
-        else: self.outcome = item.runclass.action(**item.runclass.parameters)
+        try:
+            # Runclass is just a string
+            if not callable(item.runclass.action): self.outcome = item.runclass.action
+            # Runclass is a method
+            elif item.runclass.includeScreen: self.outcome = item.runclass.action(item.__screen__, **item.runclass.parameters)
+            # Do not add screen
+            else: self.outcome = item.runclass.action(**item.runclass.parameters)
+        
+        # There is a error
+        except: traceback.print_exc()
 
     def isItem(self, name = None) -> bool: return self.name == name
 

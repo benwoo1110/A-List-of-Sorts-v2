@@ -55,4 +55,5 @@ class bubblesort:
 
         # Sort is completed
         sort_screen.objects.time_taken.data.stopTimer()
-        array.completed()
+        action_result = array.completed()
+        if action_result != None: return action_result

@@ -86,12 +86,20 @@ class surface(coreFunc):
 
     def load(self): self.__screen__.objects.load()
 
-    def display(self, withLoad:bool = True, newSurface:bool = False):
+    def display(self, withLoad:bool = True, newSurface:bool = False, animate:bool = False):
         # Use a new surface
         if newSurface: self.create()
         # Update to latest state of objects
         if withLoad: self.load()
         # Output to screen
+        speed = 0.4
+        move_per_frame = int(config.screen.width // (config.ticks * speed))
+        if animate:
+            for x in range(config.screen.width, 0, -move_per_frame):
+                window.blit(self.Surface, (x, self.frame.y))
+                pg_ess.core.update()
+                pg_ess.core.buffer()
+            
         window.blit(self.Surface, self.frame.coord())
         pg_ess.core.update()
 
@@ -200,9 +208,9 @@ class item(coreFunc):
         if type(state) == str: return hasattr(self.images, self.type+state)
         return False
 
-    def switchState(self, toState:str, directToScreen:bool = False):
+    def switchState(self, toState:str, directToScreen:bool = False, display:bool = True):
         if self.state != toState and self.hasState(toState): 
-            self.display(withState=toState, directToScreen=directToScreen) 
+            if display: self.display(withState=toState, directToScreen=directToScreen) 
 
     def load(self, withState:str = None, loadData:bool = True):
         # Set state
@@ -557,8 +565,6 @@ class timer(text):
         if self.state == 'stop':
             self.startTime = time.time() - self.startTime
             self.state = 'start'
-        
-        else: print('Timer has alr started.')
 
     def stopTimer(self):
         # Stop only if timer has started
@@ -568,15 +574,11 @@ class timer(text):
             self.startTime = stopTime - self.startTime
             self.state = 'stop'
 
-        else: print('Timer has alr stopped.')
-
     def updateTimer(self):
         # Only update if timer has started
         if self.state == 'start':
             self.text = '{:.2f} sec'.format(time.time() - self.startTime)
             self.item.display()
-
-        else: print('Cant update timer, it is currently stopped.')
 
     def resetTimer(self):
         self.startTime = 0

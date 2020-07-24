@@ -143,7 +143,7 @@ class sort:
         sort_screen.objects.list_length.data.text = str(bars)
 
         # Display home screen
-        sort_screen.objects.sort_title.switchState(sortType)
+        sort_screen.objects.sort_title.switchState(sortType, display=False)
         sort_screen.surface.display()
 
         sort_result = runSort[sortType](sort_screen, speed)
