@@ -8,6 +8,7 @@ import inspect
 import random
 import math
 import time
+import re
 from pygame_events import *
 from algorithm.commonFunc import commonFunc
 
@@ -270,14 +271,42 @@ class textFormat(coreFunc):
         self.font = pygame.font.Font(self.fontType, self.fontSize)
 
 
+class textValidate(coreFunc):
+    def __init__(self, charsAllowed:list = list(range(32,65)) + list(range(91,127)) + [8], 
+    inAscii:bool = True, regex:str = '[\w\s.]+', defaultText:str = 'default'):
+        self.charsAllowed = charsAllowed
+        self.inAscii = inAscii
+        self.regex = re.compile(regex)
+        self.defaultText = defaultText
+
 class text(coreFunc):
     def __init__(self, text:str = '', prefix:str = '', suffix:str = '', 
-    format:textFormat = textFormat(), editable:bool = True):
+    format:textFormat = textFormat(), validation:textValidate = textValidate(), editable:bool = True):
         self.text = text
         self.prefix = prefix
         self.suffix = suffix
         self.format = format
+        self.validation = validation
         self.editable = editable
+
+    def validateChar(self, char, inAscii = True):
+        if self.validation.inAscii and not inAscii: char = ord(char)
+        elif not self.validation.inAscii and inAscii: char = chr(char)
+
+        return char in self.validation.charsAllowed
+
+    def validateText(self):
+        regexTexts = self.validation.regex.findall(self.text)
+
+        if regexTexts == []: 
+            self.text = self.validation.defaultText
+            return False
+
+        if len(regexTexts) > 1: 
+            self.text = regexTexts[0]
+            return False
+
+        if regexTexts[0] == self.text: return True
 
     def getText(self, state:str):
         if state == 'Selected' and self.editable: return self.prefix+self.text+'_'+self.suffix
@@ -359,15 +388,8 @@ class sortbars(coreFunc):
         self.base_y = 575
 
         # Generate random list of sort
-        barsnumbers = random.sample(list(range(1, self.bars+1)), self.bars)
-
-        # Generate barslist 
-        barslist = []
-        for index,bar in enumerate(barsnumbers):
-            barslist.append(barData(number=bar, frame=self.calBarCoord(index, bar), colour=pg_ess.colour.white))
-        
-        # Store
-        self.barslist = barslist
+        self.unsortedlist = random.sample(list(range(1, self.bars+1)), self.bars)
+        self.genBars()
 
     def calBarCoord(self, index:int, bar:int) -> coord:
         return coord(
@@ -375,6 +397,15 @@ class sortbars(coreFunc):
                     self.start_x+self.spacing//2+(self.width+self.spacing)*index, 
                     self.base_y-self.height*bar, self.width, self.height*bar
                 )
+
+    def genBars(self):
+         # Generate barslist 
+        barslist = []
+        for index,bar in enumerate(self.unsortedlist):
+            barslist.append(barData(number=bar, frame=self.calBarCoord(index, bar), colour=pg_ess.colour.white))
+        
+        # Store
+        self.barslist = barslist
 
     def swap(self, bar_1:int, bar_2:int, speed:float):
         # Ensure bar 2 is on the left of bar 1
@@ -516,7 +547,6 @@ class barData(coreFunc):
 class timer(text):
     def __init__(self, format:textFormat = textFormat()):
         super().__init__('0.00 sec', '', '', format, False)
-
         self.resetTimer()
 
     def startTimer(self, withReset = False):
@@ -525,8 +555,7 @@ class timer(text):
        
         # Start only if timer is stopped
         if self.state == 'stop':
-            if self.startTime == None: self.startTime = time.time()
-            else: self.startTime += time.time()
+            self.startTime = time.time() - self.startTime
             self.state = 'start'
         
         else: print('Timer has alr started.')
@@ -550,7 +579,7 @@ class timer(text):
         else: print('Cant update timer, it is currently stopped.')
 
     def resetTimer(self):
-        self.startTime = None
+        self.startTime = 0
         self.state = 'stop'
 
 

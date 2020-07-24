@@ -78,7 +78,7 @@ class event(coreFunc):
     def action(self, actions:list = [],  directToScreen:bool = False):
         onItem = None
         # Loop through items in opposite order
-        for index,name in enumerate(list(self.__screen__.objects.__dict__.keys())[:0:-1]):
+        for index,name in enumerate(list(self.__screen__.objects.__dict__.keys())[1:]):
             # Get item
             item = self.__screen__.objects[name]
             # Check if has a runclass
@@ -88,7 +88,6 @@ class event(coreFunc):
                     # Load hover state
                     item.switchState('Hover', directToScreen) 
                     onItem = item
-                    break
                 # Change back to normal state
                 elif item.state in ('Hover', 'Selected'): item.switchState('', directToScreen)
 

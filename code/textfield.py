@@ -35,7 +35,7 @@ class textfield:
 
             pressed_key = None
             for char in keypressed[::-1]:
-                if char.key in chars_allowed: pressed_key = char
+                if textfield_item.data.validateChar(char.key): pressed_key = char
 
             # Engage key
             if pressed_key != None and time.time() - time_pressed >= repeat_interval:
@@ -62,7 +62,9 @@ class textfield:
             # When program is set to close
             if action_result.contains('outcome','__quit__'): return '__quit__'
             # Going back
-            if action_result.contains('outcome', 'go_back'): return '__back__' 
+            if action_result.contains('outcome', 'go_back'): 
+                textfield_item.data.validateText()
+                return '__back__' 
 
             # Reset repeat timing on key release
             if action_result.didAction('keyup'): time_pressed, repeat_interval = 0, 1.2

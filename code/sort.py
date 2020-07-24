@@ -137,7 +137,8 @@ class sort:
     @staticmethod
     def run(screen, sortType:str, bars:int, speed:float):
         # Set data from parent
-        sort_screen.objects.sortbox.data.bars = int(bars)
+        if sort_screen.objects.sortbox.data.bars != int(bars): sort_screen.objects.sortbox.data.bars = int(bars)
+        else: sort_screen.objects.sortbox.data.genBars()
         sort_screen.objects.speed.data.text = str(speed)
         sort_screen.objects.list_length.data.text = str(bars)
 

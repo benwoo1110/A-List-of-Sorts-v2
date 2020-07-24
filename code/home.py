@@ -32,7 +32,7 @@ home_screen = screen(
             },
             'data': text(
                 text = 'Bubble sort',
-                editable = False,
+                #editable = False,
                 format = textFormat(
                     fontType=pg_ess.font.futura,
                     fontSize=38,
@@ -41,7 +41,7 @@ home_screen = screen(
             ),
             'dataAddSelf': True,
             'runclass': runclass(
-                action=selection.run,
+                action=textfield.run,
                 parameters={'itemName': 'type'}
             )
         },
@@ -79,6 +79,11 @@ home_screen = screen(
                     fontType=pg_ess.font.futura,
                     fontSize=38,
                     colour=pg_ess.colour.black
+                ),
+                validation = textValidate(
+                    charsAllowed=list(range(48, 58)) + [8, 46],
+                    regex='\d{1,2}\.\d{1,2}|\d{1,2}',
+                    defaultText='1.0'
                 )
             ),
             'dataAddSelf': True,
@@ -101,6 +106,11 @@ home_screen = screen(
                     fontType=pg_ess.font.futura,
                     fontSize=38,
                     colour=pg_ess.colour.black
+                ),
+                validation = textValidate(
+                    charsAllowed=list(range(48, 58)) + [8],
+                    regex='[1-9][0-9]{0,2}',
+                    defaultText='10'
                 )
             ),
             'dataAddSelf': True,

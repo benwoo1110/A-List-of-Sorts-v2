@@ -20,9 +20,14 @@ class commonFunc:
 
         # No action
         if action_result == None: return
+
+        sort_screen.objects.time_taken.data.stopTimer()
+
         # When program is set to close
         if action_result.contains('outcome','__quit__'): return '__quit__'
         # Going back
         if action_result.contains('outcome', 'go_back'): return '__back__' 
         # Load back screen
         if action_result.contains('outcome', '__back__'): sort_screen.surface.display(withLoad=False)
+
+        sort_screen.objects.time_taken.data.startTimer()
