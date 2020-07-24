@@ -1,8 +1,15 @@
 ######################################
 # Import and initialize the librarys #
 ######################################
-import traceback
-from pygame_core import *
+from code.pygame_core import *
+
+
+#################
+# Setup logging #
+#################
+filename = os.path.basename(__file__).split('.')[0]
+logger = log.get_logger(filename)
+logger.info('Loading up {}...'.format(filename))
 
 
 # Track keys that are pressed

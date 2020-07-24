@@ -2,7 +2,15 @@
 # Import and initialize the librarys #
 ######################################
 import time
-from pygame_objects import *
+from code.pygame_objects import *
+
+
+#################
+# Setup logging #
+#################
+filename = os.path.basename(__file__).split('.')[0]
+logger = log.get_logger(filename)
+logger.info('Loading up {}...'.format(filename))
 
 
 textfield_screen = screen(

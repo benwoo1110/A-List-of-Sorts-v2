@@ -1,10 +1,22 @@
 ######################################
 # Import and initialize the librarys #
 #####################################
-from pygame_objects import *
-from algorithm.bubblesort import bubblesort
-from algorithm.insertionsort import insertionsort
-from algorithm.selectionsort import selectionsort
+from code.pygame_objects import *
+from code.algorithm.bubblesort import bubblesort
+from code.algorithm.insertionsort import insertionsort
+from code.algorithm.bogosort import bogosort
+from code.algorithm.mergesort import mergesort
+from code.algorithm.quicksort import quicksort
+from code.algorithm.radixsort import radixsort
+from code.algorithm.selectionsort import selectionsort
+
+
+#################
+# Setup logging #
+#################
+filename = os.path.basename(__file__).split('.')[0]
+logger = log.get_logger(filename)
+logger.info('Loading up {}...'.format(filename))
 
 
 sort_screen = screen(

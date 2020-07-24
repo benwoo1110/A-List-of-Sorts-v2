@@ -30,21 +30,17 @@ with open('requirements.txt', 'r') as requirements:
 
 
 #####################
-# Get configuration #
+# Import code stuff #
 #####################
-# Set to code directory
-sys.path.insert(1, './code')
-# Import config options
-from config import config
+from code.config import config
+from code.pygame_core import *
+from code.home import home
 
 
 #################################
 # Starting Cryptography GUI app #
 #################################
 if __name__ == "__main__":
-    # Get home screen
-    from home import *
-
     # Run home screen
     pg_ess.core.caption('A List of Sorts v2')
     home.run()

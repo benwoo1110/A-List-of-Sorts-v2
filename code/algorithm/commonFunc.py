@@ -2,6 +2,15 @@
 # Import and initialize the librarys #
 ######################################
 import time
+from code.pygame_core import *
+
+
+#################
+# Setup logging #
+#################
+filename = os.path.basename(__file__).split('.')[0]
+logger = log.get_logger(filename)
+logger.info('Loading up {}...'.format(filename))
 
 
 class commonFunc:

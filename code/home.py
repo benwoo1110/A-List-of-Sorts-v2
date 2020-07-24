@@ -1,10 +1,18 @@
 ######################################
 # Import and initialize the librarys #
 ######################################
-from pygame_objects import *
-from textfield import textfield
-from selection import selection
-from sort import sort
+from code.pygame_objects import *
+from code.textfield import textfield
+from code.selection import selection
+from code.sort import sort
+
+
+#################
+# Setup logging #
+#################
+filename = os.path.basename(__file__).split('.')[0]
+logger = log.get_logger(filename)
+logger.info('Loading up {}...'.format(filename))
 
 
 ###########################
@@ -82,7 +90,7 @@ home_screen = screen(
                 ),
                 validation = textValidate(
                     charsAllowed=list(range(48, 58)) + [8, 46],
-                    regex='\d{1,2}\.\d{1,2}|\d{1,2}',
+                    regex='\d{1,2}\.\d{1,3}|\d{1,2}',
                     defaultText='1.0'
                 )
             ),

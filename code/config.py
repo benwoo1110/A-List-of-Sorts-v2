@@ -5,15 +5,12 @@ import logging
 import yaml
 import os
 
-##########################
-# Getting configurations #
-##########################
 
 # Default setting for file
 default_config_contents = '''\
-###############################
-# Cryptography GUI config.yml #
-###############################
+#################################
+# A List of Sorts v2 config.yml #
+#################################
 
 # NOTE: Change only if you know what you are doing!
 
@@ -28,11 +25,13 @@ screen:
 # WARNING -> 30
 # INFO -> 20
 # DEBUG -> 10
-debug_level:
+logging:
   # For console output
-  console: 'INFO'
-  # App activities logged in './cryptography-GUI/logs'
-  logs: 'DEBUG'
+  console_level: 'INFO'
+  # App activities logged in './A-List-of-Sorts-v2/logs'
+  file_level: 'DEBUG'
+  # Number of logs to keep in logs folder
+  keep_logs: 5
 
 # Changes the refresh rate of pygame
 ticks: 60
@@ -41,7 +40,10 @@ ticks: 60
 scroll_speed: 35
 '''
 
-# Set config file directory
+
+##########################
+# Getting configurations #
+##########################
 config_dir = './config.yml'
 if os.path.basename(os.getcwd()) == 'code': config_dir = '../config.yml'
 
@@ -49,6 +51,7 @@ if os.path.basename(os.getcwd()) == 'code': config_dir = '../config.yml'
 if not os.path.isfile(config_dir):
     with open(config_dir, 'w') as config_file:
         config_file.write(default_config_contents)
+        print("Generated ./config.yml")
 
 # Read from config file
 with open(config_dir) as config_file:
@@ -80,11 +83,5 @@ class Struct:
         return '[config] {}'.format(parsed_config_file)
 
 # Convert dict to class object
-config = Struct(**parsed_config_file)
-
-
-###############
-# For testing #
-###############
-if __name__ == "__main__":
-    print(config)
+class config:
+    Config = Struct(**parsed_config_file)

@@ -2,15 +2,22 @@
 # Import and initialize the librarys #
 ######################################
 import os
-import glob
 import textwrap
 import inspect
 import random
 import math
 import time
 import re
-from pygame_events import *
-from algorithm.commonFunc import commonFunc
+from code.pygame_events import *
+from code.algorithm.commonFunc import commonFunc
+
+
+#################
+# Setup logging #
+#################
+filename = os.path.basename(__file__).split('.')[0]
+logger = log.get_logger(filename)
+logger.info('Loading up {}...'.format(filename))
 
 
 class objectFrame(coreFunc):
