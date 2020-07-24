@@ -8,6 +8,7 @@ from pygame_objects import *
 
 class selectionsort:
 
+    @staticmethod
     def run(sort_screen, speed:int):
         array = sort_screen.objects.sortbox.data
         

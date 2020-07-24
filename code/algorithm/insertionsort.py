@@ -7,6 +7,7 @@ from pygame_objects import *
 
 class insertionsort:
 
+    @staticmethod
     def run(sort_screen, speed:int):
         array = sort_screen.objects.sortbox.data
         

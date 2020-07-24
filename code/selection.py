@@ -93,6 +93,7 @@ selection_screen.surface.load()
 
 class selection:
 
+    @staticmethod
     def run(screen, itemName):
         # Display home screen
         selection_screen.surface.display(withLoad=False)

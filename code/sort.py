@@ -134,6 +134,7 @@ runSort = {
 
 class sort:
 
+    @staticmethod
     def run(screen, sortType:str, bars:int, speed:float):
         # Set data from parent
         sort_screen.objects.sortbox.data.bars = int(bars)

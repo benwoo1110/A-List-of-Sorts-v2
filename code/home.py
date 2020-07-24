@@ -143,6 +143,7 @@ info_text = {
 ###############
 class home:
 
+    @staticmethod
     def run():
         # Display home screen
         home.setInfoText()
@@ -172,6 +173,7 @@ class home:
                 if action_result.click.isItem('list_length'): 
                     home_screen.objects.run.runclass.parameters['bars'] = int(home_screen.objects.list_length.data.text)
 
+    @staticmethod
     def setInfoText():
         # Set info to the corresponding sort type
         sort_type = home_screen.objects.type.data.text

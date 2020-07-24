@@ -22,10 +22,11 @@ chars_allowed = list(range(32,65)) + list(range(91,127)) + [8]
 
 class textfield:
 
-    def run(screen, itemName):
+    @staticmethod
+    def run(text_screen, itemName):
 
         # Get textfield item
-        textfield_item = screen.objects[itemName]
+        textfield_item = text_screen.objects[itemName]
         textfield_item.load()
 
         time_pressed, repeat_interval = 0, 1.2
