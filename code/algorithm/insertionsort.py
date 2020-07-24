@@ -9,7 +9,10 @@ class insertionsort:
 
     def run(sort_screen, speed:int):
         array = sort_screen.objects.sortbox.data
+        
+        # Reset stats
         sort_screen.objects.time_taken.data.startTimer(withReset=True)
+        sort_screen.objects.moves.data.reset()
 
         # Loop through second bar onwards
         for index in range(1, array.bars):
@@ -26,7 +29,12 @@ class insertionsort:
             # check if bar needs to move
             moveTo = index
             for check in range(index-1, -1, -1):
+                # Add a move
+                sort_screen.objects.moves.data.moved()
+
+                # Check where should the bar move to
                 if array.barslist[index].number >= array.barslist[check].number: break
+                
                 else: 
                     array.barslist[check].colour = pg_ess.colour.red
                     moveTo = check
@@ -48,5 +56,6 @@ class insertionsort:
 
             array.barslist[index].state()
 
+        # Sort is completed
         sort_screen.objects.time_taken.data.stopTimer()
         array.completed()

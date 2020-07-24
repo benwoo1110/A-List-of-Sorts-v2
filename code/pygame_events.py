@@ -90,7 +90,7 @@ class event(coreFunc):
                     onItem = item
                     break
                 # Change back to normal state
-                else: item.switchState('', directToScreen)
+                elif item.state in ('Hover', 'Selected'): item.switchState('', directToScreen)
 
         # Run actions
         for actionMethod in actions:

@@ -10,7 +10,10 @@ class selectionsort:
 
     def run(sort_screen, speed:int):
         array = sort_screen.objects.sortbox.data
+        
+        # Reset stats
         sort_screen.objects.time_taken.data.startTimer(withReset=True)
+        sort_screen.objects.moves.data.reset()
 
         # Loop through all the bar index
         for index in range(array.bars):
@@ -18,6 +21,10 @@ class selectionsort:
             # Check for the lowest number
             lowest_index = index
             for check in range(index, array.bars):
+                # Add a move
+                sort_screen.objects.moves.data.moved()
+
+                # Number is lower than the current lowest
                 if array.barslist[check].number < array.barslist[lowest_index].number:
                     array.barslist[lowest_index].state()
                     lowest_index = check
@@ -30,6 +37,7 @@ class selectionsort:
                         sort_screen.objects.time_taken.data.updateTimer()
                         sort_screen.event.action()
 
+                # Just show selected if not
                 else:
                     array.barslist[check].state('selected')
  
@@ -44,5 +52,6 @@ class selectionsort:
 
             array.move(lowest_index, index, speed)
 
+        # Sort is completed
         sort_screen.objects.time_taken.data.stopTimer()
         array.completed()

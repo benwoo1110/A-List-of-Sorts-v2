@@ -549,3 +549,22 @@ class timer(text):
     def resetTimer(self):
         self.startTime = None
         self.state = 'stop'
+
+
+class moves(text):
+    def __init__(self, format:textFormat = textFormat()):
+        super().__init__('0', '', '', format, False)
+
+        self.movesNumber = 0
+
+    def updateDisplay(self):
+        self.text = str(self.movesNumber)
+        self.item.display()
+
+    def moved(self, display=True):
+        self.movesNumber += 1
+        if display: self.updateDisplay()
+
+    def reset(self, display=True):
+        self.movesNumber = 0
+        if display: self.updateDisplay()

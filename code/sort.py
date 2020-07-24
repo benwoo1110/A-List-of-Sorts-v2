@@ -16,8 +16,13 @@ sort_screen = screen(
         'background': {
             'type': 'object',
             'frame': {
-                'box': coord(w=1024, h=768),
                 'image': coord(w=1024, h=768)
+            },
+        },
+        'sort_title': {
+            'type': 'title',
+            'frame': {
+                'image': coord(w=1024, h=135)
             },
         },
         'back': {
@@ -54,15 +59,13 @@ sort_screen = screen(
             ),
             'dataAddSelf': True,
         },
-        'swaps': {
+        'moves': {
             'type': 'text',
             'frame': {
                 'image': coord(x=436, y=677, w=112, h=40),
                 'text': coord(x=436, y=677, w=112, h=40)
             },
-            'data': text(
-                text = '100',
-                editable = False,
+            'data': moves(
                 format = textFormat(
                     fontType=pg_ess.font.futura,
                     fontSize=28,
@@ -138,6 +141,7 @@ class sort:
         sort_screen.objects.list_length.data.text = str(bars)
 
         # Display home screen
+        sort_screen.objects.sort_title.switchState(sortType)
         sort_screen.surface.display()
 
         runSort[sortType](sort_screen, speed)
