@@ -105,10 +105,8 @@ class selection:
 
             # No action
             if action_result == None: continue
-
             # When program is set to close
             if action_result.contains('outcome','__quit__'): return '__quit__'
-
             # Going back
             if action_result.contains('outcome', 'go_back'): return '__back__' 
 

@@ -9,12 +9,7 @@ import random
 import math
 import time
 from pygame_events import *
-
-
-####################
-# Global variables #
-####################
-time_per_frame = 1 / config.ticks
+from algorithm.commonFunc import commonFunc
 
 
 class objectFrame(coreFunc):
@@ -410,7 +405,9 @@ class sortbars(coreFunc):
 
             self.item.load()
             self.item.__screen__.objects.time_taken.data.updateTimer()
-            pg_ess.core.buffer()
+            
+            action_result = commonFunc.getAction(self.item.__screen__)
+            if action_result != None: return action_result
 
         # Swap bar position
         self.barslist[bar_1], self.barslist[bar_2] = self.barslist[bar_2], self.barslist[bar_1]
@@ -456,7 +453,9 @@ class sortbars(coreFunc):
 
             self.item.load()
             self.item.__screen__.objects.time_taken.data.updateTimer()
-            pg_ess.core.buffer()
+            
+            action_result = commonFunc.getAction(self.item.__screen__)
+            if action_result != None: return action_result
 
         # Move the position of the bar in list
         value = self.barslist.pop(orginal_pos)
@@ -476,18 +475,20 @@ class sortbars(coreFunc):
             self.barslist[index].colour = (0, 255, 0)
 
             self.item.display()
-            pg_ess.core.buffer()
-            select_time = time.time()
-            while time.time() - select_time < 1/self.bars: pg_ess.core.buffer()
+            self.item.__screen__.event.action()
+
+            action_result = commonFunc.waitAction(self.item.__screen__, 1/self.bars)
+            if action_result != None: return action_result
 
         # Going down
         for index in range(len(self.barslist)-1, -1, -1):
             self.barslist[index].colour = pg_ess.colour.white
 
             self.item.display()
-            pg_ess.core.buffer()
-            select_time = time.time()
-            while time.time() - select_time < 1/self.bars: pg_ess.core.buffer()
+            self.item.__screen__.event.action()
+
+            action_result = commonFunc.waitAction(self.item.__screen__, 1/self.bars)
+            if action_result != None: return action_result
 
     def load(self, Surface, frame:objectFrame, state:str):
         for index,bar in enumerate(self.barslist):
@@ -519,9 +520,11 @@ class timer(text):
         self.resetTimer()
 
     def startTimer(self, withReset = False):
+        # Check if should reset timer before starting
+        if withReset: self.resetTimer()
+       
         # Start only if timer is stopped
         if self.state == 'stop':
-            if withReset: self.startTime = None
             if self.startTime == None: self.startTime = time.time()
             else: self.startTime += time.time()
             self.state = 'start'

@@ -145,7 +145,8 @@ class sort:
         sort_screen.objects.sort_title.switchState(sortType)
         sort_screen.surface.display()
 
-        runSort[sortType](sort_screen, speed)
+        sort_result = runSort[sortType](sort_screen, speed)
+        if sort_result != None: return sort_result
 
         while True:
             # Get check for interaction with screen
@@ -153,7 +154,6 @@ class sort:
 
             # No action
             if action_result == None: continue
-
             # When program is set to close
             if action_result.contains('outcome','__quit__'): return '__quit__'
             # Going back

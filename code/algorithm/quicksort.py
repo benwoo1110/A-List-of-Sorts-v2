@@ -2,8 +2,8 @@
 # Import and initialize the librarys #
 ######################################
 import time
+from algorithm.commonFunc import commonFunc
 from pygame_objects import *
-
 
 
 class selectionsort:

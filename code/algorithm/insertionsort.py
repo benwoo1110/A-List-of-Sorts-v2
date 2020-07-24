@@ -2,6 +2,7 @@
 # Import and initialize the librarys #
 ######################################
 import time
+from algorithm.commonFunc import commonFunc
 from pygame_objects import *
 
 
@@ -22,10 +23,8 @@ class insertionsort:
             array.barslist[index].state('selected')
             sort_screen.objects.sortbox.display()
 
-            select_time = time.time()
-            while time.time() - select_time < speed/2: 
-                sort_screen.objects.time_taken.data.updateTimer()
-                sort_screen.event.action()
+            action_result = commonFunc.waitAction(sort_screen, speed/2)
+            if action_result != None: return action_result
 
             # check if bar needs to move
             moveTo = index
@@ -42,19 +41,17 @@ class insertionsort:
 
                     sort_screen.objects.sortbox.display()
 
-                    select_time = time.time()
-                    while time.time() - select_time < speed/2:
-                        sort_screen.objects.time_taken.data.updateTimer()
-                        sort_screen.event.action()
+                    action_result = commonFunc.waitAction(sort_screen, speed/2)
+                    if action_result != None: return action_result
 
             # Bar needs to move pos
-            if moveTo != index: array.move(index, moveTo, speed)
+            if moveTo != index: 
+                action_result = array.move(index, moveTo, speed)
+                if action_result != None: return action_result
 
-            select_time = time.time()
-            while time.time() - select_time < speed/2:
-                sort_screen.objects.time_taken.data.updateTimer()
-                sort_screen.event.action()
-
+            action_result = commonFunc.waitAction(sort_screen, speed/2)
+            if action_result != None: return action_result
+            
             array.barslist[index].state()
 
         # Sort is completed

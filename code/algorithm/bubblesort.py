@@ -2,6 +2,7 @@
 # Import and initialize the librarys #
 ######################################
 import time
+from algorithm.commonFunc import commonFunc
 from pygame_objects import *
 
 
@@ -28,23 +29,20 @@ class bubblesort:
                 array.barslist[index+1].state('selected')
                 sort_screen.objects.sortbox.display()
 
-                select_time = time.time()
-                while time.time() - select_time < speed/2: 
-                    sort_screen.objects.time_taken.data.updateTimer()
-                    sort_screen.event.action()
+                action_result = commonFunc.waitAction(sort_screen, speed/2)
+                if action_result != None: return action_result
 
                 # Swap the bars
                 if array.barslist[index+1].number < array.barslist[index].number:
-                    array.swap(index, index+1, speed)
+                    action_result = array.swap(index, index+1, speed)
+                    if action_result != None: return action_result
                     didSwap = True
 
                 # Unselect the bars
                 array.barslist[index].state()
 
-                select_time = time.time()
-                while time.time() - select_time < speed/2:
-                    sort_screen.objects.time_taken.data.updateTimer()
-                    sort_screen.event.action()
+                action_result = commonFunc.waitAction(sort_screen, speed/2)
+                if action_result != None: return action_result
             
             # Unselect the bars
             array.barslist[index+1].state()
@@ -52,10 +50,8 @@ class bubblesort:
             # If all pairs are sorted
             if not didSwap: break
 
-            select_time = time.time()
-            while time.time() - select_time < speed/2:
-                sort_screen.objects.time_taken.data.updateTimer()
-                sort_screen.event.action()
+            action_result = commonFunc.waitAction(sort_screen, speed/2)
+            if action_result != None: return action_result
 
         # Sort is completed
         sort_screen.objects.time_taken.data.stopTimer()

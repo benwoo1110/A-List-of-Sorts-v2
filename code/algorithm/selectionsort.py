@@ -2,8 +2,8 @@
 # Import and initialize the librarys #
 ######################################
 import time
+from algorithm.commonFunc import commonFunc
 from pygame_objects import *
-
 
 
 class selectionsort:
@@ -33,10 +33,8 @@ class selectionsort:
 
                     sort_screen.objects.sortbox.display()
 
-                    select_time = time.time()
-                    while time.time() - select_time < speed/2: 
-                        sort_screen.objects.time_taken.data.updateTimer()
-                        sort_screen.event.action()
+                    action_result = commonFunc.waitAction(sort_screen, speed/2)
+                    if action_result != None: return action_result
 
                 # Just show selected if not
                 else:
@@ -44,14 +42,13 @@ class selectionsort:
  
                     sort_screen.objects.sortbox.display()
 
-                    select_time = time.time()
-                    while time.time() - select_time < speed/2: 
-                        sort_screen.objects.time_taken.data.updateTimer()
-                        sort_screen.event.action()
+                    action_result = commonFunc.waitAction(sort_screen, speed/2)
+                    if action_result != None: return action_result
                                         
                     array.barslist[check].state()
 
-            array.move(lowest_index, index, speed)
+            action_result = array.move(lowest_index, index, speed)
+            if action_result != None: return action_result
 
         # Sort is completed
         sort_screen.objects.time_taken.data.stopTimer()

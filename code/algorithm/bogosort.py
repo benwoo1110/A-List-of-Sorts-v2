@@ -2,12 +2,12 @@
 # Import and initialize the librarys #
 ######################################
 import time
+from algorithm.commonFunc import commonFunc
 from pygame_objects import *
 
 
-
 class selectionsort:
-    
+
     @staticmethod
     def run(sort_screen, speed:int):
         array = sort_screen.objects.sortbox.data
