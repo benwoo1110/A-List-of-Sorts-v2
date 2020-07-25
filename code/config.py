@@ -70,17 +70,13 @@ class Struct:
             else:
                 self.__dict__[k] = v
 
-    def screen_res(self) -> tuple:
-        return (self.screen.width, self.screen.height)
+    def screen_res(self) -> tuple: return (self.screen.width, self.screen.height)
 
-    def scale_w(self) -> float:
-        return (self.screen.width/1024)
+    def scale_w(self) -> float: return (self.screen.width/1024)
 
-    def scale_h(self) -> float:
-        return (self.screen.height/768)
+    def scale_h(self) -> float: return (self.screen.height/768)
 
-    def __str__(self):
-        return '[config] {}'.format(parsed_config_file)
+    def __repr__(self): return '{}'.format(self.__dict__)
 
 # Convert dict to class object
 class config:

@@ -117,7 +117,7 @@ home_screen = screen(
                 ),
                 validation = textValidate(
                     charsAllowed=list(range(48, 58)) + [8],
-                    regex='[1-9][0-9]{0,2}',
+                    regex='^([1-9][0-9]{0,1}|[1-3][0-9]{2}|400)$',
                     defaultText='10'
                 )
             ),

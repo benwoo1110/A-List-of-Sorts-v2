@@ -67,6 +67,7 @@ class log:
 filename = os.path.basename(__file__).split('.')[0]
 logger = log.get_logger(filename)
 logger.info('Loading up {}...'.format(filename))
+logger.debug('[config] {}'.format(config))
 
 
 #####################
@@ -84,7 +85,7 @@ class coreFunc:
     def __setitem__(self, name, value): self.__dict__[name] = value
     def __setattr__(self, name, value): self.__dict__[name] = value
     def __getitem__(self, name): return self.__dict__[name]
-    def __str__(self): return '{}'.format(self.__dict__)
+    def __repr__(self): return '{}'.format(self.__dict__)
 
 
 ######################
@@ -121,23 +122,21 @@ class pg_ess:
     class core:
         @staticmethod
         def caption(caption:str = 'pygame time!'):
-            '''Set window header title'''
             pygame.display.set_caption(caption)
+            logger.info('Set window title to "{}"'.format(caption))
         
         @staticmethod
         def update(tick:int = config.ticks):
-            '''Draw display changes to screen'''
             pygame.display.flip()
             pygame.display.update()
             pygame.time.Clock().tick_busy_loop(tick)
         
         @staticmethod
-        def buffer() -> bool:
-            '''Loop through pygame events and check of quit and scrolling'''
+        def buffer():
             for event in pygame.event.get():
-                if event.type == pygame.QUIT: return '__quit__'
+                if event.type == pygame.QUIT: pg_ess.core.quit()
 
         @staticmethod
         def quit():
-            '''Exit from program'''
+            logger.info('Exiting program... Goodbye!')
             pygame.quit()

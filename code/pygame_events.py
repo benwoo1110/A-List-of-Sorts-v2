@@ -60,7 +60,7 @@ class actionResult(coreFunc):
             else: self.outcome = item.runclass.action(**item.runclass.parameters)
         
         # There is a error
-        except: traceback.print_exc()
+        except Exception as e: logger.error(e, exc_info=True)
 
     def isItem(self, name = None) -> bool: return self.name == name
 
@@ -117,7 +117,9 @@ class event(coreFunc):
         ])
         
         # Output event's result if any
-        if event_result.didAction(): return event_result
+        if event_result.didAction(): 
+            logger.debug('[{}] {}'.format(self.__screen__.name, event_result))
+            return event_result
 
     def click(self, event, item, directToScreen:bool = False):
         # Check if item is valid
@@ -180,11 +182,11 @@ class event(coreFunc):
                 # Scroll up
                 if event.button == 4:
                     surface.frame.y = min(surface.frame.y + config.scroll_speed, 0) / config.scale_w()
-                    surface.display(withLoad=False)
+                    surface.display()
                 # Scroll down
                 elif event.button == 5:
                     surface.frame.y = max(surface.frame.y - config.scroll_speed, min(config.screen.height - surface.frame.h, 0)) / config.scale_w()
-                    surface.display(withLoad=False)
+                    surface.display()
 
     def quit(self, event):
         if event.type == pygame.QUIT: 

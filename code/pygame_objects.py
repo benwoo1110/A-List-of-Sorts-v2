@@ -25,7 +25,7 @@ class objectFrame(coreFunc):
         self.__dict__.update(**coords)
 
 
-class coord:
+class coord(coreFunc):
     def __init__(self, scale:bool = True, x:int = 0, y:int = 0, w:int = 0, h:int = 0):
         self.scale:bool = scale
         self.x:int = x
@@ -57,8 +57,6 @@ class coord:
         scroll_x, scroll_y = surfaceCoord
         # Return if in box
         return self.x + scroll_x < mousePos[0] < self.x + self.w + scroll_x and self.y + scroll_y < mousePos[1] < self.y + self.h + scroll_y
-    
-    def __str__(self): return '{}'.format(self.__dict__)
 
 
 class screen(coreFunc):
@@ -70,6 +68,10 @@ class screen(coreFunc):
         self.actions = actions(self, actionParameters)
         self.event = event(self)
 
+        # Load the screen
+        self.surface.load
+
+        logger.debug('[{}] {}'.format(self.name, self.__repr__()))
 
 class surface(coreFunc):
     def __init__(self, screen, frame:coord = coord(), bgColour:tuple = pg_ess.colour.orange, isAlpha:bool = False, scroll:bool = True):
@@ -93,12 +95,13 @@ class surface(coreFunc):
 
     def load(self): self.__screen__.objects.load()
 
-    def display(self, withLoad:bool = True, newSurface:bool = False, animate:bool = False):
+    def display(self, withLoad:bool = False, resetSurface:bool = False, animate:bool = False):
         # Use a new surface
-        if newSurface: self.create()
+        if resetSurface: self.create()
         # Update to latest state of objects
         if withLoad: self.load()
-        # Output to screen
+
+        # Animation
         speed = 0.4
         move_per_frame = int(config.screen.width // (config.ticks * speed))
         if animate:
@@ -106,7 +109,8 @@ class surface(coreFunc):
                 window.blit(self.Surface, (x, self.frame.y))
                 pg_ess.core.update()
                 pg_ess.core.buffer()
-            
+                
+        # Output to screen    
         window.blit(self.Surface, self.frame.coord())
         pg_ess.core.update()
 
@@ -114,9 +118,10 @@ class surface(coreFunc):
 class actions(coreFunc):
     def __init__(self, screen:screen, actionsMethods:dict = {}):
         self.__screen__ = screen
-        # Add keyboard actions
+        # Add run actions
         for name,action_method in actionsMethods.items():
-            self.add(name, action_method)
+            if callable(action_method): self.add(name, action_method)
+            else: logger.warn('[{}] Action method {} not callable. Skipping..'.format(self.__screen__.name, name))
 
     def add(self, name, data):
         self.__dict__[name] = data
@@ -155,12 +160,18 @@ class objects(coreFunc):
 
     def getObjects(self, withItems:list = ['__all__'], excludeItems:list = []):
         items_to_load = []
-        # Get all items
+        
+        # Get included items items
         if withItems == ['__all__']: items_to_load = list(self.__dict__.keys())[1:]
+        else: 
+            for includeItem in withItems:
+                if self.__dict__.get(includeItem) != None: items_to_load.append(includeItem)
+                else: logger.warn('[{}] Unable to include {}. Item not in objects...'.format(self.__screen__.name, includeItem))
+
         # Remove the ones stated to exclude
         for excludeItem in excludeItems:
             try: items_to_load.remove(excludeItem)
-            except ValueError: pass
+            except ValueError: logger.warn('[{}] Unable to exclude {}. Item not in objects...'.format(self.__screen__.name, excludeItem))
 
         return items_to_load
 
@@ -180,7 +191,7 @@ class objects(coreFunc):
         # Load items defined to surface
         else: 
             self.load(withItems, excludeItems, withState)
-            self.__screen__.surface.display(withLoad=False)
+            self.__screen__.surface.display()
 
 
 class item(coreFunc):
@@ -206,43 +217,50 @@ class item(coreFunc):
             self.images = images(imagePage=[screen.name, name], isAlpha=isAlpha)
             self.load()
         # No images loaded
-        else: self.images = None
+        else: 
+            self.images = None
+            logger.warn('[{}] No image found for {} item.'.format(self.__screen__.name, self.name))
 
     def hasRunclass(self):
         return isinstance(self.runclass, runclass)
         
     def hasState(self, state:str): 
-        if type(state) == str: return hasattr(self.images, self.type+state)
-        return False
+        # If not state define
+        if state == None: return False
+        # Check if state exist
+        check = hasattr(self.images, self.type+state)
+        if not check: logger.warn('[{}] {} does not have state "{}"'.format(self.__screen__.name, self.name, state))
+        return check
 
-    def switchState(self, toState:str, directToScreen:bool = False, display:bool = True):
+    def switchState(self, toState:str, directToScreen:bool = False, withDisplay:bool = True):
         if self.state != toState and self.hasState(toState): 
-            if display: self.display(withState=toState, directToScreen=directToScreen) 
+            if withDisplay: self.display(withState=toState, directToScreen=directToScreen)
+            else: self.load(withState=toState)
 
-    def load(self, withState:str = None, loadData:bool = True):
-        # Set state
+    def load(self, withState:str = None, withData:bool = True):
+        # Set state if needed
         if self.hasState(withState): self.state = withState
         # Load item to surface
         Surface = self.__screen__.surface.Surface
-        Surface.blit(self.images.__dict__[self.type+self.state], (self.frame.image.coord()))
+        if images != None: Surface.blit(self.images.__dict__[self.type+self.state], (self.frame.image.coord()))
         # Load data
-        if self.data != None and loadData: self.data.load(Surface, self.frame, self.state)
+        if hasattr(self.data, 'load') and withData: self.data.load()
 
-    def display(self, withState:str = None, loadData:bool = True, directToScreen:bool = False):
+    def display(self, withState:str = None, withData:bool = True, directToScreen:bool = False):
         # Output item to screen
         if directToScreen: 
             # Set state
             if self.hasState(withState): self.state = withState
             # Display to screen
-            window.blit(self.images.__dict__[self.type+self.state], (self.frame.image.coord(self.__screen__.surface.frame.coord())))
+            if images != None: window.blit(self.images.__dict__[self.type+self.state], (self.frame.image.coord(self.__screen__.surface.frame.coord())))
             # Display data
-            if self.data != None and loadData: self.data.display(None, self.frame, self.state, True)
+            if hasattr(self.data, 'display') and withData: self.data.display(directToScreen=True)
             pg_ess.core.update()
 
         # Display to surface
         else: 
             self.load(withState)
-            self.__screen__.surface.display(withLoad=False)
+            self.__screen__.surface.display()
 
 
 class images(coreFunc):
@@ -260,7 +278,11 @@ class images(coreFunc):
             image_name = os.path.basename(image).split('.')[0]
             # Load image
             image_surface = pygame.image.load(image).convert_alpha() if isAlpha else pygame.image.load(image).convert()
-            image_surface = pygame.transform.smoothscale(image_surface, (int(image_surface.get_width()*config.scale_w()), int(image_surface.get_height()*config.scale_w())))
+            image_surface = pygame.transform.smoothscale(
+                image_surface, 
+                (int(image_surface.get_width()*config.scale_w()), 
+                int(image_surface.get_height()*config.scale_w()))
+            )
             # Store image
             self.__dict__[image_name] = image_surface
 
@@ -282,17 +304,17 @@ class textFormat(coreFunc):
         self.warpText = warpText
         self.align = align
         self.lineSpacing = lineSpacing
-        
         self.font = pygame.font.Font(self.fontType, self.fontSize)
 
 
 class textValidate(coreFunc):
     def __init__(self, charsAllowed:list = list(range(32,65)) + list(range(91,127)) + [8], 
-    inAscii:bool = True, regex:str = '[\w\s.]+', defaultText:str = 'default'):
+    inAscii:bool = True, regex:str = '[\w\D.]+', defaultText:str = 'default', customMethod:any = None):
         self.charsAllowed = charsAllowed
         self.inAscii = inAscii
         self.regex = re.compile(regex)
         self.defaultText = defaultText
+        self.customMethod = customMethod
 
 class text(coreFunc):
     def __init__(self, text:str = '', prefix:str = '', suffix:str = '', 
@@ -311,20 +333,23 @@ class text(coreFunc):
         return char in self.validation.charsAllowed
 
     def validateText(self):
-        regexTexts = self.validation.regex.findall(self.text)
+        valid = self.validation
+        regexTexts = valid.regex.findall(self.text)
 
         if regexTexts == []: 
-            self.text = self.validation.defaultText
+            self.text = valid.defaultText
             return False
 
         if len(regexTexts) > 1: 
             self.text = regexTexts[0]
             return False
 
-        if regexTexts[0] == self.text: return True
+        if regexTexts[0] == self.text: 
+            if callable(valid.customMethod): return valid.customMethod(self.text)
+            return True
 
-    def getText(self, state:str):
-        if state == 'Selected' and self.editable: return self.prefix+self.text+'_'+self.suffix
+    def getText(self):
+        if self.item.state == 'Selected' and self.editable: return self.prefix+self.text+'_'+self.suffix
         else: return self.prefix+self.text+self.suffix
 
     def setText(self, text:str = None, prefix:str = None, suffix:str = None, withDisplay: bool = True):
@@ -334,11 +359,11 @@ class text(coreFunc):
 
         self.item.display()
 
-    def renderText(self, frame:objectFrame, state:str):
+    def renderText(self):
         # Generate surface for text
-        text_surface = pygame.surface.Surface(frame.text.size(), pygame.SRCALPHA)
+        text_surface = pygame.surface.Surface(self.item.frame.text.size(), pygame.SRCALPHA)
         # Get text with prefix and suffix
-        text = self.getText(state)
+        text = self.getText()
         
         # No warpText
         if self.format.warpText == None:
@@ -359,22 +384,23 @@ class text(coreFunc):
             
         return text_surface
 
-    def load(self, Surface, frame:objectFrame, state:str):
+    def load(self):
         # Get the text
-        text_surface = self.renderText(frame, state)
+        text_surface = self.renderText()
         # Output to surface
-        Surface.blit(text_surface, frame.text.coord())
+        Surface = self.item.__screen__.surface.Surface
+        Surface.blit(text_surface, self.item.frame.text.coord())
 
-    def display(self, screen, frame:objectFrame, state:str, directToScreen:bool = False):
+    def display(self, directToScreen:bool = False):
         if directToScreen:
             # Get the text
-            text_surface = self.renderText(frame, state)
+            text_surface = self.renderText()
             # Output to screen
-            window.blit(text_surface, frame.text.coord(self.item.__screen__.surface.frame.coord()))
+            window.blit(text_surface, self.item.frame.text.coord(self.item.__screen__.surface.frame.coord()))
         
         else:
-            self.load(screen.surface.Surface, frame, state)
-            screen.surface.display(withLoad=False)
+            self.load()
+            screen.surface.display()
 
 
 class sortbars(coreFunc):
@@ -393,6 +419,8 @@ class sortbars(coreFunc):
         # start x: 100
         # max width: 836
         # Base y: 575
+
+        # Calculate bar size and spacing
         self.spacing = int(100 / self.bars)
         self.corner = int(200 / self.bars)
 
@@ -536,16 +564,16 @@ class sortbars(coreFunc):
             action_result = commonFunc.waitAction(self.item.__screen__, 1/self.bars)
             if action_result != None: return action_result
 
-    def load(self, Surface, frame:objectFrame, state:str):
-        for index,bar in enumerate(self.barslist):
+    def load(self):
+        for bar in self.barslist:
             pygame.draw.rect(
-                surface=Surface, color=bar.colour, rect=bar.frame.rect(), 
+                surface=self.item.__screen__.surface.Surface, color=bar.colour, rect=bar.frame.rect(), 
                 border_top_left_radius=self.corner, border_top_right_radius=self.corner
                 )
 
-    def display(self, screen, frame:objectFrame, state:str, directToScreen:bool = False):
-        self.load(screen.surface.Surface, frame, state)
-        screen.surface.display(withLoad=False)
+    def display(self, directToScreen:bool = False):
+        self.load()
+        screen.surface.display()
 
 
 class barData(coreFunc):
@@ -584,8 +612,7 @@ class timer(text):
     def updateTimer(self):
         # Only update if timer has started
         if self.state == 'start':
-            self.text = '{:.2f} sec'.format(time.time() - self.startTime)
-            self.item.display()
+            self.setText('{:.2f} sec'.format(time.time() - self.startTime))
 
     def resetTimer(self):
         self.startTime = 0
@@ -595,17 +622,15 @@ class timer(text):
 class moves(text):
     def __init__(self, format:textFormat = textFormat()):
         super().__init__('0', '', '', format, False)
-
         self.movesNumber = 0
 
     def updateDisplay(self):
-        self.text = str(self.movesNumber)
-        self.item.display()
+        self.setText(str(self.movesNumber))
 
-    def moved(self, display=True):
+    def moved(self, withDisplay=True):
         self.movesNumber += 1
-        if display: self.updateDisplay()
+        if withDisplay: self.updateDisplay()
 
-    def reset(self, display=True):
+    def reset(self, withDisplay=True):
         self.movesNumber = 0
-        if display: self.updateDisplay()
+        if withDisplay: self.updateDisplay()

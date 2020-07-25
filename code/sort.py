@@ -137,10 +137,11 @@ sort_screen = screen(
 runSort = {
     'Bubble sort': bubblesort.run,
     'Insertion sort': insertionsort.run,
-    'Merge sort': insertionsort.run,
-    'Quick sort': insertionsort.run,
-    'Radix sort': insertionsort.run,
-    'Bogo sort': selectionsort.run
+    'Merge sort': mergesort.run,
+    'Quick sort': quicksort.run,
+    'Radix sort': radixsort.run,
+    'Bogo sort': bogosort.run,
+    'Selection sort': selectionsort.run
 }
 
 
@@ -149,13 +150,15 @@ class sort:
     @staticmethod
     def run(screen, sortType:str, bars:int, speed:float):
         # Set data from parent
+        sort_screen.objects.sort_title.switchState(sortType, withDisplay=False)
+
         if sort_screen.objects.sortbox.data.bars != int(bars): sort_screen.objects.sortbox.data.bars = int(bars)
         else: sort_screen.objects.sortbox.data.genBars()
-        sort_screen.objects.speed.data.text = str(speed)
-        sort_screen.objects.list_length.data.text = str(bars)
+        
+        sort_screen.objects.speed.data.setText(str(speed))
+        sort_screen.objects.list_length.data.setText(str(bars))
 
-        # Display home screen
-        sort_screen.objects.sort_title.switchState(sortType, display=False)
+        # Display sort screen
         sort_screen.surface.display()
 
         sort_result = runSort[sortType](sort_screen, speed)
