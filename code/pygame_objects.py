@@ -556,7 +556,7 @@ class sortbars(coreFunc):
 
         # Going down
         for index in range(len(self.barslist)-1, -1, -1):
-            self.barslist[index].colour = pg_ess.colour.white
+            self.barslist[index].state('done')
 
             self.item.display()
             self.item.__screen__.event.action()
@@ -584,6 +584,7 @@ class barData(coreFunc):
 
     def state(self, withState:str = ''):
         if withState == 'selected': self.colour = pg_ess.colour.selected
+        elif withState == 'done': self.colour = pg_ess.colour.lightgreen
         else: self.colour = pg_ess.colour.white
 
 

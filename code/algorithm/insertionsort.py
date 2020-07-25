@@ -59,8 +59,6 @@ class insertionsort:
 
             action_result = commonFunc.waitAction(sort_screen, speed/2)
             if action_result != None: return action_result
-            
-            array.barslist[index].state()
 
         # Sort is completed
         sort_screen.objects.time_taken.data.stopTimer()

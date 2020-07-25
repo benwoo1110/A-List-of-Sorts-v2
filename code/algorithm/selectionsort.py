@@ -58,6 +58,8 @@ class selectionsort:
             action_result = array.move(lowest_index, index, speed)
             if action_result != None: return action_result
 
+            array.barslist[index].state('done')
+
         # Sort is completed
         sort_screen.objects.time_taken.data.stopTimer()
         action_result = array.completed()

@@ -55,6 +55,8 @@ class bubblesort:
             # Unselect the bars
             array.barslist[index+1].state()
 
+            array.barslist[counter].state('done')
+
             # If all pairs are sorted
             if not didSwap: break
 

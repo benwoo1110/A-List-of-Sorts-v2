@@ -153,6 +153,7 @@ info_text = {
     'Quick sort': 'Quick sort is an O(n log n) efficient sorting algorithm, serving as a systematic method for placing the elements of a random access file or an array in order.',
     'Radix sort': 'Radix sort is a non-comparative integer sorting algorithm that sorts data with integer keys by grouping keys by individual digits which share the same significant position and value.',
     'Bogo sort': 'Bogo sort is a highly ineffective sorting algorithm based on the generate and test paradigm. The function successively generates permutations of its input until it finds one that is sorted.',
+    'Selection sort': 'Selection sort is a simple, in-place comparison-based algorithm. The list is divided into two parts, sorted part at the left end and unsorted part at the right end.',
 }
 
 
