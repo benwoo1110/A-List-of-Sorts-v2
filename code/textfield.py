@@ -29,10 +29,12 @@ class textfield:
 
     @staticmethod
     def run(text_screen, itemName):
+        # Set surface
+        textfield_screen.surface = text_screen.surface
 
         # Get textfield item
         textfield_item = text_screen.objects[itemName]
-        textfield_item.load()
+        textfield_item.switchState('Selected')
 
         time_pressed, repeat_interval = 0, 1.2
 

@@ -24,6 +24,7 @@ icon_file: './icon.png'
 screen:
   width: 1024
   height: 768
+  resizable: True
 
 # Level of output shown
 # CRITICAL -> 50

@@ -130,7 +130,6 @@ class event(coreFunc):
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             # Set state to clicked
             click_result = actionResult(name=item.name, type=item.type, outcome='clicked')
-            item.switchState('Selected')
             
             # Get the outcome of running
             click_result.getOutcome(item)
@@ -195,15 +194,22 @@ class event(coreFunc):
             config.screen.width = event.w
             config.screen.height = event.h
 
+            # Set y axis to new window size
+            self.__screen__.surface.frame.y = max(self.__screen__.surface.frame.y, min(config.screen.height - self.__screen__.surface.frame.__getattr__('h', scale=True), 0))
+            
             # Display surface with new scaling 
             window.fill(pg_ess.colour.orange)
-            self.__screen__.surface.display()
+            resizedSurface = pygame.transform.smoothscale(pygame.display.get_surface(), event.size)
+            window.blit(resizedSurface, self.__screen__.surface.frame.coord())
             
             logger.debug('Window resized to {}'.format(event.size))
         
         elif event.type == pygame.VIDEOEXPOSE:  
             window.fill(pg_ess.colour.orange)
+            window.blit(pygame.display.get_surface(), self.__screen__.surface.frame.coord())
             self.__screen__.surface.display() 
+
+            logger.debug('Window exposed...')
 
     def quit(self, event):
         if event.type == pygame.QUIT: 

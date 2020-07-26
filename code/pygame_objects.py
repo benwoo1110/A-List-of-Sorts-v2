@@ -109,12 +109,11 @@ class surface(coreFunc):
                 pg_ess.core.update()
                 pg_ess.core.buffer()
                 
+        # Resize surface
+        resizedSurface = pygame.transform.smoothscale(self.Surface, self.frame.size(scale=True))
+
         # Output to screen
-        screen_surface = pygame.Surface(self.frame.size(scale=True))
-
-        pygame.transform.smoothscale(self.Surface, self.frame.size(scale=True), screen_surface)
-
-        window.blit(screen_surface, self.frame.coord())
+        window.blit(resizedSurface, self.frame.coord())
         pg_ess.core.update()
 
 
@@ -281,13 +280,6 @@ class images(coreFunc):
             image_name = os.path.basename(image).split('.')[0]
             # Load image
             image_surface = pygame.image.load(image).convert_alpha() if isAlpha else pygame.image.load(image).convert()
-            '''
-            image_surface = pygame.transform.smoothscale(
-                image_surface, 
-                (int(image_surface.get_width()*config.scale_w()), 
-                int(image_surface.get_height()*config.scale_w()))
-            )
-            '''
             # Store image
             self.__dict__[image_name] = image_surface
 
@@ -304,7 +296,7 @@ class textFormat(coreFunc):
     def __init__(self, fontType:str = None, fontSize:int = 36, colour:tuple = pg_ess.colour.white, 
     warpText:int = None, align:str = 'left', lineSpacing:int = 1):
         self.fontType = fontType
-        self.fontSize = int(fontSize * config.scale_w())
+        self.fontSize = fontSize
         self.colour = colour
         self.warpText = warpText
         self.align = align

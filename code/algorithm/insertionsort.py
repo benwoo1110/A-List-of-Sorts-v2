@@ -57,6 +57,9 @@ class insertionsort:
                 action_result = array.move(index, moveTo, speed)
                 if action_result != None: return action_result
 
+            else:
+                array.barslist[index].state('')
+
             action_result = commonFunc.waitAction(sort_screen, speed/2)
             if action_result != None: return action_result
 

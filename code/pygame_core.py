@@ -88,8 +88,11 @@ elif config.icon_file != '':
 pygame.display.set_caption(config.title)
 
 # Set display
-window = pygame.display.set_mode(config.screen_res(), pygame.RESIZABLE)
+if config.screen.resizable: window = pygame.display.set_mode(config.screen_res(), pygame.RESIZABLE)
+else: window = pygame.display.set_mode(config.screen_res())
 clock = pygame.time.Clock()
+
+logger.debug(pygame.display.Info())
 
 
 #####################
@@ -129,7 +132,7 @@ class pg_ess:
         red = (255, 100, 78)
         green = (136, 250, 78)
         lightgreen = (200, 255, 200)
-            
+
 
     ##################
     # Core functions #
