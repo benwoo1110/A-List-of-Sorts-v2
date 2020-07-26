@@ -106,15 +106,14 @@ class surface(coreFunc):
         if animate:
             for x in range(config.screen.width, 0, -move_per_frame):
                 window.blit(self.Surface, (x, self.frame.y))
-                pg_ess.core.update()
-                pg_ess.core.buffer()
-                
+                self.__screen__.event.actions()
+
         # Resize surface
         resizedSurface = pygame.transform.smoothscale(self.Surface, self.frame.size(scale=True))
 
         # Output to screen
         window.blit(resizedSurface, self.frame.coord())
-        pg_ess.core.update()
+        
 
 
 class actions(coreFunc):
@@ -257,7 +256,7 @@ class item(coreFunc):
             if images != None: window.blit(self.images.__dict__[self.type+self.state], (self.frame.image.coord(self.__screen__.surface.frame.coord())))
             # Display data
             if hasattr(self.data, 'display') and withData: self.data.display(directToScreen=True)
-            pg_ess.core.update()
+            
 
         # Display to surface
         else: 
@@ -354,7 +353,8 @@ class text(coreFunc):
         if prefix != None: self.prefix = prefix
         if suffix != None: self.suffix = suffix
 
-        self.item.display()
+        if withDisplay: self.item.display()
+        else: self.item.load()
 
     def renderText(self):
         # Generate surface for text
@@ -397,7 +397,7 @@ class text(coreFunc):
         
         else:
             self.load()
-            screen.surface.display()
+            self.item.__screen__.surface.display()
 
 
 class sortbars(coreFunc):
@@ -569,8 +569,8 @@ class sortbars(coreFunc):
                 )
 
     def display(self, directToScreen:bool = False):
-        self.load()
-        screen.surface.display()
+        self.item.load()
+        self.item.__screen__.surface.display(directToScreen)
 
 
 class barData(coreFunc):
@@ -588,7 +588,8 @@ class barData(coreFunc):
 class timer(text):
     def __init__(self, format:textFormat = textFormat()):
         super().__init__('0.00 sec', '', '', format, False)
-        self.resetTimer()
+        self.startTime = 0
+        self.state = 'stop'
 
     def startTimer(self, withReset = False):
         # Check if should reset timer before starting
@@ -615,6 +616,7 @@ class timer(text):
     def resetTimer(self):
         self.startTime = 0
         self.state = 'stop'
+        self.setText('{:.2f} sec'.format(self.startTime))
 
 
 class moves(text):

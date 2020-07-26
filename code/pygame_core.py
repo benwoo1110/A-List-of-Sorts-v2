@@ -127,19 +127,8 @@ class pg_ess:
         white = (255, 255, 255)
         gray = (43, 43, 43)
         whiteish = (213, 213, 213)
-        orange = (255, 143, 8)
+        orange = (236, 146, 52)
         selected = (150, 150, 150)
         red = (255, 100, 78)
         green = (136, 250, 78)
         lightgreen = (200, 255, 200)
-
-
-    ##################
-    # Core functions #
-    ##################
-    class core:
-
-        @staticmethod
-        def update(): 
-            pygame.display.update()
-            clock.tick(config.framerate)

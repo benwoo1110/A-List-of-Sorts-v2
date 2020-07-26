@@ -84,6 +84,9 @@ class event(coreFunc):
                 event_result = event_run.event(event, *event_run.parameters)
                 # Get and store result if any
                 if event_result != None: result[event_run.action] = event_result
+
+        pygame.display.update()
+        clock.tick(config.framerate)
         
         return result
 
@@ -176,7 +179,7 @@ class event(coreFunc):
         # Get surface
         surface = self.__screen__.surface
         # Check if scrolling is needed
-        if surface.scroll and config.screen.height - surface.frame.h < 0:
+        if surface.scroll and config.screen.height - surface.frame.__getattr__('h', True) < 0:
             # Check of scroll action
             if event.type == pygame.MOUSEBUTTONDOWN:
                 # Scroll up

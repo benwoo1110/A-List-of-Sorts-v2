@@ -9,6 +9,7 @@ from code.algorithm.mergesort import mergesort
 from code.algorithm.quicksort import quicksort
 from code.algorithm.radixsort import radixsort
 from code.algorithm.selectionsort import selectionsort
+from code.algorithm.commonFunc import commonFunc
 
 
 #################
@@ -154,12 +155,18 @@ class sort:
 
         if sort_screen.objects.sortbox.data.bars != int(bars): sort_screen.objects.sortbox.data.bars = int(bars)
         else: sort_screen.objects.sortbox.data.genBars()
-        
-        sort_screen.objects.speed.data.setText(str(speed))
-        sort_screen.objects.list_length.data.setText(str(bars))
+
+        sort_screen.objects.speed.data.setText(str(speed), withDisplay=False)
+        sort_screen.objects.list_length.data.setText(str(bars), withDisplay=False)
+        sort_screen.objects.moves.data.reset()
+        sort_screen.objects.time_taken.data.resetTimer()
 
         # Display sort screen
         sort_screen.surface.display()
+
+        # Buffer time before sort starts
+        action_result = commonFunc.waitAction(sort_screen, 0.5)
+        if action_result != None: return action_result
 
         sort_result = runSort[sortType](sort_screen, speed)
         if sort_result != None: return sort_result
