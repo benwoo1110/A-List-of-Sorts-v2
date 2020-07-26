@@ -24,9 +24,6 @@ textfield_screen = screen(
 )
 
 
-# Allow A-Z and all 
-chars_allowed = list(range(32,65)) + list(range(91,127)) + [8]
-
 
 class textfield:
 
@@ -42,21 +39,20 @@ class textfield:
         while True:
 
             pressed_key = None
-            for char in keypressed[::-1]:
-                if textfield_item.data.validateChar(char.key): pressed_key = char
+
+            for char in keypressed:
+                if textfield_item.data.validateChar(char.key): 
+                    pressed_key = char
 
             # Engage key
             if pressed_key != None and time.time() - time_pressed >= repeat_interval:
 
                 # remove character
                 if pressed_key.key == 8: 
-                    textfield_item.data.text = textfield_item.data.text[:-1]
+                    textfield_item.data.setText(textfield_item.data.text[:-1])
                     
                 # Add character
-                else: textfield_item.data.text += pressed_key.unicode
-
-                # Update textfield
-                textfield_item.display()
+                else: textfield_item.data.setText(textfield_item.data.text + pressed_key.unicode)
 
                 # Setup for next key repeat
                 time_pressed = time.time()
@@ -75,4 +71,7 @@ class textfield:
                 return '__back__' 
 
             # Reset repeat timing on key release
-            if action_result.didAction('keyup'): time_pressed, repeat_interval = 0, 1.2
+            if action_result.didAction('keydown'): pass
+                 
+            if action_result.didAction('keyup'): 
+                if textfield_item.data.validateChar(char.key): time_pressed, repeat_interval = 0, 1.2

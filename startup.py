@@ -40,10 +40,8 @@ from code.home import home
 #################################
 # Starting Cryptography GUI app #
 #################################
-if __name__ == "__main__":
-    # Run home screen
-    pg_ess.core.caption('A List of Sorts v2')
-    home.run()
+home.run()
 
-    # End program
-    pg_ess.core.quit()
+# End program
+logger.info('Exiting program... Goodbye!')
+pygame.quit()

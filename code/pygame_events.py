@@ -113,6 +113,7 @@ class event(coreFunc):
             eventRun(action='keydown', event=self.keydown),
             eventRun(action='keyup', event=self.keyup),
             eventRun(action='scroll', event=self.scroll),
+            eventRun(action='resize', event=self.resize),
             eventRun(action='quit', event=self.quit)
         ])
         
@@ -123,7 +124,7 @@ class event(coreFunc):
 
     def click(self, event, item, directToScreen:bool = False):
         # Check if item is valid
-        if item == None: return None
+        if item == None: return
 
         # Check if mouse is clicked
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
@@ -168,7 +169,7 @@ class event(coreFunc):
                     # Set name of result
                     keyboard_result.name = key.name
                     # Get the outcome of running
-                    keyboard_result.getOutcome(key)     
+                    keyboard_result.getOutcome(key) 
             
         return keyboard_result
 
@@ -181,12 +182,28 @@ class event(coreFunc):
             if event.type == pygame.MOUSEBUTTONDOWN:
                 # Scroll up
                 if event.button == 4:
-                    surface.frame.y = min(surface.frame.y + config.scroll_speed, 0) / config.scale_w()
+                    surface.frame.y = min(surface.frame.y + config.scroll_speed, 0) 
                     surface.display()
                 # Scroll down
                 elif event.button == 5:
-                    surface.frame.y = max(surface.frame.y - config.scroll_speed, min(config.screen.height - surface.frame.h, 0)) / config.scale_w()
+                    surface.frame.y = max(surface.frame.y - config.scroll_speed, min(config.screen.height - surface.frame.__getattr__('h', scale=True), 0))
                     surface.display()
+
+    def resize(self, event):
+        if event.type == pygame.VIDEORESIZE:
+            # Save new screen size
+            config.screen.width = event.w
+            config.screen.height = event.h
+
+            # Display surface with new scaling 
+            window.fill(pg_ess.colour.orange)
+            self.__screen__.surface.display()
+            
+            logger.debug('Window resized to {}'.format(event.size))
+        
+        elif event.type == pygame.VIDEOEXPOSE:  
+            window.fill(pg_ess.colour.orange)
+            self.__screen__.surface.display() 
 
     def quit(self, event):
         if event.type == pygame.QUIT: 

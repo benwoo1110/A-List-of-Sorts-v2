@@ -6,6 +6,7 @@ import os
 import sys
 import glob
 import traceback
+import inspect
 from datetime import datetime
 from code.config import config
 
@@ -70,12 +71,25 @@ logger.info('Loading up {}...'.format(filename))
 logger.debug('[config] {}'.format(config))
 
 
-#####################
-# Initialise screen #
-#####################
+############################
+# Initialise pygame window #
+############################
 import pygame
 pygame.init()
-window = pygame.display.set_mode(config.screen_res())
+
+# Set icon
+if os.path.isfile(config.icon_file): 
+    pygame.display.set_icon(pygame.image.load(config.icon_file))
+
+elif config.icon_file != '': 
+    logger.warn('Error loading app icon image "{}"'.format(config.icon_file))
+
+# Set title
+pygame.display.set_caption(config.title)
+
+# Set display
+window = pygame.display.set_mode(config.screen_res(), pygame.RESIZABLE)
+clock = pygame.time.Clock()
 
 
 #####################
@@ -115,29 +129,14 @@ class pg_ess:
         red = (255, 100, 78)
         green = (136, 250, 78)
         lightgreen = (200, 255, 200)
-    
+            
 
     ##################
     # Core functions #
     ##################
     class core:
-        @staticmethod
-        def caption(caption:str = 'pygame time!'):
-            pygame.display.set_caption(caption)
-            logger.info('Set window title to "{}"'.format(caption))
-        
-        @staticmethod
-        def update(tick:int = config.ticks):
-            pygame.display.flip()
-            pygame.display.update()
-            pygame.time.Clock().tick_busy_loop(tick)
-        
-        @staticmethod
-        def buffer():
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT: pg_ess.core.quit()
 
         @staticmethod
-        def quit():
-            logger.info('Exiting program... Goodbye!')
-            pygame.quit()
+        def update(): 
+            pygame.display.update()
+            clock.tick(config.framerate)

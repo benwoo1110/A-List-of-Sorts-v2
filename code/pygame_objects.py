@@ -26,37 +26,33 @@ class objectFrame(coreFunc):
 
 
 class coord(coreFunc):
-    def __init__(self, scale:bool = True, x:int = 0, y:int = 0, w:int = 0, h:int = 0):
-        self.scale:bool = scale
+    def __init__(self, scale:bool = False, x:int = 0, y:int = 0, w:int = 0, h:int = 0):
         self.x:int = x
         self.y:int = y
         self.w:int = w
         self.h:int = h
 
-    def __setattr__(self, name, value):
-        if name != 'scale' and self.scale: self.__dict__[name] = int(value * config.scale_w())
-        else: self.__dict__[name] = value
+    def __getattr__(self, name, scale:bool = False): 
+        if scale: return int(self.__dict__[name] * config.scale_w())
+        else: return int(self.__dict__[name])
 
-    def size(self) -> tuple: return (self.w, self.h)
+    def size(self, scale:bool = False) -> tuple: return (self.__getattr__('w', scale), self.__getattr__('h', scale))
 
-    def coord(self, surfaceCoord:tuple = (0, 0)) -> tuple: return (self.x + surfaceCoord[0], self.y + surfaceCoord[1])
+    def coord(self, surfaceCoord:tuple = (0, 0), scale:bool = False) -> tuple: return (self.__getattr__('x', scale) + surfaceCoord[0], self.__getattr__('y', scale) + surfaceCoord[1])
     
-    def rect(self): return (self.x, self.y, self.w, self.h)
+    def rect(self, scale:bool = False): return (self.__getattr__('x', scale), self.__getattr__('y', scale), self.__getattr__('w', scale), self.__getattr__('h', scale))
 
     def move(self, x, y):
-        og_scale = self.scale
-        self.scale = False
         self.x += x
         self.y += y
-        self.scale = og_scale
 
-    def mouseIn(self, surfaceCoord:tuple = (0, 0)) -> bool:
+    def mouseIn(self, surfaceCoord:tuple = (0, 0), scale:bool = True) -> bool:
         # Get current mouse position
         mousePos = pygame.mouse.get_pos()
         # Save surface coord to seperate variables
         scroll_x, scroll_y = surfaceCoord
         # Return if in box
-        return self.x + scroll_x < mousePos[0] < self.x + self.w + scroll_x and self.y + scroll_y < mousePos[1] < self.y + self.h + scroll_y
+        return self.__getattr__('x', scale) + scroll_x < mousePos[0] < self.__getattr__('x', scale) + self.__getattr__('w', scale) + scroll_x and self.__getattr__('y', scale) + scroll_y < mousePos[1] < self.__getattr__('y', scale) + self.__getattr__('h', scale) + scroll_y
 
 
 class screen(coreFunc):
@@ -69,9 +65,10 @@ class screen(coreFunc):
         self.event = event(self)
 
         # Load the screen
-        self.surface.load
+        self.surface.load()
 
         logger.debug('[{}] {}'.format(self.name, self.__repr__()))
+
 
 class surface(coreFunc):
     def __init__(self, screen, frame:coord = coord(), bgColour:tuple = pg_ess.colour.orange, isAlpha:bool = False, scroll:bool = True):
@@ -81,6 +78,8 @@ class surface(coreFunc):
         self.isAlpha = isAlpha
         self.scroll = scroll
         
+        self.frame.scale = True
+
         # Create surface
         self.create()
     
@@ -103,15 +102,19 @@ class surface(coreFunc):
 
         # Animation
         speed = 0.4
-        move_per_frame = int(config.screen.width // (config.ticks * speed))
+        move_per_frame = int(config.screen.width // (config.framerate * speed))
         if animate:
             for x in range(config.screen.width, 0, -move_per_frame):
                 window.blit(self.Surface, (x, self.frame.y))
                 pg_ess.core.update()
                 pg_ess.core.buffer()
                 
-        # Output to screen    
-        window.blit(self.Surface, self.frame.coord())
+        # Output to screen
+        screen_surface = pygame.Surface(self.frame.size(scale=True))
+
+        pygame.transform.smoothscale(self.Surface, self.frame.size(scale=True), screen_surface)
+
+        window.blit(screen_surface, self.frame.coord())
         pg_ess.core.update()
 
 
@@ -278,11 +281,13 @@ class images(coreFunc):
             image_name = os.path.basename(image).split('.')[0]
             # Load image
             image_surface = pygame.image.load(image).convert_alpha() if isAlpha else pygame.image.load(image).convert()
+            '''
             image_surface = pygame.transform.smoothscale(
                 image_surface, 
                 (int(image_surface.get_width()*config.scale_w()), 
                 int(image_surface.get_height()*config.scale_w()))
             )
+            '''
             # Store image
             self.__dict__[image_name] = image_surface
 
@@ -461,7 +466,7 @@ class sortbars(coreFunc):
 
         # Calculate animation speed
         length_apart = self.barslist[bar_2].frame.x - self.barslist[bar_1].frame.x
-        number_of_frames = config.ticks * speed
+        number_of_frames = config.framerate * speed
         if number_of_frames < 1: number_of_frames = 1
 
         move_per_frame = length_apart / number_of_frames
@@ -503,7 +508,7 @@ class sortbars(coreFunc):
 
         # Calculate animation speed
         length_apart = self.barslist[new_pos].frame.x - self.barslist[orginal_pos].frame.x
-        number_of_frames = config.ticks * speed
+        number_of_frames = config.framerate * speed
         if number_of_frames < 1: number_of_frames = 1
 
         move_per_frame = length_apart / number_of_frames

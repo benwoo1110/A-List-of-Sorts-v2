@@ -14,6 +14,12 @@ default_config_contents = '''\
 
 # NOTE: Change only if you know what you are doing!
 
+# Window caption
+title: 'A List of Sorts v2'
+
+# Application icon file location
+icon_file: './icon.png'
+
 # Size of pygame window in pixel
 screen:
   width: 1024
@@ -34,7 +40,7 @@ logging:
   keep_logs: 5
 
 # Changes the refresh rate of pygame
-ticks: 60
+framerate: 60
 
 # Change speed of scrolling
 scroll_speed: 35
