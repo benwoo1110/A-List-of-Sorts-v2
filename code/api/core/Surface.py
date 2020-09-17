@@ -29,7 +29,7 @@ class Surface(Container):
         for data in self.datas.values():
             if (isinstance(data, Images)) and data.imageFolder == None:
                 data.imageFolder = File(self.surfaceDir)
-            data.setUp(self.screen.getScreen())
+            data.setUp(self)
 
         for _, childSurface in self:
             childSurface.setUp(self.surfaceDir, screen)
@@ -56,9 +56,12 @@ class Surface(Container):
     def getName(self):
         return self.name
 
+    def getScreen(self):
+        return self.screen.getScreen()
+
     def load(self, withChilds:list = None, nested:bool = False):
         for data in self.datas.values():
-            data.loadWithState(self.state)
+            data.loadWithState()
 
         self.loaded = True
 
