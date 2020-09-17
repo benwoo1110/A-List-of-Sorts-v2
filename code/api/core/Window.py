@@ -1,14 +1,13 @@
 import pygame
 
-from code.api.data.Frame import Frame
+from code.api.core.Container import Container
 from code.api.utils.File import File
 from code.api.utils.Logger import Logger
 
 
-class Window:
-
+class Window(Container):
     def __init__(self, icon:File, title:str, fullscreen:bool, windowScale:int, size:tuple):
-        self.screens = []
+        super().__init__()
         self.screensStack = []
         self.doStackChange = False
         self.doUpdate = False
@@ -23,8 +22,8 @@ class Window:
         except Exception: Logger.get().error('Unable set display caption!', exc_info=True)
 
         # Set display
-        width = size[0]
-        height = size[1]
+        self.width = size[0]
+        self.height = size[1]
 
         if fullscreen:
             self.window = pygame.display.set_mode(self.size(), pygame.FULLSCREEN)
@@ -62,17 +61,31 @@ class Window:
 
     def coord(self): return (self.x, self.y)
     
-    def addScreen(self, name, screen):
-        self.__dict__[name] = screen
-        self.screens.append(name)
-        Logger.get().debug('Added screen {}'.format(name))
+    def addScreen(self, screen):
+        self.container[screen.name] = screen
+        Logger.get().debug('Added screen {}'.format(screen.name))
 
-    def getScreen(self): return getattr(self, self.screensStack[-1]).Screen
-
-    def getBackground(self): return getattr(self, self.screensStack[-1]).background
+    def getCurrentScreen(self): return self.container.get(self.screensStack[-1]).getScreen()
 
     def triggerUpdate(self):
         self.doUpdate = True
+
+    def update(self):
+        try:
+            # Display window
+            resizedSurface = pygame.transform.smoothscale(self.getCurrentScreen(), self.scaledSize())
+            self.window.blit(resizedSurface, self.coord())
+
+            # Update
+            pygame.display.update()
+            pygame.time.Clock().tick(60)
+
+        # Error
+        except:
+            Logger.get().critical('Error updating pygame window!', exc_info=True)
+
+        # Reset screen update trigger
+        self.doUpdate = False
 
     def changeStack(self, type_:str, screen:str = None) -> bool:
         # Notify another changeStack() is happening
@@ -123,15 +136,15 @@ class Window:
                 Logger.get().error('No screen in stack, falling back to startScreen.')
 
             # Prep screen
-            screen = getattr(self, self.screensStack[-1])
-            screen.init()
-            screen.display(withBackground=True)
+            screen = self.container.get(self.screensStack[-1])
+            screen.start()
+            screen.display()
 
             # Log current screen stacks
             Logger.get().debug('New screen stack of {}'.format(self.screensStack))
             
             # Main loop for top screen
-            while not self.stackChange:
+            while not self.doStackChange:
                 # Check for updates wanted to screen
                 if self.doUpdate: self.update()
 

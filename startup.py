@@ -16,6 +16,13 @@ Dependency(packages).check()
 # App setup
 from code.api.App import App
 from code.api.utils.Logger import Logger
+from code.api.core.Screen import Screen
 
-app = App("A List of Sort")
+class testScreen(Screen):
+    def __init__(self, name):
+        super().__init__(name)
+
+app = App("A List of Sort", (1024, 768))
+app.registerScreen(testScreen('testScreen'))
 Logger.get().info("TEST START")
+app.start('testScreen')

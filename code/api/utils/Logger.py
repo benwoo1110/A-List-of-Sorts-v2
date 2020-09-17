@@ -29,7 +29,7 @@ class Logger:
 
         # Console logging
         consoleHandler = logging.StreamHandler(sys.stdout)
-        consoleHandler.setLevel(Logger.levelFromString(fileLevel))
+        consoleHandler.setLevel(Logger.levelFromString(consoleLevel))
         consoleHandler.setFormatter(Logger.FORMATTER)
 
         # Logging to log file
