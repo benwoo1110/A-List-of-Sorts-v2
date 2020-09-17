@@ -6,14 +6,10 @@ class Container:
             self.container = container
     
     def __iter__(self):
-        self.counter = 0
-        return self
+        return iter(self.container.items())
 
-    def __next__(self):
-        if self.counter >= len(self.container):
-            self.counter = 0
-            raise StopIteration
+    def addContainer(self, name, object_:object):
+        self.container[name] = object_
 
-        current = getattr(self, self.container[self.counter])
-        self.counter += 1
-        return current
+    def getContainer(self, name):
+        return self.container.get(name)

@@ -17,12 +17,24 @@ Dependency(packages).check()
 from code.api.App import App
 from code.api.utils.Logger import Logger
 from code.api.core.Screen import Screen
+from code.api.data.Images import Images
+from code.api.utils.File import File
 
-class testScreen(Screen):
-    def __init__(self, name):
-        super().__init__(name)
+
+class home(Screen):
+    def __init__(self):
+        super().__init__('home')
+
+
+image = Images(File("./surfaces/home/"), None)
+test = home()
 
 app = App("A List of Sort", (1024, 768))
-app.registerScreen(testScreen('testScreen'))
+image.setUp()
+
+for i in image:
+    print(i)
+
+app.registerScreen(test)
 Logger.get().info("TEST START")
-app.start('testScreen')
+app.start('home')

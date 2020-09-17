@@ -3,6 +3,8 @@ import pygame
 from code.api.core.Container import Container
 from code.api.core.Frame import Frame
 from code.api.core.Window import Window
+from code.api.data.Images import Images
+from code.api.utils.File import File
 
 
 class Screen(Container):
@@ -25,6 +27,9 @@ class Screen(Container):
         self.frame = frame
         self.window = window
         self.screen = pygame.surface.Surface(frame.size(), pygame.SRCALPHA)
+        self.backgroundImage = Images(File("./surfaces/{}".format(self.name)), self.frame).setUp()
+
+        self.screen.blit(self.backgroundImage.getImage('background'), self.backgroundImage.frame.coord())
 
     def addSurfaces(self, surfaces:list):
         for surface in surfaces:
@@ -35,6 +40,9 @@ class Screen(Container):
     
     def getScreen(self):
         return self.screen
+
+    def getName(self):
+        return self.name
 
     def display(self):
         self.window.triggerUpdate()

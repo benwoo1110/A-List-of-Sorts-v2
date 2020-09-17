@@ -28,9 +28,9 @@ class File:
     def exist(self) -> bool:
         return os.path.exists(self.filepath)
 
-    def getContainingFiles(self) -> dict:
+    def getContainingFiles(self, filter_:str = "*") -> dict:
         files = dict()
-        for file_ in glob.glob(os.path.join(self.filepath, "*")):
+        for file_ in glob.glob(os.path.join(self.filepath, filter_)):
             files[os.path.basename(file_)] = File(file_)
         return files
 
@@ -42,3 +42,6 @@ class File:
 
     def getPath(self) -> str:
         return self.filepath
+
+    def __repr__(self):
+        return "File('{}')".format(self.getPath())
