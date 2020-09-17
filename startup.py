@@ -1,47 +1,21 @@
-######################################
-# Import and initialize the librarys #
-######################################
-import logging
-import sys
 import os
-import pkg_resources
 
 
-##########################
-# Check for dependencies #
-##########################
-with open('requirements.txt', 'r') as requirements:
-    # Getting dependencies list needed
-    dependencies = requirements.read().split('\n')
+# Set program evironment
+os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
+os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
-    for dependency in dependencies:
-        # Check if dependencies meets the requirements
-        try: pkg_resources.require(dependency)
+# Dependency checking
+from code.api.utils.Dependency import Dependency
 
-        # If dependencies out of date
-        except pkg_resources.VersionConflict:
-            print('Dependency {} outdated. Attempting to update now...'.format(dependency))
-            os.system('pip3 install --no-cache-dir {}'.format(dependency))
-
-        # If dependencies is not found/installed.
-        except pkg_resources.DistributionNotFound:
-            print('Dependency {} not found. Attempting to install now...'.format(dependency))
-            os.system('pip3 install --no-cache-dir {}'.format(dependency))
+with open("./requirements.txt", "r") as requirementsFile:
+    packages = requirementsFile.read().split("\n")
+Dependency(packages).check()
 
 
-#####################
-# Import code stuff #
-#####################
-from code.config import config
-from code.pygame_core import *
-from code.home import home
+# App setup
+from code.api.App import App
+from code.api.utils.Logger import Logger
 
-
-#################################
-# Starting Cryptography GUI app #
-#################################
-home.run()
-
-# End program
-logger.info('Exiting program... Goodbye!')
-pygame.quit()
+app = App("A List of Sort")
+Logger.get().info("TEST START")
