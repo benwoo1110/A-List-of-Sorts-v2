@@ -20,21 +20,11 @@ from code.api.core.Screen import Screen
 from code.api.data.Images import Images
 from code.api.utils.File import File
 
-
-class home(Screen):
-    def __init__(self):
-        super().__init__('home')
+from code.screens.home import home
 
 
-image = Images(File("./surfaces/home/"), None)
-test = home()
+app = App(name="A List of Sort v2", size=(1024, 768))
 
-app = App("A List of Sort", (1024, 768))
-image.setUp()
-
-for i in image:
-    print(i)
-
-app.registerScreen(test)
+app.registerScreen(home())
 Logger.get().info("TEST START")
 app.start('home')

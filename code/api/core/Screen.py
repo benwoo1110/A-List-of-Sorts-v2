@@ -1,4 +1,5 @@
 import pygame
+import os
 
 from code.api.core.Container import Container
 from code.api.core.Frame import Frame
@@ -11,6 +12,7 @@ class Screen(Container):
     def __init__(self, name):
         super().__init__()
         self.name = name
+        self.screenDir = os.path.join("./surfaces/", self.getName()+"/")
     
     def start(self):
         pass
@@ -27,13 +29,16 @@ class Screen(Container):
         self.frame = frame
         self.window = window
         self.screen = pygame.surface.Surface(frame.size(), pygame.SRCALPHA)
-        self.backgroundImage = Images(File("./surfaces/{}".format(self.name)), self.frame).setUp()
 
+        self.backgroundImage = Images(File(self.screenDir), self.frame).setUp(self.screen)
         self.screen.blit(self.backgroundImage.getImage('background'), self.backgroundImage.frame.coord())
 
-    def addSurfaces(self, surfaces:list):
-        for surface in surfaces:
-            self.container[surface.getName()] = surface
+        for _, surface in self:
+            surface.setUp(self.screenDir, self)
+
+    def addSurface(self, surface):
+        self.addContainer(surface.getName(), surface)
+        return self
 
     def getSurface(self, name:str):
         return self.container.get(name)

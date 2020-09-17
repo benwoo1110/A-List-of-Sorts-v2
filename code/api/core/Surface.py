@@ -1,84 +1,78 @@
 import  pygame
+import os
 
 from code.api.core.Screen import Screen
 from code.api.core.Window import Window
+from code.api.core.Container import Container
 from code.api.core.Frame import Frame
 from code.api.data.Images import Images
+from code.api.utils.File import File
 
 
-class Surface:
-    def __init__(self, screen, name, frame:Frame, selectable:bool = True, 
-    bg_colour:tuple = None, directDisplay:bool = False, alpha:bool = False, **items):
-        self.screen = screen
+class Surface(Container):
+    def __init__(self, name:str, type_:str, frame:Frame, selectable:bool = True, actions:list = None):
+        super().__init__()
         self.name = name
+        self.type_ = type_
         self.frame = frame
         self.selectable = selectable
-        self.bg_colour = bg_colour
-        self.directDisplay = directDisplay
-        self.alpha = alpha
-
-        # Create surface
-        if self.alpha: self.Surface = pygame.surface.Surface(self.frame.size(), pygame.SRCALPHA)
-        else: self.Surface = pygame.surface.Surface(self.frame.size())
-        
-        # Get background image
-        self.bg_image = Images([self.screen.name, self.name], frame=self.frame, alpha=alpha)
-        self.loadBackground()
-
-        # Store items
+        self.actions = actions
+        self.datas = dict()
+        self.surface = pygame.surface.Surface(self.frame.size(), pygame.SRCALPHA)
+        self.state = "normal"
         self.loaded = False
-        self.containerList = []
-        for name, itemData in items.items(): self.addItem(name, itemData)
 
-    def addChild(self, name, itemData:dict):
-        pass
+    def setUp(self, parentDir:str, screen:Screen):
+        self.screen = screen
+        self.surfaceDir = os.path.join(parentDir, self.getName()+"/")
 
-    def getChild(self, name:str) -> Surface:
-        pass
+        for data in self.datas.values():
+            if (isinstance(data, Images)) and data.imageFolder == None:
+                data.imageFolder = File(self.surfaceDir)
+            data.setUp(self.screen.getScreen())
+
+        for _, childSurface in self:
+            childSurface.setUp(self.surfaceDir, screen)
+
+        self.load()
+
+    def addData(self, name, data):
+        self.datas[name] = data
+        return self
+
+    def getData(self, name):
+        return self.datas.get(name)
+
+    def addChild(self, childSurface):
+        self.addContainer(childSurface.getName(), childSurface)
+        return self
+
+    def getChild(self, name:str):
+        return self.getContainer(name)
 
     def listChild(self) -> list:
-        pass
+        return self.container.keys()
 
-    def unload(self):
-        if self.loaded: self.loaded = False
-        else: logger.warn('Surface {} already unloaded.'.format(self.name))
+    def getName(self):
+        return self.name
 
-    def load(self, withItems:list = None, refresh:bool = False):
-        # Get item list to load
-        if withItems == None: toLoad = []
-        elif withItems == 'all': toLoad = self.containerList
-        else: toLoad = withItems
-        
-        # Load all items defined
-        for item in toLoad: 
-            if refresh: getattr(self, item).load(withData='all')
-            else: getattr(self, item).load()
-
-        # Load to screen
-        self.screen.Screen.blit(self.Surface, self.frame.coord())
+    def load(self, withChilds:list = None, nested:bool = False):
+        for data in self.datas.values():
+            data.loadWithState(self.state)
 
         self.loaded = True
 
-    def loadBackground(self):
-        # Fill colour
-        if self.bg_colour != None: self.Surface.fill(self.bg_colour)
-        # Display to screen
-        if 'background' in self.bg_image.containerList: 
-            self.Surface.blit(self.bg_image.background, (0, 0))
+        if withChilds == None:
+            return
 
-    def display(self, withItems:list = None, refresh:bool = False):        
-        # Load the surface with items
-        self.load(withItems, refresh)
+        for name, child in self: 
+            if name not in withChilds:
+                continue
+            if nested:
+                child.load(withChilds, nested)
+            else:
+                child.load()
 
-        # Directly display to window
-        if self.directDisplay:
-            # Resize surface
-            resizedSurface = pygame.transform.smoothscale(self.Surface, self.frame.size(scale=window.scale))
-            
-            # Output to window
-            window.Window.blit(resizedSurface, self.frame.coord(surfaceCoord=window.coord(), scale=window.scale))
-            PgEss.updateWindow()
-        
-        else:
-            # Load to screen
-            self.screen.display()
+    def display(self, withChilds:list = None, nested:bool = False):        
+        self.load(withChilds, nested)
+        self.screen.display()

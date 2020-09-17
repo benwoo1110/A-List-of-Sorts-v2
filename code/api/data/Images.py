@@ -13,17 +13,16 @@ class Images(Container):
         self.fileType = fileType
         self.frame = frame
 
-    def setUp(self):
-        imageDict = self.imageFolder.getContainingFiles(self.fileType)
+    def setUp(self, surface):
+        self.surface = surface
 
         # get the image
+        imageDict = self.imageFolder.getContainingFiles(self.fileType)
         for imageFileName, imageFile in imageDict.items():
             # Get name
             imageName = imageFileName.split('.')[0]
-
             # Load image
             loadedImage = pygame.image.load(imageFile.getPath()).convert_alpha()
-
             # Store image
             self.addContainer(imageName, loadedImage)
 
@@ -31,3 +30,9 @@ class Images(Container):
 
     def getImage(self, name):
         return self.container.get(name)
+    
+    def load(self, name):
+        self.surface.blit(self.getImage(name), self.frame.coord())
+
+    def loadWithState(self, state:str):
+        self.surface.blit(self.getImage(state), self.frame.coord())
