@@ -1,9 +1,9 @@
+# Set program evironment
 import os
 
-
-# Set program evironment
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
+
 
 # Dependency checking
 from code.api.utils.Dependency import Dependency
@@ -21,7 +21,6 @@ from code.api.data.Images import Images
 from code.api.utils.File import File
 
 from code.screens.home import home
-
 
 app = App(name="A List of Sort v2", size=(1024, 768))
 
