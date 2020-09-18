@@ -7,9 +7,26 @@ from code.api.utils.Logger import Logger
 
 
 class TextFormat:
+    pygame.font.init()
+
+    customFontsAvailable = dict()
+    defaultFont = None
+
+    @staticmethod
+    def addCustomFonts(customFontsAvailable:dict):
+        TextFormat.customFontsAvailable.update(**customFontsAvailable)
+
+    @staticmethod
+    def getCustomFont(font:str):
+        return TextFormat.customFontsAvailable.get(font)
+
+    @staticmethod
+    def setDefaultFont(font:str):
+        TextFormat.defaultFont = font
+
     def __init__(self, fontType:str = None, fontSize:int = 36, colour:tuple = (0,0,0), 
     warpText:int = None, align:str = 'left', pos:str = 'top', lineSpacing:int = 1):
-        self.fontType = fontType
+        self.fontType = TextFormat.defaultFont if fontType == None else fontType
         self.fontSize = fontSize
         self.colour = colour
         self.warpText = warpText
@@ -39,15 +56,15 @@ class TextValidate:
 
 class Text:
     def __init__(self, frame:Frame, text:str = '', prefix:str = '', suffix:str = '', name=None, item=None,
-    format:TextFormat = TextFormat(), validation:TextValidate = TextValidate(), editable:bool = True):
+    format:TextFormat = None, validation:TextValidate = None, editable:bool = True):
         self.name = name
         self.item = item
         self.frame = frame
         self.text = text
         self.prefix = prefix
         self.suffix = suffix
-        self.format = format
-        self.validation = validation
+        self.format = TextFormat() if format == None else format
+        self.validation = TextValidate() if validation == None else validation
         self.editable = editable
 
     def setUp(self, surface):

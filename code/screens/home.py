@@ -26,7 +26,7 @@ class home(Screen):
                     actions=[]
                 )
                 .addData("image", Images(None, Frame(x=225, y=242, w=751, h=211)))
-                .addData("text", Text(frame=Frame(x=225, y=242, w=751, h=211), text="test"))
+                .addData("text", Text(frame=Frame(x=100, y=242, w=751, h=211), text="test"))
             )
         )
     

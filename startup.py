@@ -17,13 +17,15 @@ Dependency(packages).check()
 from code.api.App import App
 from code.api.utils.Logger import Logger
 from code.api.core.Screen import Screen
-from code.api.data.Images import Images
+from code.api.data.Text import TextFormat
 from code.api.utils.File import File
-
 from code.screens.home import home
 
 app = App(name="A List of Sort v2", size=(1024, 768))
 
+TextFormat.setDefaultFont(TextFormat.getCustomFont("Futura"))
+
 app.registerScreen(home())
-Logger.get().info("TEST START")
-app.start('home')
+
+Logger.get().info("START")
+app.start("home")
