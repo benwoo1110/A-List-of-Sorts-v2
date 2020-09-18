@@ -21,28 +21,32 @@ class Logger:
             Logger.logger.error("Logger has already been setup!")
             return
 
-        # Setup log file directory
-        logFiles = glob.glob(os.path.join(Logger.LOGS_LOCATION, "*.log"))
-        logFiles.sort(key=os.path.getmtime)
-        for i in range(len(logFiles) - max(0, maxKeepLog-1)):
-            os.remove(logFiles[i])
+        # Create logging object
+        Logger.logger = logging.getLogger(loggerName)
+        Logger.logger.setLevel(logging.DEBUG)
 
-        # Console logging
+        # Console
         consoleHandler = logging.StreamHandler(sys.stdout)
         consoleHandler.setLevel(Logger.levelFromString(consoleLevel))
         consoleHandler.setFormatter(Logger.FORMATTER)
 
-        # Logging to log file
-        fileHandler = logging.FileHandler(Logger.LOG_FILENAME)
-        fileHandler.setLevel(Logger.levelFromString(fileLevel))
-        fileHandler.setFormatter(Logger.FORMATTER)
-
-        # Create logging object
-        Logger.logger = logging.getLogger(loggerName)
-        Logger.logger.setLevel(logging.DEBUG)
         Logger.logger.addHandler(consoleHandler)
-        Logger.logger.addHandler(fileHandler)
 
+        # File
+        if os.path.isdir(Logger.LOGS_LOCATION):
+            # Setup log file directory
+            logFiles = glob.glob(os.path.join(Logger.LOGS_LOCATION, "*.log"))
+            logFiles.sort(key=os.path.getmtime)
+            for i in range(len(logFiles) - max(0, maxKeepLog-1)):
+                os.remove(logFiles[i])
+
+            # Logging to log file
+            fileHandler = logging.FileHandler(Logger.LOG_FILENAME)
+            fileHandler.setLevel(Logger.levelFromString(fileLevel))
+            fileHandler.setFormatter(Logger.FORMATTER)
+
+            Logger.logger.addHandler(fileHandler)
+        
         isSetUp = True
 
     @staticmethod
