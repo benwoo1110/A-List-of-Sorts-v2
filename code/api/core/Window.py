@@ -117,7 +117,7 @@ class Window(Container):
                 Logger.get().error('No screen in stack, falling back to startScreen.')
 
             # Prep screen
-            screen = self.container.get(self.screensStack[-1])
+            screen = self._container.get(self.screensStack[-1])
             screen.start()
             screen.display()
 
@@ -142,16 +142,20 @@ class Window(Container):
             self.doStackChange = False
 
     def addScreen(self, screen):
-        self.container[screen.getName()] = screen
+        self.addObject(screen.getName(), screen)
         Logger.get().debug('Added screen {}'.format(screen.getName()))
 
     def triggerUpdate(self):
         self.doUpdate = True
 
-    def size(self): return (self.width, self.height)
+    def size(self):
+        return (self.width, self.height)
 
-    def scaledSize(self): return (self.scaledWidth, self.scaledWeight)
+    def scaledSize(self):
+        return (self.scaledWidth, self.scaledWeight)
 
-    def getCoord(self): return (self.x, self.y)
+    def getCoord(self):
+        return (self.x, self.y)
 
-    def getCurrentScreen(self): return self.container.get(self.screensStack[-1]).getScreen()
+    def getCurrentScreen(self):
+        return self.getObject(self.screensStack[-1]).getScreen()

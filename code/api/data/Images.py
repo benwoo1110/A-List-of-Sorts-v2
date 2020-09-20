@@ -24,12 +24,12 @@ class Images(Container):
             # Load image
             loadedImage = pygame.image.load(imageFile.getPath()).convert_alpha()
             # Store image
-            self.addContainer(imageName, loadedImage)
+            self.addObject(imageName, loadedImage)
 
         return self
 
     def getImage(self, name):
-        return self.container.get(name)
+        return self.getObject(name)
     
     def load(self, name):
         self.surface.getScreen().blit(self.getImage(name), self.frame.getCoord())

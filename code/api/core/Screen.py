@@ -40,11 +40,11 @@ class Screen(Container):
         self._window.triggerUpdate()
 
     def addSurface(self, surface):
-        self.addContainer(surface.getName(), surface)
+        self.addObject(surface.getName(), surface)
         return self
 
     def getSurface(self, name:str):
-        return self.getContainer(name)
+        return self.getObject(name)
     
     def getScreen(self):
         return self._screen

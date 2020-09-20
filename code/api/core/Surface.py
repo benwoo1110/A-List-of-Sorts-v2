@@ -61,7 +61,7 @@ class Surface(Container):
         return self
 
     def addChild(self, childSurface):
-        self.addContainer(childSurface.getName(), childSurface)
+        self.addObject(childSurface.getName(), childSurface)
         return self
 
     def setState(self, newState:str):
@@ -75,10 +75,10 @@ class Surface(Container):
         return self._datas.get(name)
 
     def getChild(self, name:str):
-        return self.getContainer(name)
+        return self.getObject(name)
 
     def listChild(self) -> list:
-        return self.container.keys()
+        return self._container.keys()
 
     def getName(self):
         return self._name
