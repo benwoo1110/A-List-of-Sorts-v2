@@ -9,29 +9,46 @@ class Frame:
         Frame.windowScale = scale
 
     def __init__(self, x:int = 0, y:int = 0, w:int = 0, h:int = 0):
-        self.x = x
-        self.y = y
-        self.w = w
-        self.h = h
-
-    def size(self, scale:int = 1) -> tuple:
-        return (int(self.w * scale), int(self.h * scale))
+        self._x = x
+        self._y = y
+        self._w = w
+        self._h = h
 
     def overlayCoord(self, surfaceCoord:tuple): 
-        self.x += surfaceCoord[0]
-        self.y += surfaceCoord[1]
-
-    def coord(self, surfaceCoord:tuple = (0, 0), scale:int = 1) -> tuple: 
-        return (int((self.x + surfaceCoord[0]) * scale), int((self.y + surfaceCoord[1]) * scale))
-    
-    def rect(self): return (self.x, self.y, self.w, self.h)
+        self._x += surfaceCoord[0]
+        self._y += surfaceCoord[1]
 
     def move(self, x, y):
-        self.x += x
-        self.y += y
+        self._x += x
+        self._y += y
 
     def mouseIn(self, surfaceCoord:tuple = (0, 0)) -> bool:
         mousePos = pygame.mouse.get_pos()
-        s_x, s_y = surfaceCoord
-        return int((self.x + s_x) * Frame.windowScale) < mousePos[0] < int((self.x + self.w + s_x) * Frame.windowScale)\
-        and int((self.y + s_y) * Frame.windowScale) < mousePos[1] < int((self.y + self.h + s_y) * Frame.windowScale)
+        sx, sy = surfaceCoord
+        return int((self._x + sx) * Frame.windowScale) < mousePos[0] < int((self._x + self._w + sx) * Frame.windowScale)\
+        and int((self._y + sy) * Frame.windowScale) < mousePos[1] < int((self._y + self._h + sy) * Frame.windowScale)
+
+    def getCoord(self, surfaceCoord:tuple = (0, 0), scale:int = 1) -> tuple: 
+        return (int((self._x + surfaceCoord[0]) * scale), int((self._y + surfaceCoord[1]) * scale))
+
+    def size(self, scale:int = 1) -> tuple:
+        return (int(self._w * scale), int(self._h * scale))
+    
+    def getRect(self, scale:int = 1) -> tuple:
+        return (int(self._x * scale), int(self._y * scale), int(self._w * scale), int(self._h * scale))
+
+    @property
+    def x(self):
+        return self._x
+    
+    @property
+    def y(self):
+        return self._y
+
+    @property
+    def w(self):
+        return self._w
+
+    @property
+    def h(self):
+        return self._h

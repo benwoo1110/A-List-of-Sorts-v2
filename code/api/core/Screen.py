@@ -31,7 +31,7 @@ class Screen(Container):
         self.screen = pygame.surface.Surface(frame.size(), pygame.SRCALPHA)
 
         self.backgroundImage = Images(File(self.screenDir), self.frame).setUp(None)
-        self.screen.blit(self.backgroundImage.getImage('background'), self.backgroundImage.frame.coord())
+        self.screen.blit(self.backgroundImage.getImage('background'), self.backgroundImage.frame.getCoord())
 
         for _, surface in self:
             surface.setUp(self.screenDir, self)

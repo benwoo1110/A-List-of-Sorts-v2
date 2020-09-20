@@ -32,7 +32,7 @@ class Images(Container):
         return self.container.get(name)
     
     def load(self, name):
-        self.surface.getScreen().blit(self.getImage(name), self.frame.coord())
+        self.surface.getScreen().blit(self.getImage(name), self.frame.getCoord())
 
     def loadWithState(self):
-        self.surface.getScreen().blit(self.getImage(self.surface.state), self.frame.coord())
+        self.surface.getScreen().blit(self.getImage(self.surface.state), self.frame.getCoord())
