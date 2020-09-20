@@ -2,7 +2,6 @@ import logging
 import os
 import sys
 import glob
-import traceback
 from functools import wraps
 from datetime import datetime
 
@@ -13,24 +12,24 @@ class Logger:
     LOGS_LOCATION = "./logs/"
 
     isSetUp = False
-    logger = logging.getLogger()
+    log = logging.getLogger()
 
     @staticmethod
     def setUp(loggerName:str, maxKeepLog:int, consoleLevel:str, fileLevel:str):
         if Logger.isSetUp:
-            Logger.logger.error("Logger has already been setup!")
+            Logger.log.error("Logger has already been setup!")
             return
 
         # Create logging object
-        Logger.logger = logging.getLogger(loggerName)
-        Logger.logger.setLevel(logging.DEBUG)
+        Logger.log = logging.getLogger(loggerName)
+        Logger.log.setLevel(logging.DEBUG)
 
         # Console
         consoleHandler = logging.StreamHandler(sys.stdout)
         consoleHandler.setLevel(Logger.levelFromString(consoleLevel))
         consoleHandler.setFormatter(Logger.FORMATTER)
 
-        Logger.logger.addHandler(consoleHandler)
+        Logger.log.addHandler(consoleHandler)
 
         # File
         if os.path.isdir(Logger.LOGS_LOCATION):
@@ -45,20 +44,20 @@ class Logger:
             fileHandler.setLevel(Logger.levelFromString(fileLevel))
             fileHandler.setFormatter(Logger.FORMATTER)
 
-            Logger.logger.addHandler(fileHandler)
+            Logger.log.addHandler(fileHandler)
         
-        isSetUp = True
+        Logger.isSetUp = True
 
     @staticmethod
     def get() -> logging.getLogger:
-        return Logger.logger
+        return Logger.log
 
     @staticmethod
     def method():
         def inner_function(func):
             @wraps(func)
             def log_method(*args, **kwargs):
-                Logger.logger.debug('Running {} with arguments {} {}'.format(func.__name__, args, kwargs))
+                Logger.log.debug('Running {} with arguments {} {}'.format(func.__name__, args, kwargs))
                 return func(*args, **kwargs)
             return log_method
         return inner_function
