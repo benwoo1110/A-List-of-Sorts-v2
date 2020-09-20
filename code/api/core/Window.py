@@ -55,36 +55,17 @@ class Window(Container):
         # Show display information
         Logger.get().debug(pygame.display.Info())
 
-    def size(self): return (self.width, self.height)
-
-    def scaledSize(self): return (self.scaledWidth, self.scaledWeight)
-
-    def coord(self): return (self.x, self.y)
-    
-    def addScreen(self, screen):
-        self.container[screen.name] = screen
-        Logger.get().debug('Added screen {}'.format(screen.name))
-
-    def getCurrentScreen(self): return self.container.get(self.screensStack[-1]).getScreen()
-
-    def triggerUpdate(self):
-        self.doUpdate = True
-
     def update(self):
         try:
-            # Display window
             resizedSurface = pygame.transform.smoothscale(self.getCurrentScreen(), self.scaledSize())
-            self.window.blit(resizedSurface, self.coord())
-
-            # Update
+            self.window.blit(resizedSurface, self.getCoord())
             pygame.display.update()
             pygame.time.Clock().tick(60)
 
-        # Error
-        except:
-            Logger.get().critical('Error updating pygame window!', exc_info=True)
+        except Exception as e:
+            Logger.get().critical(e, exc_info=True)
+            Logger.get().critical('Error updating pygame window!')
 
-        # Reset screen update trigger
         self.doUpdate = False
 
     def changeStack(self, type_:str, screen:str = None) -> bool:
@@ -159,3 +140,18 @@ class Window(Container):
             # When screen ends
             screen.end()
             self.doStackChange = False
+
+    def addScreen(self, screen):
+        self.container[screen.getName()] = screen
+        Logger.get().debug('Added screen {}'.format(screen.getName()))
+
+    def triggerUpdate(self):
+        self.doUpdate = True
+
+    def size(self): return (self.width, self.height)
+
+    def scaledSize(self): return (self.scaledWidth, self.scaledWeight)
+
+    def getCoord(self): return (self.x, self.y)
+
+    def getCurrentScreen(self): return self.container.get(self.screensStack[-1]).getScreen()

@@ -35,4 +35,4 @@ class Images(Container):
         self.surface.getScreen().blit(self.getImage(name), self.frame.getCoord())
 
     def loadWithState(self):
-        self.surface.getScreen().blit(self.getImage(self.surface.state), self.frame.getCoord())
+        self.surface.getScreen().blit(self.getImage(self.surface.getState()), self.frame.getCoord())

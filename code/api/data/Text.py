@@ -109,7 +109,7 @@ class Text:
     def getText(self):
         # Combine prefix, text and suffix
         try:
-            if self.surface.state == 'Selected' and self.editable: return self.prefix+self.text+'_'+self.suffix
+            if self.surface.isState('selected') and self.editable: return self.prefix+self.text+'_'+self.suffix
             else: return self.prefix+self.text+self.suffix
         
         # Error, usually due to prefix, text or suffix not being str
