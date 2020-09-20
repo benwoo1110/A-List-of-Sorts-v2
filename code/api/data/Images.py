@@ -9,15 +9,15 @@ from code.api.utils.File import File
 class Images(Container):
     def __init__(self, imageFolder:File, frame:Frame, fileType:str = '*.png'):
         super().__init__()
-        self.imageFolder = imageFolder
-        self.fileType = fileType
-        self.frame = frame
+        self._imageFolder = imageFolder
+        self._fileType = fileType
+        self._frame = frame
 
     def setUp(self, surface):
-        self.surface = surface
+        self._surface = surface
 
         # get the image
-        imageDict = self.imageFolder.getContainingFiles(self.fileType)
+        imageDict = self._imageFolder.getContainingFiles(self._fileType)
         for imageFileName, imageFile in imageDict.items():
             # Get name
             imageName = imageFileName.split('.')[0]
@@ -27,12 +27,26 @@ class Images(Container):
             self.addObject(imageName, loadedImage)
 
         return self
+    
+    def load(self, name):
+        self._surface.getScreen().blit(self.getImage(name), self._frame.getCoord())
+
+    def loadWithState(self):
+        self._surface.getScreen().blit(self.getImage(self._surface.getState()), self._frame.getCoord())
+
+    def setImageFolder(self, folder:File):
+        if self.hasImageFolder():
+            raise Exception()
+        self._imageFolder = folder
+    
+    def hasImageFolder(self):
+        return self._imageFolder != None
+
+    def getImageFolder(self):
+        return self._imageFolder
 
     def getImage(self, name):
         return self.getObject(name)
-    
-    def load(self, name):
-        self.surface.getScreen().blit(self.getImage(name), self.frame.getCoord())
 
-    def loadWithState(self):
-        self.surface.getScreen().blit(self.getImage(self.surface.getState()), self.frame.getCoord())
+    def getFrame(self):
+        return self._frame

@@ -26,8 +26,8 @@ class Surface(Container):
         self._surfaceDir = os.path.join(parentDir, self._name+"/")
 
         for data in self._datas.values():
-            if (isinstance(data, Images)) and data.imageFolder == None:
-                data.imageFolder = File(self._surfaceDir)
+            if (isinstance(data, Images)) and not data.hasImageFolder():
+                data.setImageFolder(File(self._surfaceDir))
             data.setUp(self)
 
         for _, childSurface in self:

@@ -55,79 +55,23 @@ class TextValidate:
         self.invalidPrompt = invalidPrompt
 
 class Text:
-    def __init__(self, frame:Frame, text:str = '', prefix:str = '', suffix:str = '', name=None, item=None,
-    format:TextFormat = None, validation:TextValidate = None, editable:bool = True):
-        self.name = name
-        self.item = item
-        self.frame = frame
-        self.text = text
-        self.prefix = prefix
-        self.suffix = suffix
-        self.format = TextFormat() if format == None else format
-        self.validation = TextValidate() if validation == None else validation
-        self.editable = editable
+    def __init__(self, frame:Frame, text:str = '', prefix:str = '', suffix:str = '',
+    format_:TextFormat = None, validation:TextValidate = None, editable:bool = True):
+        self._frame = frame
+        self._text = text
+        self._prefix = prefix
+        self._suffix = suffix
+        self._format = TextFormat() if format_ is None else format_
+        self._validation = TextValidate() if validation is None else validation
+        self._editable = editable
 
     def setUp(self, surface):
         self.surface = surface
         self.renderText()
 
-    def validateChar(self, char, inAscii = True):
-        # Ensure that character is alloweed for that textfield
-        if self.validation.inAscii and not inAscii: char = ord(char)
-        elif not self.validation.inAscii and inAscii: char = chr(char)
-
-        return char in self.validation.charsAllowed
-
-    def validateText(self):
-        # Check for regex matching
-        valid = self.validation
-        regexTexts = valid.regex.findall(self.text)
-        Logger.get().debug('[{}] Regex matching result of {}'.format(self.item.name, regexTexts))
-
-        # Full match
-        if len(regexTexts) == 1 and regexTexts[0] == self.text: 
-            if callable(valid.customMethod): return valid.customMethod(self.text)
-            return True
-
-        # Invalid based on regex
-        else:
-            '''
-            if self.validation.invalidPrompt != None:
-                # Error sound
-                sound.error.play()
-
-                # Tell user is invalid
-                Alert(
-                    type='notify', 
-                    title='Invalid Input',
-                    content=self.validation.invalidPrompt
-                ).do()
-            '''
-
-            return False
-
-    def getText(self):
-        # Combine prefix, text and suffix
-        try:
-            if self.surface.isState('selected') and self.editable: return self.prefix+self.text+'_'+self.suffix
-            else: return self.prefix+self.text+self.suffix
-        
-        # Error, usually due to prefix, text or suffix not being str
-        except:
-            Logger.get().error('Error getting text for {}'.format(self.name), exc_info=True)
-            return 'Error'
-
-    def setText(self, text:str = None, prefix:str = None, suffix:str = None):
-        if text != None: self.text = str(text)
-        if prefix != None: self.prefix = str(prefix)
-        if suffix != None: self.suffix = str(suffix)
-
-        self.renderText()
-        self.surface.display()
-
     def renderText(self):
         # Generate surface for text
-        self.textSurface = pygame.surface.Surface(self.frame.size(), pygame.SRCALPHA)
+        self.textSurface = pygame.surface.Surface(self._frame.size(), pygame.SRCALPHA)
         # Get text with prefix and suffix
         text = self.getText()
         
@@ -135,36 +79,86 @@ class Text:
         line_text = text.split('\n')
 
         # Warp the text
-        if self.format.warpText == None:
+        if self._format.warpText == None:
             warpped_text = line_text
         
         else:
             warpped_text = []
             for line in line_text:
-                warpped_text += textwrap.wrap(line, width=self.format.warpText)
+                warpped_text += textwrap.wrap(line, width=self._format.warpText)
         
         # generate text to surface
         h = 0
         for line in warpped_text:
             # Size of text line
-            text_w, text_h = self.format.font.size(line)
+            text_w, text_h = self._format.font.size(line)
 
             # Render the text line and store to text surface
-            rendered_text = self.format.font.render(line, True, self.format.colour)
+            rendered_text = self._format.font.render(line, True, self._format.colour)
 
             # Render line based on alignment
-            if self.format.align == 'left': self.textSurface.blit(rendered_text, (0, h))
-            elif self.format.align == 'right': self.textSurface.blit(rendered_text, (self.frame.w - text_w, h))
-            elif self.format.align == 'center': self.textSurface.blit(rendered_text, (int((self.frame.w - text_w)/2), h))
+            if self._format.align == 'left': self.textSurface.blit(rendered_text, (0, h))
+            elif self._format.align == 'right': self.textSurface.blit(rendered_text, (self._frame.w - text_w, h))
+            elif self._format.align == 'center': self.textSurface.blit(rendered_text, (int((self._frame.w - text_w)/2), h))
 
             self.textHeight = h
             # Set hight of next line
-            h += text_h * self.format.lineSpacing
+            h += text_h * self._format.lineSpacing
         
         self.textHeight += text_h
     
     def loadWithState(self):
-        if self.format.pos == 'top': self.surface.getScreen().blit(self.textSurface, self.frame.coord())
-        elif self.format.pos == 'bottom': self.surface.getScreen().blit(self.textSurface, (self.frame.x, self.frame.y + (self.frame.h - self.textHeight)))
-        elif self.format.pos == 'center': self.surface.getScreen().blit(self.textSurface, (self.frame.x, self.frame.y + int((self.frame.h - self.textHeight)/2)))
-        else: Logger.get().error('Unknown text postion type: "{}"'.format(self.format.pos))
+        if self._format.pos == 'top': self.surface.getScreen().blit(self.textSurface, self._frame.coord())
+        elif self._format.pos == 'bottom': self.surface.getScreen().blit(self.textSurface, (self._frame.x, self._frame.y + (self._frame.h - self.textHeight)))
+        elif self._format.pos == 'center': self.surface.getScreen().blit(self.textSurface, (self._frame.x, self._frame.y + int((self._frame.h - self.textHeight)/2)))
+        else: Logger.get().error('Unknown text postion type: "{}"'.format(self._format.pos))
+
+    def validateChar(self, char, inAscii = True):
+        # Ensure that character is allowed for that textfield
+        if self._validation.inAscii and not inAscii: char = ord(char)
+        elif not self._validation.inAscii and inAscii: char = chr(char)
+
+        return char in self._validation.charsAllowed
+
+    def validateText(self):
+        # Check for regex matching
+        valid = self._validation
+        regexTexts = valid.regex.findall(self._text)
+        Logger.get().debug('[{}] Regex matching result of {}'.format(self.item.name, regexTexts))
+
+        # Full match
+        if len(regexTexts) == 1 and regexTexts[0] == self._text: 
+            if callable(valid.customMethod): return valid.customMethod(self._text)
+            return True
+
+        # Invalid based on regex
+        else:
+            return False
+    
+    def setText(self, text:str = None, prefix:str = None, suffix:str = None):
+        if text != None: self._text = str(text)
+        if prefix != None: self._prefix = str(prefix)
+        if suffix != None: self._suffix = str(suffix)
+
+        self.renderText()
+        self.surface.display()
+    
+    def getText(self):
+        # Combine prefix, text and suffix
+        try:
+            if self.surface.isState('selected') and self._editable: return self._prefix+self._text+'_'+self._suffix
+            else: return self._prefix+self._text+self._suffix
+        
+        # Error, usually due to prefix, text or suffix not being str
+        except:
+            Logger.get().error('Error getting text for {}'.format(self.name), exc_info=True)
+            return None
+
+    def getFrame(self):
+        return self._frame
+
+    def getFormat(self):
+        return self._format
+
+    def isEditable(self):
+        return self._editable

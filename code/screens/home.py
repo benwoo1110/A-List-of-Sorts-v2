@@ -21,7 +21,7 @@ class home(Screen):
             .addData("text", Text(
                 frame=Frame(x=271, y=159, w=628, h=53),
                 text="Insertion sort",
-                format=TextFormat(fontSize=38, pos="center")
+                format_=TextFormat(fontSize=38, pos="center")
             ))
         )\
         .addSurface(
@@ -35,7 +35,7 @@ class home(Screen):
             .addData("text", Text(
                 frame=Frame(x=252, y=260, w=695, h=168),
                 text="Bubble sort, is one of the most simplest sorting algorithm that repeatedly steps through the list, compares adjacent pairs and swaps them if they are in the wrong order.",
-                format=TextFormat(fontSize=31, pos="center", warpText=48)
+                format_=TextFormat(fontSize=31, pos="center", warpText=48)
             ))
         )\
         .addSurface(
@@ -49,7 +49,7 @@ class home(Screen):
             .addData("text", Text(
                 frame=Frame(x=296, y=490, w=654, h=53),
                 text="100.0", suffix=" swaps per sec",
-                format=TextFormat(fontSize=38, pos="center")
+                format_=TextFormat(fontSize=38, pos="center")
             ))
         )\
         .addSurface(
@@ -63,7 +63,7 @@ class home(Screen):
             .addData("text", Text(
                 frame=Frame(x=428, y=585, w=522, h=53),
                 text="10", suffix=" bars",
-                format=TextFormat(fontSize=38, pos="center")
+                format_=TextFormat(fontSize=38, pos="center")
             ))
         )\
         .addSurface(
