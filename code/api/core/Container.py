@@ -11,7 +11,7 @@ class Container:
     def addObject(self, name, object_:object):
         self._container[name] = object_
 
-    def getObject(self, name):
+    def getObject(self, name) -> object:
         return self._container.get(name)
 
     def delete(self, name) -> object:

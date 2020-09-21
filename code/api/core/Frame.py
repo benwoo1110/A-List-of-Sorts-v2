@@ -38,17 +38,17 @@ class Frame:
         return (int(self._x * scale), int(self._y * scale), int(self._w * scale), int(self._h * scale))
 
     @property
-    def x(self):
+    def x(self) -> int:
         return self._x
     
     @property
-    def y(self):
+    def y(self) -> int:
         return self._y
 
     @property
-    def w(self):
+    def w(self) -> int:
         return self._w
 
     @property
-    def h(self):
+    def h(self) -> int:
         return self._h

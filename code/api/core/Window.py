@@ -1,6 +1,7 @@
 import pygame
 
 from code.api.core.Container import Container
+from code.api.core.Screen import Screen
 from code.api.utils.File import File
 from code.api.utils.Logger import Logger
 
@@ -32,7 +33,7 @@ class Window(Container):
             windowWidth, windowHeight = self.window.get_size()
             
             # Set scaling
-            self.scale = min(windowWidth / width, windowHeight / height)
+            self.scale = min(windowWidth / self.width, windowHeight / self.height)
             self.scaledWidth = int(self.width * self.scale)
             self.scaledWeight = int(self.height * self.scale)
 
@@ -106,6 +107,20 @@ class Window(Container):
             
         return True
 
+    def runScreen(self, screen):
+        # Main loop for top screen
+        while not self.doStackChange:
+            if self.doUpdate:
+                self.update()
+
+            screenResult = screen.run()
+
+            if screenResult == 'quit':
+                pygame.quit()
+                return
+
+        self.doStackChange = False
+
     def mainloop(self, startScreen:str):
         # Start with startScreen
         self.screensStack.append(startScreen)
@@ -123,39 +138,32 @@ class Window(Container):
 
             # Log current screen stacks
             Logger.get().debug('New screen stack of {}'.format(self.screensStack))
-            
-            # Main loop for top screen
-            while not self.doStackChange:
-                # Check for updates wanted to screen
-                if self.doUpdate: self.update()
 
-                # Get result of screen actions
-                screenResult = screen.run()
-
-                # End program
-                if screenResult == 'quit':
-                    pygame.quit()
-                    return
+            self.runScreen(screen)
 
             # When screen ends
             screen.end()
-            self.doStackChange = False
 
-    def addScreen(self, screen):
+    def addScreen(self, screen:Screen):
+        if not isinstance(screen, Screen):
+            raise TypeError("Not an instance of Screen object.")
         self.addObject(screen.getName(), screen)
         Logger.get().debug('Added screen {}'.format(screen.getName()))
 
     def triggerUpdate(self):
         self.doUpdate = True
 
-    def size(self):
+    def size(self) -> tuple:
         return (self.width, self.height)
 
-    def scaledSize(self):
+    def scaledSize(self) -> tuple:
         return (self.scaledWidth, self.scaledWeight)
 
-    def getCoord(self):
+    def getCoord(self) -> tuple:
         return (self.x, self.y)
+
+    def getScreen(self, name) -> Screen:
+        return self.getObject(name)
 
     def getCurrentScreen(self):
         return self.getObject(self.screensStack[-1]).getScreen()

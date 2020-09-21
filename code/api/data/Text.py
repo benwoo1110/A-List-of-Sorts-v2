@@ -3,6 +3,7 @@ import re
 import pygame
 
 from code.api.core.Frame import Frame
+from code.api.data.Data import Data
 from code.api.utils.Logger import Logger
 
 
@@ -54,7 +55,7 @@ class TextValidate:
         self.customMethod = customMethod
         self.invalidPrompt = invalidPrompt
 
-class Text:
+class Text(Data):
     def __init__(self, frame:Frame, text:str = '', prefix:str = '', suffix:str = '',
     format_:TextFormat = None, validation:TextValidate = None, editable:bool = True):
         self._frame = frame
@@ -113,14 +114,14 @@ class Text:
         elif self._format.pos == 'center': self.surface.getScreen().blit(self.textSurface, (self._frame.x, self._frame.y + int((self._frame.h - self.textHeight)/2)))
         else: Logger.get().error('Unknown text postion type: "{}"'.format(self._format.pos))
 
-    def validateChar(self, char, inAscii = True):
+    def validateChar(self, char, inAscii = True) -> bool:
         # Ensure that character is allowed for that textfield
         if self._validation.inAscii and not inAscii: char = ord(char)
         elif not self._validation.inAscii and inAscii: char = chr(char)
 
         return char in self._validation.charsAllowed
 
-    def validateText(self):
+    def validateText(self) -> bool:
         # Check for regex matching
         valid = self._validation
         regexTexts = valid.regex.findall(self._text)
@@ -143,7 +144,7 @@ class Text:
         self.renderText()
         self.surface.display()
     
-    def getText(self):
+    def getText(self) -> str:
         # Combine prefix, text and suffix
         try:
             if self.surface.isState('selected') and self._editable: return self._prefix+self._text+'_'+self._suffix
@@ -154,11 +155,11 @@ class Text:
             Logger.get().error('Error getting text for {}'.format(self.name), exc_info=True)
             return None
 
-    def getFrame(self):
+    def getFrame(self) -> Frame:
         return self._frame
 
-    def getFormat(self):
+    def getFormat(self) -> TextFormat:
         return self._format
 
-    def isEditable(self):
+    def isEditable(self) -> bool:
         return self._editable

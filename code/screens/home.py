@@ -77,4 +77,4 @@ class home(Screen):
         )
     
     def start(self):
-        pass
+        self.getSurface("run")

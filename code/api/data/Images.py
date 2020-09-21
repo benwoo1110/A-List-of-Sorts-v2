@@ -1,12 +1,12 @@
 import pygame
-import glob
 
 from code.api.core.Container import Container
 from code.api.core.Frame import Frame
+from code.api.data.Data import Data
 from code.api.utils.File import File
 
 
-class Images(Container):
+class Images(Container, Data):
     def __init__(self, imageFolder:File, frame:Frame, fileType:str = '*.png'):
         super().__init__()
         self._imageFolder = imageFolder
