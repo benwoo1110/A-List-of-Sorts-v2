@@ -4,6 +4,7 @@ import os
 from code.api.core.Container import Container
 from code.api.core.Frame import Frame
 from code.api.core.Surface import Surface
+from code.api.event.EventRunner import EventRunner
 from code.api.data.Images import Images
 from code.api.utils.File import File
 
@@ -18,9 +19,7 @@ class Screen(Container):
         pass
 
     def run(self):
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                return "quit"
+        self._runner.run()
     
     def end(self):
         pass
@@ -29,6 +28,7 @@ class Screen(Container):
         self._frame = frame
         self._window = window
         self._screen = pygame.surface.Surface(frame.size(), pygame.SRCALPHA)
+        self._runner = EventRunner(self)
 
         self._backgroundImage = Images(File(self._screenDir), self._frame).setUp(None)
         self._screen.blit(self._backgroundImage.getImage('background'), self._backgroundImage.getFrame().getCoord())
@@ -38,6 +38,9 @@ class Screen(Container):
 
     def display(self):
         self._window.triggerUpdate()
+    
+    def switchScreen(self, type_:str, screen:str = None):
+        self._window.changeStack(type_, screen)
 
     def addSurface(self, surface):
         self.addObject(surface.getName(), surface)

@@ -11,6 +11,9 @@ class Container:
     def addObject(self, name, object_:object):
         self._container[name] = object_
 
+    def hasObject(self, name):
+        return self._container.get(name) is not None
+
     def getObject(self, name) -> object:
         return self._container.get(name)
 
