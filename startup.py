@@ -19,13 +19,16 @@ from code.api.utils.Logger import Logger
 from code.api.core.Screen import Screen
 from code.api.data.Text import TextFormat
 from code.api.utils.File import File
+
 from code.screens.home import home
+from code.screens.sort import sort
 
 app = App(name="A List of Sort v2", size=(1024, 768))
 
 TextFormat.setDefaultFont(TextFormat.getCustomFont("Futura"))
 
 app.registerScreen(home())
+app.registerScreen(sort())
 
-Logger.get().info("START")
+Logger.get().info("STARTING APP")
 app.start("home")

@@ -1,0 +1,8 @@
+{
+    "Bubble sort": "Bubble sort, is one of the most simplest sorting algorithm that repeatedly steps through the list, compares adjacent pairs and swaps them if they are in the wrong order.",
+    "Insertion sort": "Insertion sort is a simple sorting algorithm that builds the final sorted array (or list) one item at a time. It can be simply implemented and is also efficient for (quite) small data sets.",
+    "Merge sort": "Merge sort an efficient, comparison-based sorting algorithm. It’s a divide and conquer algorithm that was invented by John von Neumann in 1945.",
+    "Quick sort": "Quick sort is an O(n log n) efficient sorting algorithm, serving as a systematic method for placing the elements of a random access file or an array in order.",
+    "Radix sort": "Radix sort is a non-comparative integer sorting algorithm that sorts data with integer keys by grouping keys by individual digits which share the same significant position and value.",
+    "Bogo sort": "Bogo sort is a highly ineffective sorting algorithm based on the generate and test paradigm. The function successively generates permutations of its input until it finds one that is sorted."
+}

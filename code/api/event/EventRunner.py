@@ -7,6 +7,7 @@ from code.api.event.EventHandler import EventHandler
 class EventRunner:
     def __init__(self, screen):
         self._screen = screen
+        self._currentHoverSurface = None
         self._events = {
             'clickdown': self.clickdown,
             'clickup': self.clickup,
@@ -22,14 +23,14 @@ class EventRunner:
                 handler(PGEvent)
     
     def hover(self):
-        hoverSurface = self.getHover(self._screen)
-        if hoverSurface is not None:
-            hoverSurface.setState("hover")
+        self._currentHoverSurface = self.getHover(self._screen)
+        if self._currentHoverSurface is not None:
+            self._currentHoverSurface.setState("hover")
 
     def getHover(self, surface):
         hoverSurface = None
         for _, childSurface in surface:
-            if childSurface.isState("disabled"):
+            if not childSurface.isLoaded() or childSurface.isState("disabled") or not childSurface.isSelectable():
                 continue
 
             if childSurface.getFrame().mouseIn():
@@ -46,7 +47,9 @@ class EventRunner:
 
     @EventHandler(pygame.MOUSEBUTTONUP)
     def clickup(self, event):
-        print('click down up', event.pos)
+        if self._currentHoverSurface is not None:
+            self._currentHoverSurface.runActions()
+        print('click up at', event.pos)
     
     @EventHandler(pygame.KEYDOWN)
     def keydown(self, event):
@@ -58,4 +61,5 @@ class EventRunner:
     
     @EventHandler(pygame.QUIT)
     def quit(self, event):
-        pass
+        pygame.quit()
+        exit()

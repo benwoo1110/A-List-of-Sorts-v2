@@ -20,11 +20,6 @@ class App:
         self.name = name
         self.frame = Frame(w=size[0], h=size[1])
 
-        # Config
-        if not App.CONFIG_FILE.exist():
-            self.resourceFiles.get("default_config.yml").copyTo(App.CONFIG_FILE)
-        self.configData = App.CONFIG_FILE.loadYaml()
-
         # Logging
         App.LOGS_FOLDER.createDirIfEmpty()
         Logger.setUp(self.name, 5, "INFO", "DEBUG")

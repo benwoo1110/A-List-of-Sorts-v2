@@ -17,14 +17,12 @@ class Images(Container, Data):
         self._surface = surface
 
         # get the image
-        imageDict = self._imageFolder.getContainingFiles(self._fileType)
+        imageDict = self._imageFolder.getContainingFiles(self._fileType, withExtension=False)
         for imageFileName, imageFile in imageDict.items():
-            # Get name
-            imageName = imageFileName.split('.')[0]
             # Load image
             loadedImage = pygame.image.load(imageFile.getPath()).convert_alpha()
             # Store image
-            self.addObject(imageName, loadedImage)
+            self.addObject(imageFileName, loadedImage)
 
         return self
     

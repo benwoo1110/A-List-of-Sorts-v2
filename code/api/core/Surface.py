@@ -32,13 +32,13 @@ class Surface(Container):
         for _, childSurface in self:
             childSurface.setUp(self._surfaceDir, screen)
 
-        self.load()
+        self.load(withChilds='all', nested=True)
 
     def unload(self, withChilds:list = None, nested:bool = False):
         self._loaded = False
 
         for name, child in self: 
-            if name not in withChilds:
+            if withChilds != 'all' and name not in withChilds:
                 continue
             if nested:
                 child.unload(withChilds, nested)
@@ -55,12 +55,16 @@ class Surface(Container):
             return
 
         for name, child in self: 
-            if name not in withChilds:
+            if withChilds != 'all' and name not in withChilds:
                 continue
             if nested:
                 child.load(withChilds, nested)
             else:
                 child.load()
+
+    def runActions(self):
+        for action in self._actions:
+            action.do()
 
     def display(self, withChilds:list = None, nested:bool = False):
         self.load(withChilds, nested)
@@ -111,6 +115,9 @@ class Surface(Container):
 
     def isSelectable(self) -> bool:
         return self._selectable
+
+    def isLoaded(self) -> bool:
+        return self._loaded
 
     def getState(self) -> str:
         return self._state

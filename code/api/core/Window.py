@@ -71,7 +71,7 @@ class Window(Container):
 
     def changeStack(self, type_:str, screen:str = None) -> bool:
         # Notify another changeStack() is happening
-        if self.stackChange: 
+        if self.doStackChange: 
             Logger.get().warning('Another stack change is happening as well, this may cause issues.')
         
         self.doStackChange = True
@@ -81,7 +81,7 @@ class Window(Container):
             # Go back one screen
             if screen == None: self.screensStack.pop()
             # Go back to screen specified
-            elif screen in self.screens:
+            elif screen in self._container:
                 self.screensStack = self.screensStack[:self.screensStack.index(screen)+1]
             # Error
             else:
@@ -90,7 +90,7 @@ class Window(Container):
         
         # Load a new screen
         elif type_ == 'load':  
-            if screen in self.screens:
+            if screen in self._container:
                 self.screensStack.append(screen)
             # Error
             else:

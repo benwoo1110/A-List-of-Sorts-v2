@@ -3,11 +3,12 @@ from code.api.core.Surface import Surface
 from code.api.core.Frame import Frame
 from code.api.data.Images import Images
 from code.api.data.Text import Text, TextFormat
+from code.api.event.Action import Runclass
 
 
 class home(Screen):
     def __init__(self):
-        super().__init__("home")
+        super().__init__(name="home")
 
         self\
         .addSurface(
@@ -71,10 +72,7 @@ class home(Screen):
                 name="run",
                 type_="button",
                 frame=Frame(x=781, y=671, w=194, h=70),
-                actions=[]
+                actions=[Runclass(self.switchScreen, "load", "sort")]
             )
             .addData("image", Images(None, Frame(x=781, y=671, w=194, h=70)))
         )
-    
-    def start(self):
-        self.getSurface("run")
